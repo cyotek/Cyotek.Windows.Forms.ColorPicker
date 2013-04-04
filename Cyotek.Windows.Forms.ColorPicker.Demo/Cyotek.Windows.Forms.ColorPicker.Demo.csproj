@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{638299BD-079A-4F2B-A1E6-EFA711C2EDB2}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Cyotek.Windows.Forms.ColorPicker.Demo</RootNamespace>
+    <AssemblyName>clrpkdmo</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutDialog.designer.cs">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BaseForm.designer.cs">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColorEditorManagerDemoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColorEditorManagerDemoForm.Designer.cs">
+      <DependentUpon>ColorEditorManagerDemoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColorEditorDemoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColorEditorDemoForm.Designer.cs">
+      <DependentUpon>ColorEditorDemoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColorGridDemoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColorGridDemoForm.Designer.cs">
+      <DependentUpon>ColorGridDemoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColorPickerDialogDemoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColorPickerDialogDemoForm.Designer.cs">
+      <DependentUpon>ColorPickerDialogDemoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColorSliderDemonstrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColorSliderDemonstrationForm.Designer.cs">
+      <DependentUpon>ColorSliderDemonstrationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColorWheelDemoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColorWheelDemoForm.Designer.cs">
+      <DependentUpon>ColorWheelDemoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EventsListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GroupBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ScreenColorPickerDemoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScreenColorPickerDemoForm.Designer.cs">
+      <DependentUpon>ScreenColorPickerDemoForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AboutDialog.resx">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BaseForm.resx">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColorEditorManagerDemoForm.resx">
+      <DependentUpon>ColorEditorManagerDemoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColorEditorDemoForm.resx">
+      <DependentUpon>ColorEditorDemoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColorGridDemoForm.resx">
+      <DependentUpon>ColorGridDemoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColorPickerDialogDemoForm.resx">
+      <DependentUpon>ColorPickerDialogDemoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColorSliderDemonstrationForm.resx">
+      <DependentUpon>ColorSliderDemonstrationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColorWheelDemoForm.resx">
+      <DependentUpon>ColorWheelDemoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScreenColorPickerDemoForm.resx">
+      <DependentUpon>ScreenColorPickerDemoForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
+      <Project>{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}</Project>
+      <Name>Cyotek.Windows.Forms.ColorPicker</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
+    <Content Include="palettes\PaintNet.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\eyedropper.png" />
+    <None Include="palettes\Hex256.pal">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\cellbackground.png" />
+    <None Include="Resources\icon.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
