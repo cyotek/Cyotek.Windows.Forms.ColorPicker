@@ -10,14 +10,14 @@ namespace Cyotek.Windows.Forms
 
   // If you use this code in your applications, donations or attribution is welcome
 
-  public class Jasc10PaletteReader : IPaletteReader
+  public class GimpPaletteReader : IPaletteReader
   {
     #region Constructors
 
-    public Jasc10PaletteReader()
+    public GimpPaletteReader()
     { }
 
-    public Jasc10PaletteReader(string fileName)
+    public GimpPaletteReader(string fileName)
       : this()
     {
       this.FileName = fileName;
@@ -33,6 +33,11 @@ namespace Cyotek.Windows.Forms
 
     #region Members
 
+    public ColorCollection ReadPalette()
+    {
+      return this.ReadPalette(this.FileName);
+    }
+
     /// <summary>
     /// Reads the palette.
     /// </summary>
@@ -43,33 +48,34 @@ namespace Cyotek.Windows.Forms
     /// Invalid palette file
     /// or
     /// </exception>
-    public ColorCollection ReadPalette()
+    public ColorCollection ReadPalette(string fileName)
     {
       ColorCollection results;
 
-      if (string.IsNullOrEmpty(this.FileName))
-        throw new InvalidOperationException("No filename specified.");
+      if (string.IsNullOrEmpty(fileName))
+        throw new ArgumentNullException("fileName");
 
-      if (!File.Exists(this.FileName))
-        throw new FileNotFoundException(string.Format("Cannot find file '{0}'", this.FileName), this.FileName);
+      if (!File.Exists(fileName))
+        throw new FileNotFoundException(string.Format("Cannot find file '{0}'", fileName), fileName);
 
       results = new ColorCollection();
 
-      using (TextReader reader = new StreamReader(this.FileName))
+      using (StreamReader reader = new StreamReader(fileName))
       {
         string header;
-        string version;
-        int colorCount;
+        string startHeader;
 
         // check signature
         header = reader.ReadLine();
-        version = reader.ReadLine();
+        startHeader = reader.ReadLine();
 
-        if (header != "JASC-PAL" || version != "0100")
+        if (header != "GIMP Palette")
           throw new InvalidDataException("Invalid palette file");
 
-        colorCount = Convert.ToInt32(reader.ReadLine());
-        for (int i = 0; i < colorCount; i++)
+        while (startHeader != "#")
+          startHeader = reader.ReadLine();
+
+        while (!reader.EndOfStream)
         {
           int r;
           int g;
@@ -78,14 +84,13 @@ namespace Cyotek.Windows.Forms
           string[] parts;
 
           data = reader.ReadLine();
-          parts = !string.IsNullOrEmpty(data) ? data.Split(' ') : new string[0];
+          parts = !string.IsNullOrEmpty(data) ? data.Split(new[]
+          {
+            ' ', '\t'
+          }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
 
-          if (parts.Length != 3)
-            throw new InvalidDataException(string.Format("Invalid palette contents found at index {0}", i));
-
-          r = Convert.ToInt32(parts[0]);
-          g = Convert.ToInt32(parts[1]);
-          b = Convert.ToInt32(parts[2]);
+          if (!int.TryParse(parts[0], out r) || !int.TryParse(parts[1], out g) || !int.TryParse(parts[2], out b))
+            throw new InvalidDataException(string.Format("Invalid palette contents found with data '{0}'", data));
 
           results.Add(Color.FromArgb(r, g, b));
         }

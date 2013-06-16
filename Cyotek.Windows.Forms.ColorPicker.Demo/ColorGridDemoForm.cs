@@ -82,7 +82,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void jascPaletteFileButton_Click(object sender, EventArgs e)
     {
-      colorGrid.Colors = new Jasc10PaletteReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\Hex256.pal")).ReadPalette();
+      colorGrid.Colors = new JascPaletteReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\Hex256.pal")).ReadPalette();
     }
 
     private void office2010Button_Click(object sender, EventArgs e)

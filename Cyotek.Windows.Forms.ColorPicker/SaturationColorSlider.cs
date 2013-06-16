@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+
 #if USEEXTERNALCYOTEKLIBS
-using HslColor = Cyotek.Drawing.HslColor;
+using Cyotek.Drawing;
 #endif
 
 namespace Cyotek.Windows.Forms

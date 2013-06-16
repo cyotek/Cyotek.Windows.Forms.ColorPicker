@@ -18,6 +18,8 @@
 
     ColorCollection ReadPalette();
 
+    ColorCollection ReadPalette(string fileName);
+
     #endregion
   }
 }

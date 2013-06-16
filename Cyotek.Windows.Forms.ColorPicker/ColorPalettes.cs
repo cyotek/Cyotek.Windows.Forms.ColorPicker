@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+
 #if USEEXTERNALCYOTEKLIBS
-using HslColor = Cyotek.Drawing.HslColor;
+using Cyotek.Drawing;
 #endif
 
 namespace Cyotek.Windows.Forms

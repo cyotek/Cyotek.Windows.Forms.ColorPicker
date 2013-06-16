@@ -84,7 +84,8 @@
     <Compile Include="ColorWheel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Jasc10PaletteReader.cs" />
+    <Compile Include="GimpPaletteReader.cs" />
+    <Compile Include="JascPaletteReader.cs" />
     <Compile Include="IPaletteReader.cs" />
     <Compile Include="LightnessColorSlider.cs">
       <SubType>Component</SubType>

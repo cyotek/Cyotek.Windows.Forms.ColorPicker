@@ -37,17 +37,22 @@ namespace Cyotek.Windows.Forms
 
     public ColorCollection ReadPalette()
     {
+      return this.ReadPalette(this.FileName);
+    }
+
+    public ColorCollection ReadPalette(string fileName)
+    {
       ColorCollection results;
 
-      if (string.IsNullOrEmpty(this.FileName))
-        throw new InvalidOperationException("No filename specified.");
+      if (string.IsNullOrEmpty(fileName))
+        throw new ArgumentNullException("fileName");
 
-      if (!File.Exists(this.FileName))
-        throw new FileNotFoundException(string.Format("Cannot find file '{0}'", this.FileName), this.FileName);
+      if (!File.Exists(fileName))
+        throw new FileNotFoundException(string.Format("Cannot find file '{0}'", fileName), fileName);
 
       results = new ColorCollection();
 
-      foreach (string line in File.ReadAllLines(this.FileName).Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(";") && line.Length == 8))
+      foreach (string line in File.ReadAllLines(fileName).Where(line => !string.IsNullOrEmpty(line) && !line.StartsWith(";") && line.Length == 8))
       {
         int a;
         int r;

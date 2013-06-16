@@ -1,15 +1,15 @@
-﻿using System;
+﻿#if USEEXTERNALCYOTEKLIBS
+using Cyotek.Win32;
+#else
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-#if USEEXTERNALCYOTEKLIBS
-using NativeMethods = Cyotek.Win32.NativeMethods;
-using NativeConstants = Cyotek.Win32.NativeConstants;
-#else
 using NativeConstants = Cyotek.Windows.Forms.NativeMethods;
+
 #endif
 
 namespace Cyotek.Windows.Forms

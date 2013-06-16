@@ -166,6 +166,12 @@
     <Content Include="palettes\PaintNet.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="palettes\db16.gpl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="palettes\db32.gpl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\eyedropper.png" />
     <None Include="palettes\Hex256.pal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
