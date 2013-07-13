@@ -6,43 +6,85 @@ namespace Cyotek.Windows.Forms
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
+  /// <summary>
+  /// Provides access to color comparision operations.
+  /// </summary>
   public static class ColorComparer
   {
     #region Class Members
 
-    public static int Brightness(Color c1, Color c2)
+    /// <summary>
+    /// Ccompares two colors by brightness and returns an indication of their relative sort order.
+    /// </summary>
+    /// <param name="x">A color to compare to y.</param>
+    /// <param name="y">A color to compare to x.</param>
+    public static int Brightness(Color x, Color y)
     {
-      float h1 = c1.GetBrightness();
-      float h2 = c2.GetBrightness();
-      if (h1 < h2)
-        return -1;
-      if (h1 > h2)
-        return 1;
-      return 0;
+      float v1;
+      float v2;
+      int result;
+
+      v1 = x.GetBrightness();
+      v2 = y.GetBrightness();
+
+      if (v1 < v2)
+        result = -1;
+      else if (v1 > v2)
+        result = 1;
+      else
+        result = 0;
+
+      return result;
     }
 
-    public static int Hue(Color c1, Color c2)
+    /// <summary>
+    /// Ccompares two colors by hue and returns an indication of their relative sort order.
+    /// </summary>
+    /// <param name="x">A color to compare to y.</param>
+    /// <param name="y">A color to compare to x.</param>
+    public static int Hue(Color x, Color y)
     {
-      float h1 = c1.GetHue();
-      float h2 = c2.GetHue();
-      if (h1 < h2)
-        return -1;
-      if (h1 > h2)
-        return 1;
-      return 0;
+      float v1;
+      float v2;
+      int result;
+
+      v1 = x.GetHue();
+      v2 = y.GetHue();
+
+      if (v1 < v2)
+        result = -1;
+      else if (v1 > v2)
+        result = 1;
+      else
+        result = 0;
+
+      return result;
     }
 
-    public static int Value(Color c1, Color c2)
+    /// <summary>
+    /// Ccompares two colors by value and returns an indication of their relative sort order.
+    /// </summary>
+    /// <param name="x">A color to compare to y.</param>
+    /// <param name="y">A color to compare to x.</param>
+    public static int Value(Color x, Color y)
     {
-      int color1 = c1.R << 16 | c1.G << 8 | c1.B;
-      int color2 = c2.R << 16 | c2.G << 8 | c2.B;
-      if (color1 > color2)
-        return -1;
-      if (color1 < color2)
-        return 1;
-      return 0;
+      int v1;
+      int v2;
+      int result;
+
+      v1 = x.R << 16 | x.G << 8 | x.B;
+      v2 = y.R << 16 | y.G << 8 | y.B;
+
+      if (v1 > v2)
+        result = -1;
+      else if (v1 < v2)
+        result = 1;
+      else
+        result = 0;
+
+      return result;
     }
 
     #endregion

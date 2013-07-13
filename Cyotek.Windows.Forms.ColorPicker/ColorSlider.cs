@@ -1,13 +1,13 @@
-﻿#if USEEXTERNALCYOTEKLIBS
-using Cyotek.Win32;
-#else
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
+#if USEEXTERNALCYOTEKLIBS
+using Cyotek.Win32;
+#else
 using NativeConstants = Cyotek.Windows.Forms.NativeMethods;
 
 #endif
@@ -18,8 +18,11 @@ namespace Cyotek.Windows.Forms
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
+  /// <summary>
+  /// Represents a control for selecting a value from a scale
+  /// </summary>
   [DefaultValue("Value")]
   [DefaultEvent("ValueChanged")]
   [ToolboxItem(false)]
@@ -65,6 +68,9 @@ namespace Cyotek.Windows.Forms
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorSlider"/> class.
+    /// </summary>
     public ColorSlider()
     {
       this.SetStyle(ControlStyles.SupportsTransparentBackColor | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.Selectable, true);
@@ -198,6 +204,11 @@ namespace Cyotek.Windows.Forms
 
     #region Overridden Properties
 
+    /// <summary>
+    /// Gets or sets the font of the text displayed by the control.
+    /// </summary>
+    /// <value>The font.</value>
+    /// <returns>The <see cref="T:System.Drawing.Font" /> to apply to the text displayed by the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultFont" /> property.</returns>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Font Font
@@ -206,6 +217,11 @@ namespace Cyotek.Windows.Forms
       set { base.Font = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the foreground color of the control.
+    /// </summary>
+    /// <value>The color of the fore.</value>
+    /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultForeColor" /> property.</returns>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Color ForeColor
@@ -214,6 +230,11 @@ namespace Cyotek.Windows.Forms
       set { base.ForeColor = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the text associated with this control.
+    /// </summary>
+    /// <value>The text.</value>
+    /// <returns>The text associated with this control.</returns>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text
@@ -226,6 +247,10 @@ namespace Cyotek.Windows.Forms
 
     #region Overridden Members
 
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
       if (disposing && this.SelectionGlyph != null)
@@ -234,6 +259,11 @@ namespace Cyotek.Windows.Forms
       base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Determines whether the specified key is a regular input key or a special key that requires preprocessing.
+    /// </summary>
+    /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values.</param>
+    /// <returns>true if the specified key is a regular input key; otherwise, false.</returns>
     protected override bool IsInputKey(Keys keyData)
     {
       bool result;
@@ -246,6 +276,10 @@ namespace Cyotek.Windows.Forms
       return result;
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.GotFocus" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnGotFocus(EventArgs e)
     {
       base.OnGotFocus(e);
@@ -253,6 +287,10 @@ namespace Cyotek.Windows.Forms
       this.Invalidate();
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
     protected override void OnKeyDown(KeyEventArgs e)
     {
       int step;
@@ -291,7 +329,9 @@ namespace Cyotek.Windows.Forms
       if (value > this.Maximum)
         value = this.Maximum;
 
+      // ReSharper disable CompareOfFloatsByEqualityOperator
       if (value != this.Value)
+        // ReSharper restore CompareOfFloatsByEqualityOperator
       {
         this.Value = value;
 
@@ -301,6 +341,10 @@ namespace Cyotek.Windows.Forms
       base.OnKeyDown(e);
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.LostFocus" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnLostFocus(EventArgs e)
     {
       base.OnLostFocus(e);
@@ -308,6 +352,10 @@ namespace Cyotek.Windows.Forms
       this.Invalidate();
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
     protected override void OnMouseDown(MouseEventArgs e)
     {
       base.OnMouseDown(e);
@@ -319,6 +367,10 @@ namespace Cyotek.Windows.Forms
         PointToValue(e.Location);
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
     protected override void OnMouseMove(MouseEventArgs e)
     {
       base.OnMouseMove(e);
@@ -327,6 +379,10 @@ namespace Cyotek.Windows.Forms
         PointToValue(e.Location);
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnPaddingChanged(EventArgs e)
     {
       base.OnPaddingChanged(e);
@@ -334,6 +390,10 @@ namespace Cyotek.Windows.Forms
       this.DefineBar();
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
     protected override void OnPaint(PaintEventArgs e)
     {
       base.OnPaint(e);
@@ -342,6 +402,10 @@ namespace Cyotek.Windows.Forms
       this.PaintAdornments(e);
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnResize(EventArgs e)
     {
       base.OnResize(e);
@@ -353,6 +417,10 @@ namespace Cyotek.Windows.Forms
 
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the location and size of the color bar.
+    /// </summary>
+    /// <value>The location and size of the color bar.</value>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual Rectangle BarBounds
@@ -369,6 +437,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the bar padding.
+    /// </summary>
+    /// <value>The bar padding.</value>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual Padding BarPadding
@@ -385,6 +457,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the bar style.
+    /// </summary>
+    /// <value>The bar style.</value>
     [Category("Appearance")]
     [DefaultValue(typeof(ColorBarStyle), "TwoColor")]
     public virtual ColorBarStyle BarStyle
@@ -401,6 +477,11 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the first color of the bar.
+    /// </summary>
+    /// <value>The first color.</value>
+    /// <remarks>This property is ignored if the <see cref="BarStyle"/> property is set to Custom and a valid color set has been specified</remarks>
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "Black")]
     public virtual Color Color1
@@ -417,6 +498,11 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the second color of the bar.
+    /// </summary>
+    /// <value>The second color.</value>
+    /// <remarks>This property is ignored if the <see cref="BarStyle"/> property is set to Custom and a valid color set has been specified</remarks>
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "127, 127, 127")]
     public virtual Color Color2
@@ -433,6 +519,11 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the third color of the bar.
+    /// </summary>
+    /// <value>The third color.</value>
+    /// <remarks>This property is ignored if the <see cref="BarStyle"/> property is set to Custom and a valid color set has been specified, or if the BarStyle is set to TwoColor.</remarks>
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "White")]
     public virtual Color Color3
@@ -449,6 +540,11 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the color range used by the custom bar style.
+    /// </summary>
+    /// <value>The custom colors.</value>
+    /// <remarks>This property is ignored if the <see cref="BarStyle"/> property is not set to Custom</remarks>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual ColorCollection CustomColors
@@ -465,6 +561,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets a value to be added to or subtracted from the <see cref="Value"/> property when the selection is moved a large distance.
+    /// </summary>
+    /// <value>A numeric value. The default value is 10.</value>
     [Category("Behavior")]
     [DefaultValue(10)]
     public virtual int LargeChange
@@ -481,6 +581,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the upper limit of values of the selection range.
+    /// </summary>
+    /// <value>A numeric value. The default value is 100.</value>
     [Category("Behavior")]
     [DefaultValue(100F)]
     public virtual float Maximum
@@ -499,6 +603,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the lower limit of values of the selection range.
+    /// </summary>
+    /// <value>A numeric value. The default value is 0.</value>
     [Category("Behavior")]
     [DefaultValue(0F)]
     public virtual float Minimum
@@ -517,6 +625,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the color of the selection nub.
+    /// </summary>
+    /// <value>The color of the nub.</value>
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "Black")]
     public virtual Color NubColor
@@ -533,6 +645,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the size of the selection nub.
+    /// </summary>
+    /// <value>The size of the nub.</value>
     [Category("Appearance")]
     [DefaultValue(typeof(Size), "8, 8")]
     public virtual Size NubSize
@@ -549,6 +665,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the selection nub style.
+    /// </summary>
+    /// <value>The nub style.</value>
     [Category("Appearance")]
     [DefaultValue(typeof(ColorSliderNubStyle), "BottomRight")]
     public virtual ColorSliderNubStyle NubStyle
@@ -565,6 +685,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the orientation of the color bar.
+    /// </summary>
+    /// <value>The orientation.</value>
     [Category("Appearance")]
     [DefaultValue(typeof(Orientation), "Horizontal")]
     public virtual Orientation Orientation
@@ -581,6 +705,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether a divider is shown at the selection nub location.
+    /// </summary>
+    /// <value><c>true</c> if a value divider is to be shown; otherwise, <c>false</c>.</value>
     [Category("Appearance")]
     [DefaultValue(false)]
     public virtual bool ShowValueDivider
@@ -597,6 +725,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the value to be added to or subtracted from the <see cref="Value"/> property when the selection is moved a small distance.
+    /// </summary>
+    /// <value>A numeric value. The default value is 1.</value>
     [Category("Behavior")]
     [DefaultValue(1)]
     public virtual int SmallChange
@@ -613,6 +745,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets a numeric value that represents the current position of the selection numb on the color slider control.
+    /// </summary>
+    /// <value>A numeric value that is within the <see cref="Minimum"/> and <see cref="Maximum"/> range. The default value is 0.</value>
     [Category("Appearance")]
     [DefaultValue(0F)]
     public virtual float Value
@@ -636,12 +772,20 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the selection glyph.
+    /// </summary>
+    /// <value>The selection glyph.</value>
     protected Image SelectionGlyph { get; set; }
 
     #endregion
 
     #region Members
 
+    /// <summary>
+    /// Creates the selection nub glyph.
+    /// </summary>
+    /// <returns>Image.</returns>
     protected virtual Image CreateNubGlyph()
     {
       Image image;
@@ -703,6 +847,9 @@ namespace Cyotek.Windows.Forms
       return image;
     }
 
+    /// <summary>
+    /// Defines the bar bounds and padding.
+    /// </summary>
     protected virtual void DefineBar()
     {
       if (this.SelectionGlyph != null)
@@ -713,6 +860,10 @@ namespace Cyotek.Windows.Forms
       this.SelectionGlyph = this.NubStyle != ColorSliderNubStyle.None ? this.CreateNubGlyph() : null;
     }
 
+    /// <summary>
+    /// Gets the bar bounds.
+    /// </summary>
+    /// <returns>Rectangle.</returns>
     protected virtual Rectangle GetBarBounds()
     {
       Rectangle clientRectangle;
@@ -724,6 +875,10 @@ namespace Cyotek.Windows.Forms
       return new Rectangle(clientRectangle.Left + padding.Left, clientRectangle.Top + padding.Top, clientRectangle.Width - padding.Horizontal, clientRectangle.Height - padding.Vertical);
     }
 
+    /// <summary>
+    /// Gets the bar padding.
+    /// </summary>
+    /// <returns>Padding.</returns>
     protected virtual Padding GetBarPadding()
     {
       int left;
@@ -1055,6 +1210,10 @@ namespace Cyotek.Windows.Forms
         handler(this, e);
     }
 
+    /// <summary>
+    /// Paints control adornments.
+    /// </summary>
+    /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     protected virtual void PaintAdornments(PaintEventArgs e)
     {
       Point point;
@@ -1118,6 +1277,10 @@ namespace Cyotek.Windows.Forms
         ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(this.BarBounds, -2, -2));
     }
 
+    /// <summary>
+    /// Paints the bar.
+    /// </summary>
+    /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     protected virtual void PaintBar(PaintEventArgs e)
     {
       float angle;
@@ -1181,6 +1344,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Computes the location of the specified client point into value coordinates.
+    /// </summary>
+    /// <param name="location">The client coordinate <see cref="Point"/> to convert.</param>
     protected virtual void PointToValue(Point location)
     {
       float value;
@@ -1207,6 +1374,11 @@ namespace Cyotek.Windows.Forms
       this.Value = value;
     }
 
+    /// <summary>
+    /// Computes the location of the value point into client coordinates.
+    /// </summary>
+    /// <param name="value">The value coordinate <see cref="Point"/> to convert.</param>
+    /// <returns>A <see cref="Point"/> that represents the converted <see cref="Point"/>, value, in client coordinates.</returns>
     protected virtual Point ValueToPoint(float value)
     {
       double x;

@@ -39,7 +39,7 @@
       this.bColorBar = new Cyotek.Windows.Forms.RgbaColorSlider();
       this.bNumericUpDown = new System.Windows.Forms.NumericUpDown();
       this.hexLabel = new System.Windows.Forms.Label();
-      this.hexTextBox = new System.Windows.Forms.TextBox();
+      this.hexTextBox = new System.Windows.Forms.ComboBox();
       this.lNumericUpDown = new System.Windows.Forms.NumericUpDown();
       this.lColorBar = new Cyotek.Windows.Forms.LightnessColorSlider();
       this.lLabel = new System.Windows.Forms.Label();
@@ -177,10 +177,13 @@
       // 
       // hexTextBox
       // 
+      this.hexTextBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
       this.hexTextBox.Location = new System.Drawing.Point(105, 91);
       this.hexTextBox.Name = "hexTextBox";
-      this.hexTextBox.Size = new System.Drawing.Size(58, 20);
+      this.hexTextBox.Size = new System.Drawing.Size(58, 21);
       this.hexTextBox.TabIndex = 11;
+      this.hexTextBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.hexTextBox_DrawItem);
+      this.hexTextBox.SelectedIndexChanged += new System.EventHandler(this.hexTextBox_SelectedIndexChanged);
       this.hexTextBox.TextChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // lNumericUpDown
@@ -363,7 +366,7 @@
     private RgbaColorSlider bColorBar;
     private System.Windows.Forms.NumericUpDown bNumericUpDown;
     private System.Windows.Forms.Label hexLabel;
-    private System.Windows.Forms.TextBox hexTextBox;
+    private System.Windows.Forms.ComboBox hexTextBox;
     private System.Windows.Forms.NumericUpDown lNumericUpDown;
     private LightnessColorSlider lColorBar;
     private System.Windows.Forms.Label lLabel;

@@ -12,7 +12,7 @@ namespace Cyotek.Windows.Forms
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
   /// <summary>
   /// Represents a grid control, which displays a collection of colors using different styles.
@@ -114,7 +114,7 @@ namespace Cyotek.Windows.Forms
       this.CellBorderColor = SystemColors.ButtonShadow;
       this.ShowToolTips = true;
       this.SeparatorHeight = 8;
-      this.EditMode = ColorEditingMode.Custom;
+      this.EditMode = ColorEditingMode.CustomOnly;
       this.Color = Color.Black;
       this.CellBorderStyle = ColorCellBorderStyle.FixedSingle;
       this.SelectedCellStyle = ColorGridSelectedCellStyle.Zoomed;
@@ -396,7 +396,7 @@ namespace Cyotek.Windows.Forms
         ColorSource source;
 
         source = this.GetColorSource(this.ColorIndex);
-        if (source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || source == ColorSource.Standard && this.EditMode == ColorEditingMode.Standard)
+        if (source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || source == ColorSource.Standard && this.EditMode == ColorEditingMode.Both)
         {
           e.Handled = true;
           this.EditColor(this.ColorIndex);
@@ -421,7 +421,7 @@ namespace Cyotek.Windows.Forms
 
       hitTest = this.HitTest(e.Location);
 
-      if (hitTest.Source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || hitTest.Source == ColorSource.Standard && this.EditMode == ColorEditingMode.Standard)
+      if (hitTest.Source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || hitTest.Source == ColorSource.Standard && this.EditMode == ColorEditingMode.Both)
         this.EditColor(hitTest.Index);
     }
 

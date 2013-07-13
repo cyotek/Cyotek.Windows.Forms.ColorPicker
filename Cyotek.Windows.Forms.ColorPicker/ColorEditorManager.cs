@@ -12,8 +12,11 @@ namespace Cyotek.Windows.Forms
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
+  /// <summary>
+  /// Represents a control that binds multiple editors together as a single composite unit.
+  /// </summary>
   public class ColorEditorManager : Component, IColorEditor
   {
     #region Instance Fields
@@ -74,6 +77,10 @@ namespace Cyotek.Windows.Forms
 
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual Color Color
@@ -82,8 +89,11 @@ namespace Cyotek.Windows.Forms
       set { this.HslColor = new HslColor(value); }
     }
 
+    /// <summary>
+    /// Gets or sets the linked <see cref="ColorEditor"/>.
+    /// </summary>
     [Category("Behavior")]
-    [DefaultValue(typeof(ColorGrid), null)]
+    [DefaultValue(typeof(ColorEditor), null)]
     public virtual ColorEditor ColorEditor
     {
       get { return _colorEditor; }
@@ -98,6 +108,9 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the linked <see cref="ColorGrid"/>.
+    /// </summary>
     [Category("Behavior")]
     [DefaultValue(typeof(ColorGrid), null)]
     public virtual ColorGrid ColorGrid
@@ -114,6 +127,9 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the linked <see cref="ColorWheel"/>.
+    /// </summary>
     [Category("Behavior")]
     [DefaultValue(typeof(ColorWheel), null)]
     public virtual ColorWheel ColorWheel
@@ -130,6 +146,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the component color as a HSL structure.
+    /// </summary>
+    /// <value>The component color.</value>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual HslColor HslColor
@@ -146,6 +166,9 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the linked <see cref="LightnessColorSlider"/>.
+    /// </summary>
     [Category("Behavior")]
     [DefaultValue(typeof(LightnessColorSlider), null)]
     public virtual LightnessColorSlider LightnessColorSlider
@@ -162,6 +185,9 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the linked <see cref="ScreenColorPicker"/>.
+    /// </summary>
     [Category("Behavior")]
     [DefaultValue(typeof(ScreenColorPicker), null)]
     public virtual ScreenColorPicker ScreenColorPicker
@@ -178,12 +204,20 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether updating of linked components is disabled.
+    /// </summary>
+    /// <value><c>true</c> if updated of linked components is disabled; otherwise, <c>false</c>.</value>
     protected bool LockUpdates { get; set; }
 
     #endregion
 
     #region Members
 
+    /// <summary>
+    /// Binds events for the specified editor.
+    /// </summary>
+    /// <param name="control">The <see cref="IColorEditor"/> to bind to.</param>
     protected virtual void BindEvents(IColorEditor control)
     {
       control.ColorChanged += this.ColorChangedHandler;
@@ -290,12 +324,21 @@ namespace Cyotek.Windows.Forms
         handler(this, e);
     }
 
+    /// <summary>
+    /// Sets the color of the given editor.
+    /// </summary>
+    /// <param name="control">The <see cref="IColorEditor"/> to update.</param>
+    /// <param name="sender">The <see cref="IColorEditor"/> triggering the update.</param>
     protected virtual void SetColor(IColorEditor control, IColorEditor sender)
     {
       if (control != null && control != sender)
         control.Color = sender.Color;
     }
 
+    /// <summary>
+    /// Synchronizes linked components with the specified <see cref="IColorEditor"/>.
+    /// </summary>
+    /// <param name="sender">The <see cref="IColorEditor"/> triggering the update.</param>
     protected virtual void Synchronize(IColorEditor sender)
     {
       if (!this.LockUpdates)
@@ -320,6 +363,11 @@ namespace Cyotek.Windows.Forms
 
     #region Event Handlers
 
+    /// <summary>
+    /// Handler for linked controls.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ColorChangedHandler(object sender, EventArgs e)
     {
       if (!this.LockUpdates)

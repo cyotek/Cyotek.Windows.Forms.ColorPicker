@@ -2,12 +2,25 @@
 using System.Drawing;
 using System.IO;
 
+// Cyotek Color Picker controls library
+// Copyright © 2013 Cyotek. All Rights Reserved.
+// http://cyotek.com/blog/tag/colorpicker
+
+// If you use this code in your applications, donations or attribution are welcome
+
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
+  /// <summary>
+  /// Base class for unit tests
+  /// </summary>
   public abstract class TestBase
   {
     #region Properties
 
+    /// <summary>
+    /// Gets the path where testing resources are located.
+    /// </summary>
+    /// <value>The data path.</value>
     protected string DataPath
     {
       get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data"); }
@@ -17,7 +30,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
     #region Members
 
-    protected ColorCollection CreateDawnbringer16Palette(bool pad)
+    /// <summary>
+    /// Creates the DB16 palette.
+    /// </summary>
+    /// <remarks>http://www.pixeljoint.com/forum/forum_posts.asp?TID=12795</remarks>
+    /// <param name="pad">if set to <c>true</c> the palette is padded with black to fill 256 entries.</param>
+    protected ColorCollection CreateDawnBringer16Palette(bool pad)
     {
       ColorCollection results;
 
@@ -49,7 +67,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       return results;
     }
 
-    protected ColorCollection CreateDawnbringer32Palette(bool pad)
+    /// <summary>
+    /// Creates the DB32 palette.
+    /// </summary>
+    /// <remarks>http://www.pixeljoint.com/forum/forum_posts.asp?TID=16247</remarks>
+    /// <param name="pad">if set to <c>true</c> the palette is padded with black to fill 256 entries.</param>
+    protected ColorCollection CreateDawnBringer32Palette(bool pad)
     {
       ColorCollection results;
 

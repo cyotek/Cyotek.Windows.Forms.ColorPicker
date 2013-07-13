@@ -112,7 +112,7 @@
       // 
       this.colorGrid.AutoAddColors = false;
       this.colorGrid.CellBorderStyle = Cyotek.Windows.Forms.ColorCellBorderStyle.None;
-      this.colorGrid.EditMode = Cyotek.Windows.Forms.ColorEditingMode.Standard;
+      this.colorGrid.EditMode = Cyotek.Windows.Forms.ColorEditingMode.Both;
       this.colorGrid.Location = new System.Drawing.Point(12, 191);
       this.colorGrid.Name = "colorGrid";
       this.colorGrid.Padding = new System.Windows.Forms.Padding(0);

@@ -9,7 +9,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
   internal partial class ColorGridDemoForm : BaseForm
   {
@@ -82,7 +82,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void jascPaletteFileButton_Click(object sender, EventArgs e)
     {
-      colorGrid.Colors = new JascPaletteReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\Hex256.pal")).ReadPalette();
+      colorGrid.Colors = new JascPaletteSerializer().Deserialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\Hex256.pal"));
+    }
+
+    private void loadGimpPaletteButton_Click(object sender, EventArgs e)
+    {
+      colorGrid.Colors = new GimpPaletteSerializer().Deserialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\db32.gpl"));
     }
 
     private void office2010Button_Click(object sender, EventArgs e)
@@ -100,7 +105,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void paintNetPaletteFileButton_Click(object sender, EventArgs e)
     {
-      colorGrid.Colors = new PaintNetPaletteReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\PaintNet.txt")).ReadPalette();
+      colorGrid.Colors = new PaintNetPaletteSerializer().Deserialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\PaintNet.txt"));
     }
 
     private void resetCustomColorsButton_Click(object sender, EventArgs e)

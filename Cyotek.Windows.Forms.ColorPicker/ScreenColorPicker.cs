@@ -11,8 +11,11 @@ namespace Cyotek.Windows.Forms
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
+  /// <summary>
+  /// Represents a control that allows the selection of a color by dragging the mouse across the desktop
+  /// </summary>
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]
   public class ScreenColorPicker : Control, IColorEditor
@@ -37,6 +40,9 @@ namespace Cyotek.Windows.Forms
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScreenColorPicker"/> class.
+    /// </summary>
     public ScreenColorPicker()
     {
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
@@ -95,6 +101,10 @@ namespace Cyotek.Windows.Forms
 
     #region Overridden Members
 
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
       if (disposing)
@@ -109,6 +119,10 @@ namespace Cyotek.Windows.Forms
       base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnFontChanged(EventArgs e)
     {
       base.OnFontChanged(e);
@@ -116,6 +130,10 @@ namespace Cyotek.Windows.Forms
       this.Invalidate();
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.ForeColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnForeColorChanged(EventArgs e)
     {
       base.OnForeColorChanged(e);
@@ -123,6 +141,10 @@ namespace Cyotek.Windows.Forms
       this.Invalidate();
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
     protected override void OnMouseDown(MouseEventArgs e)
     {
       base.OnMouseDown(e);
@@ -140,6 +162,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
     protected override void OnMouseMove(MouseEventArgs e)
     {
       base.OnMouseMove(e);
@@ -148,6 +174,10 @@ namespace Cyotek.Windows.Forms
         this.UpdateSnapshot();
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseUp" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
     protected override void OnMouseUp(MouseEventArgs e)
     {
       base.OnMouseUp(e);
@@ -160,6 +190,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
     protected override void OnPaint(PaintEventArgs e)
     {
       base.OnPaint(e);
@@ -178,6 +212,10 @@ namespace Cyotek.Windows.Forms
       this.PaintAdornments(e);
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnResize(EventArgs e)
     {
       base.OnResize(e);
@@ -185,6 +223,10 @@ namespace Cyotek.Windows.Forms
       this.CreateSnapshotImage();
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.TextChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
     protected override void OnTextChanged(EventArgs e)
     {
       base.OnTextChanged(e);
@@ -196,6 +238,10 @@ namespace Cyotek.Windows.Forms
 
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
     [Category("Behavior")]
     [DefaultValue(typeof(Color), "Empty")]
     public virtual Color Color
@@ -212,6 +258,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the color of the grid.
+    /// </summary>
+    /// <value>The color of the grid.</value>
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "ControlDark")]
     public virtual Color GridColor
@@ -228,9 +278,17 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Returns if a snapshot image is available
+    /// </summary>
+    /// <value><c>true</c> if a snapshot image is available; otherwise, <c>false</c>.</value>
     [Browsable(false)]
     public bool HasSnapshot { get; protected set; }
 
+    /// <summary>
+    /// Gets or sets the image.
+    /// </summary>
+    /// <value>The image.</value>
     [Category("Appearance")]
     [DefaultValue(typeof(Image), null)]
     public virtual Image Image
@@ -247,6 +305,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether a pixel grid is displayed.
+    /// </summary>
+    /// <value><c>true</c> if a pixel grid is displayed; otherwise, <c>false</c>.</value>
     [Category("Appearance")]
     [DefaultValue(true)]
     public virtual bool ShowGrid
@@ -263,6 +325,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether text should be shown when a snapshot is present.
+    /// </summary>
+    /// <value><c>true</c> if text is to be shown when a snapshot is present; otherwise, <c>false</c> to only show text when no snapshot is available.</value>
     [Category("Appearance")]
     [DefaultValue(false)]
     public virtual bool ShowTextWithSnapshot
@@ -279,6 +345,11 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets the tab order of the control within its container.
+    /// </summary>
+    /// <value>The index of the tab.</value>
+    /// <returns>The index value of the control within the set of controls within its container. The controls in the container are included in the tab order.</returns>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     [DefaultValue(0)]
@@ -288,6 +359,11 @@ namespace Cyotek.Windows.Forms
       set { base.TabIndex = value; }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the user can give the focus to this control using the TAB key.
+    /// </summary>
+    /// <value><c>true</c> if [tab stop]; otherwise, <c>false</c>.</value>
+    /// <returns>true if the user can give the focus to the control using the TAB key; otherwise, false. The default is true.Note:This property will always return true for an instance of the <see cref="T:System.Windows.Forms.Form" /> class.</returns>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     [DefaultValue(false)]
@@ -297,6 +373,10 @@ namespace Cyotek.Windows.Forms
       set { base.TabStop = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the zoom level of the snapshot image.
+    /// </summary>
+    /// <value>The zoom level.</value>
     [Category("Appearance")]
     [DefaultValue(8)]
     public virtual int Zoom
@@ -313,16 +393,31 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating snapshot capture is in progress.
+    /// </summary>
+    /// <value><c>true</c> if snapshot capture is in progress; otherwise, <c>false</c>.</value>
     protected bool IsCapturing { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether redraw operations should occur.
+    /// </summary>
+    /// <value><c>true</c> if redraw operations should occur; otherwise, <c>false</c>.</value>
     protected bool LockUpdates { get; set; }
 
+    /// <summary>
+    /// Gets or sets the snapshot image.
+    /// </summary>
+    /// <value>The snapshot image.</value>
     protected Bitmap SnapshotImage { get; set; }
 
     #endregion
 
     #region Members
 
+    /// <summary>
+    /// Creates the snapshot image.
+    /// </summary>
     protected virtual void CreateSnapshotImage()
     {
       Size size;
@@ -341,6 +436,9 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Gets the center point based on the current zoom level.
+    /// </summary>
     protected virtual Point GetCenterPoint()
     {
       int x;
@@ -352,6 +450,9 @@ namespace Cyotek.Windows.Forms
       return new Point(x, y);
     }
 
+    /// <summary>
+    /// Gets the size of the snapshot.
+    /// </summary>
     protected virtual Size GetSnapshotSize()
     {
       int snapshotWidth;
@@ -457,6 +558,10 @@ namespace Cyotek.Windows.Forms
         handler(this, e);
     }
 
+    /// <summary>
+    /// Paints adornments onto the control.
+    /// </summary>
+    /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     protected virtual void PaintAdornments(PaintEventArgs e)
     {
       // grid
@@ -476,6 +581,10 @@ namespace Cyotek.Windows.Forms
         TextRenderer.DrawText(e.Graphics, this.Text, this.Font, this.ClientRectangle, this.ForeColor, this.BackColor, TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis);
     }
 
+    /// <summary>
+    /// Paints the center marker.
+    /// </summary>
+    /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     protected virtual void PaintCenterMarker(PaintEventArgs e)
     {
       Point center;
@@ -486,6 +595,10 @@ namespace Cyotek.Windows.Forms
         e.Graphics.DrawRectangle(pen, center.X * this.Zoom, center.Y * this.Zoom, this.Zoom + 2, this.Zoom + 2);
     }
 
+    /// <summary>
+    /// Paints the pixel grid.
+    /// </summary>
+    /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     protected virtual void PaintGrid(PaintEventArgs e)
     {
       Rectangle viewport;
@@ -509,6 +622,9 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Updates the snapshot.
+    /// </summary>
     protected virtual void UpdateSnapshot()
     {
       Point cursor;

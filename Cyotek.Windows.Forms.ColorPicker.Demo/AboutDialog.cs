@@ -9,7 +9,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
   internal partial class AboutDialog : BaseForm
   {

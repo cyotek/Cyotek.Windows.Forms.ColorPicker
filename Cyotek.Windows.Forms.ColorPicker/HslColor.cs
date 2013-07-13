@@ -8,7 +8,7 @@ namespace Cyotek.Windows.Forms
   // Copyright © 2013 Cyotek. All Rights Reserved.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // If you use this code in your applications, donations or attribution is welcome
+  // If you use this code in your applications, donations or attribution are welcome
 
   // http://en.wikipedia.org/wiki/HSL_color_space
 
@@ -128,7 +128,7 @@ namespace Cyotek.Windows.Forms
       StringBuilder builder;
 
       builder = new StringBuilder();
-      builder.Append(base.GetType().Name);
+      builder.Append(this.GetType().Name);
       builder.Append(" [");
       builder.Append("H=");
       builder.Append(this.H);
@@ -148,7 +148,7 @@ namespace Cyotek.Windows.Forms
     public int A
     {
       get { return _alpha; }
-      set { _alpha = value; }
+      set { _alpha = Math.Min(0, Math.Max(255, value)); }
     }
 
     public double H

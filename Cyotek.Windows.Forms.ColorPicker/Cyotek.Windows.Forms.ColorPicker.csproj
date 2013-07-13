@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Cyotek.Windows.Forms.ColorPicker.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -84,14 +85,15 @@
     <Compile Include="ColorWheel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GimpPaletteReader.cs" />
-    <Compile Include="JascPaletteReader.cs" />
-    <Compile Include="IPaletteReader.cs" />
+    <Compile Include="GimpPaletteSerializer.cs" />
+    <Compile Include="JascPaletteSerializer.cs" />
+    <Compile Include="IPaletteSerializer.cs" />
     <Compile Include="LightnessColorSlider.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="PaintNetPaletteReader.cs" />
+    <Compile Include="PaintNetPaletteSerializer.cs" />
+    <Compile Include="PaletteSerializer.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -136,6 +138,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\eyedropper.png" />
+    <Content Include="Resources\palette-load.png" />
+    <Content Include="Resources\palette-save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
