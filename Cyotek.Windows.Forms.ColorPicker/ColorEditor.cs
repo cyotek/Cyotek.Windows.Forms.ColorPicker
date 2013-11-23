@@ -46,14 +46,8 @@ namespace Cyotek.Windows.Forms
       this.Orientation = Orientation.Vertical;
       this.Size = new Size(200, 260);
 
-      foreach (PropertyInfo property in typeof(Color).GetProperties(BindingFlags.Public | BindingFlags.Static).Where(property => property.PropertyType == typeof(Color)))
-      {
-        Color color;
-
-        color = (Color)property.GetValue(typeof(Color), null);
-        if (!color.IsEmpty)
-          hexTextBox.Items.Add(color.Name);
-      }
+      this.AddColorProperties<SystemColors>();
+      this.AddColorProperties<Color>();
 
       this.SetDropDownWidth();
     }
@@ -409,6 +403,22 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private void AddColorProperties<T>()
+    {
+      Type type;
+
+      type = typeof(T);
+
+      foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static).Where(property => property.PropertyType == typeof(Color)))
+      {
+        Color color;
+
+        color = (Color)property.GetValue(type, null);
+        if (!color.IsEmpty)
+          hexTextBox.Items.Add(color.Name);
+      }
+    }
+
     private string AddSpaces(string text)
     {
       string result;
@@ -544,18 +554,22 @@ namespace Cyotek.Windows.Forms
       {
         Rectangle colorBox;
         string name;
+        Color color;
 
         e.DrawBackground();
 
         name = (string)hexTextBox.Items[e.Index];
+        color = Color.FromName(name);
         colorBox = new Rectangle(e.Bounds.Left + 1, e.Bounds.Top + 1, e.Bounds.Height - 3, e.Bounds.Height - 3);
 
-        using (Brush brush = new SolidBrush(Color.FromName(name)))
+        using (Brush brush = new SolidBrush(color))
           e.Graphics.FillRectangle(brush, colorBox);
         e.Graphics.DrawRectangle(SystemPens.ControlText, colorBox);
 
-        using (Brush brush = new SolidBrush(e.ForeColor))
-          e.Graphics.DrawString(this.AddSpaces(name), this.Font, brush, colorBox.Right + 3, colorBox.Top);
+        TextRenderer.DrawText(e.Graphics, this.AddSpaces(name), this.Font, new Point(colorBox.Right + 3, colorBox.Top), e.ForeColor);
+
+        //if (color == Color.Transparent && (e.State & DrawItemState.Selected) != DrawItemState.Selected)
+        //  e.Graphics.DrawLine(SystemPens.ControlText, e.Bounds.Left, e.Bounds.Top, e.Bounds.Right, e.Bounds.Top);
 
         e.DrawFocusRectangle();
       }

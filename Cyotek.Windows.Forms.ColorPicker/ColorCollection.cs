@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 
 namespace Cyotek.Windows.Forms
 {
@@ -18,7 +20,7 @@ namespace Cyotek.Windows.Forms
   /// 	<para>ColorCollection allows duplicate elements.</para>
   /// 	<para>Elements in this collection can be accessed using an integer index. Indexes in this collection are zero-based.</para>
   /// </remarks>
-  public class ColorCollection : Collection<Color>
+  public class ColorCollection : Collection<Color>, ICloneable
   {
     #region Constructors
 
@@ -38,6 +40,18 @@ namespace Cyotek.Windows.Forms
       this.AddRange(collection);
     }
 
+    public ColorCollection(IEnumerable<int> collection)
+      : this()
+    {
+      this.AddRange(collection.Select(Color.FromArgb));
+    }
+
+    public ColorCollection(System.Drawing.Imaging.ColorPalette collection)
+      : this()
+    {
+      this.AddRange(collection.Entries);
+    }
+
     #endregion
 
     #region Events
@@ -46,6 +60,22 @@ namespace Cyotek.Windows.Forms
     /// Occurs when elements in the collection are added, removed or modified.
     /// </summary>
     public event EventHandler<ColorCollectionEventArgs> CollectionChanged;
+
+    #endregion
+
+    #region Class Members
+
+    public static ColorCollection LoadPalette(string fileName)
+    {
+      IPaletteSerializer serializer;
+
+      serializer = PaletteSerializer.GetSerializer(fileName);
+      if (serializer == null)
+        throw new ArgumentException(string.Format("Cannot find a palette serializer for '{0}'", fileName), "fileName");
+
+      using (FileStream file = File.OpenRead(fileName))
+        return serializer.Deserialize(file);
+    }
 
     #endregion
 
@@ -112,6 +142,33 @@ namespace Cyotek.Windows.Forms
         this.Add(color);
     }
 
+    public virtual ColorCollection Clone()
+    {
+      return new ColorCollection(this);
+    }
+
+    public void Load(string fileName)
+    {
+      ColorCollection palette;
+
+      palette = LoadPalette(fileName);
+
+      this.Clear();
+      this.AddRange(palette);
+    }
+
+    public void Save(string fileName)
+    {
+      IPaletteSerializer serializer;
+
+      serializer = PaletteSerializer.GetSerializer(fileName);
+      if (serializer == null)
+        throw new ArgumentException(string.Format("Cannot find a palette serializer for '{0}'", fileName), "fileName");
+
+      using (FileStream file = File.OpenWrite(fileName))
+        serializer.Serialize(file, this);
+    }
+
     /// <summary>
     /// Sorts the elements in the entire %ColorCollection% using the specified order.
     /// </summary>
@@ -157,6 +214,15 @@ namespace Cyotek.Windows.Forms
 
       if (handler != null)
         handler(this, e);
+    }
+
+    #endregion
+
+    #region ICloneable Members
+
+    object ICloneable.Clone()
+    {
+      return this.Clone();
     }
 
     #endregion

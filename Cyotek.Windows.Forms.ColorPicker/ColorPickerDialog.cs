@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
@@ -34,51 +33,6 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
-
-    private string GetPaletteFilter(bool includeCombined)
-    {
-      StringBuilder filter;
-
-      // TODO: Should really try and query available serializers and build up a format string automatically
-
-      filter = new StringBuilder();
-      if (includeCombined)
-        filter.Append("Palette Files (*.pal;*.gpl;*.txt)|*.pal;*.gpl;*.txt|");
-      filter.Append("JASC Palette Files (*.pal)|*.pal|");
-      filter.Append("GIMP Palette Files (*.glp)|*.gpl|");
-      filter.Append("Paint.NET Palette Files (*.txt)|*.txt");
-
-      return filter.ToString();
-    }
-
-    private IPaletteSerializer GetSerializer(string fileName)
-    {
-      IPaletteSerializer result;
-
-      // TODO: Work this out via reflection
-
-      switch (Path.GetExtension(fileName).ToLowerInvariant())
-      {
-        case ".txt":
-          result = new PaintNetPaletteSerializer();
-          break;
-        case ".pal":
-          result = new JascPaletteSerializer();
-          break;
-        case ".gpl":
-          result = new GimpPaletteSerializer();
-          break;
-        default:
-          result = null;
-          break;
-      }
-
-      return result;
-    }
-
-    #endregion
-
     #region Event Handlers
 
     private void cancelButton_Click(object sender, EventArgs e)
@@ -96,7 +50,7 @@ namespace Cyotek.Windows.Forms
     {
       using (FileDialog dialog = new OpenFileDialog
       {
-        Filter = this.GetPaletteFilter(true),
+        Filter = PaletteSerializer.DefaultOpenFilter,
         DefaultExt = "pal",
         Title = "Open Palette File"
       })
@@ -105,7 +59,7 @@ namespace Cyotek.Windows.Forms
         {
           IPaletteSerializer serializer;
 
-          serializer = this.GetSerializer(dialog.FileName);
+          serializer = PaletteSerializer.GetSerializer(dialog.FileName);
           if (serializer != null)
           {
             try
@@ -149,7 +103,7 @@ namespace Cyotek.Windows.Forms
     {
       using (FileDialog dialog = new SaveFileDialog
       {
-        Filter = this.GetPaletteFilter(true),
+        Filter = PaletteSerializer.DefaultSaveFilter,
         DefaultExt = "pal",
         Title = "Save Palette File As"
       })
@@ -158,7 +112,7 @@ namespace Cyotek.Windows.Forms
         {
           IPaletteSerializer serializer;
 
-          serializer = this.GetSerializer(dialog.FileName);
+          serializer = PaletteSerializer.GetSerializer(dialog.FileName);
           if (serializer != null)
           {
             try

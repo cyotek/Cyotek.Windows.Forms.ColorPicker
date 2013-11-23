@@ -47,7 +47,6 @@ namespace Cyotek.Windows.Forms
     {
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
       this.SetStyle(ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, false);
-      this.UpdateStyles();
       this.Zoom = 8;
       this.Color = Color.Empty;
       this.ShowTextWithSnapshot = false;
@@ -112,8 +111,8 @@ namespace Cyotek.Windows.Forms
         if (_eyedropperCursor != null)
           _eyedropperCursor.Dispose();
 
-        if (SnapshotImage != null)
-          SnapshotImage.Dispose();
+        if (this.SnapshotImage != null)
+          this.SnapshotImage.Dispose();
       }
 
       base.Dispose(disposing);

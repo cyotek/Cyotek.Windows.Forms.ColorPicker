@@ -6,6 +6,10 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
+#if USEEXTERNALCYOTEKLIBS
+using Cyotek.Drawing;
+#endif
+
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
@@ -34,6 +38,8 @@ namespace Cyotek.Windows.Forms
     private readonly TextureBrush _cellBackgroundBrush;
 
     private bool _autoAddColors;
+
+    private bool _autoFit;
 
     private Color _cellBorderColor;
 
@@ -95,8 +101,7 @@ namespace Cyotek.Windows.Forms
     {
       _cellBackground = new Bitmap(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.cellbackground.png")));
       _cellBackgroundBrush = new TextureBrush(_cellBackground, WrapMode.Tile);
-      this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, true);
-      this.UpdateStyles();
+      this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick | ControlStyles.SupportsTransparentBackColor, true);
       this.HotIndex = InvalidIndex;
       this.ColorRegions = new Dictionary<int, Rectangle>();
       if (this.Palette != ColorPalette.None)
@@ -129,6 +134,12 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     [Category("Property Changed")]
     public event EventHandler AutoAddColorsChanged;
+
+    /// <summary>
+    /// Occurs when the AutoFit property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler AutoFitChanged;
 
     /// <summary>
     /// Occurs when the CellBorderColor property value changes
@@ -220,6 +231,7 @@ namespace Cyotek.Windows.Forms
 
     [Browsable(true)]
     [DefaultValue(true)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override bool AutoSize
     {
       get { return base.AutoSize; }
@@ -290,6 +302,9 @@ namespace Cyotek.Windows.Forms
 
     protected override void OnAutoSizeChanged(EventArgs e)
     {
+      if (this.AutoSize && this.AutoFit)
+        this.AutoFit = false;
+
       base.OnAutoSizeChanged(e);
 
       if (this.AutoSize)
@@ -311,6 +326,8 @@ namespace Cyotek.Windows.Forms
       int column;
       int lastStandardRowOffset;
       int lastStandardRowLastColumn;
+
+      this.WasKeyPressed = true;
 
       lastStandardRowOffset = (this.PrimaryRows * this.Columns) - this.Colors.Count;
       lastStandardRowLastColumn = this.Columns - lastStandardRowOffset;
@@ -391,7 +408,7 @@ namespace Cyotek.Windows.Forms
 
     protected override void OnKeyUp(KeyEventArgs e)
     {
-      if (e.KeyData == Keys.Enter && this.ColorIndex != InvalidIndex)
+      if (this.WasKeyPressed && e.KeyData == Keys.Enter && this.ColorIndex != InvalidIndex)
       {
         ColorSource source;
 
@@ -402,6 +419,8 @@ namespace Cyotek.Windows.Forms
           this.EditColor(this.ColorIndex);
         }
       }
+
+      this.WasKeyPressed = false;
 
       base.OnKeyUp(e);
     }
@@ -456,7 +475,6 @@ namespace Cyotek.Windows.Forms
       base.OnPaddingChanged(e);
 
       this.RefreshColors();
-
       this.Invalidate();
     }
 
@@ -467,6 +485,16 @@ namespace Cyotek.Windows.Forms
       if (this.AllowPainting)
       {
         base.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc as the PaintBackground event is no longer being called
+
+        // draw a design time dotted grid
+        if (this.DesignMode)
+        {
+          using (Pen pen = new Pen(SystemColors.ButtonShadow)
+          {
+            DashStyle = DashStyle.Dot
+          })
+            e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+        }
 
         // draw cells for all current colors
         for (int i = 0; i < this.Colors.Count; i++)
@@ -511,6 +539,22 @@ namespace Cyotek.Windows.Forms
           _autoAddColors = value;
 
           this.OnAutoAddColorsChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public virtual bool AutoFit
+    {
+      get { return _autoFit; }
+      set
+      {
+        if (this.AutoFit != value)
+        {
+          _autoFit = value;
+
+          this.OnAutoFitChanged(EventArgs.Empty);
         }
       }
     }
@@ -635,7 +679,7 @@ namespace Cyotek.Windows.Forms
     }
 
     [Category("Behavior")]
-    [DefaultValue(typeof(ColorEditingMode), "Custom")]
+    [DefaultValue(typeof(ColorEditingMode), "CustomOnly")]
     public virtual ColorEditingMode EditMode
     {
       get { return _editMode; }
@@ -776,6 +820,8 @@ namespace Cyotek.Windows.Forms
 
     protected int SeparatorHeight { get; set; }
 
+    protected bool WasKeyPressed { get; set; }
+
     #endregion
 
     #region Members
@@ -904,6 +950,18 @@ namespace Cyotek.Windows.Forms
         result.Source = ColorSource.None;
 
       return result;
+    }
+
+    protected virtual void CalculateCellSize()
+    {
+      int w;
+      int h;
+
+      w = ((this.ClientSize.Width - this.Padding.Horizontal) / this.Columns) - this.Spacing.Width;
+      h = ((this.ClientSize.Height - this.Padding.Vertical) / (this.PrimaryRows + this.CustomRows)) - this.Spacing.Height;
+
+      if (w > 0 && h > 0)
+        this.CellSize = new Size(w, h);
     }
 
     protected virtual void CalculateRows()
@@ -1043,6 +1101,25 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="AutoFitChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnAutoFitChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      if (this.AutoFit && this.AutoSize)
+        this.AutoSize = false;
+
+      this.RefreshColors();
+
+      handler = this.AutoFitChanged;
+
+      if (handler != null)
+        handler(this, e);
+    }
+
+    /// <summary>
     /// Raises the <see cref="CellBorderColorChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -1084,6 +1161,7 @@ namespace Cyotek.Windows.Forms
 
       if (this.AutoSize)
         this.SizeToFit();
+      this.RefreshColors();
       this.Invalidate();
 
       handler = this.CellSizeChanged;
@@ -1272,6 +1350,7 @@ namespace Cyotek.Windows.Forms
 
       if (this.AutoSize)
         this.SizeToFit();
+      this.RefreshColors();
       this.Invalidate();
 
       handler = this.SpacingChanged;
@@ -1288,10 +1367,30 @@ namespace Cyotek.Windows.Forms
       using (Brush brush = new SolidBrush(color))
         e.Graphics.FillRectangle(brush, bounds);
 
-      if (this.CellBorderStyle == ColorCellBorderStyle.FixedSingle)
+      switch (this.CellBorderStyle)
       {
-        using (Pen pen = new Pen(this.CellBorderColor))
-          e.Graphics.DrawRectangle(pen, bounds.Left, bounds.Top, bounds.Width - 1, bounds.Height - 1);
+        case ColorCellBorderStyle.FixedSingle:
+          using (Pen pen = new Pen(this.CellBorderColor))
+            e.Graphics.DrawRectangle(pen, bounds.Left, bounds.Top, bounds.Width - 1, bounds.Height - 1);
+          break;
+        case ColorCellBorderStyle.DoubleSoft:
+          HslColor shadedOuter;
+          HslColor shadedInner;
+
+          shadedOuter = new HslColor(color);
+          shadedOuter.L -= 0.50;
+
+          shadedInner = new HslColor(color);
+          shadedInner.L -= 0.20;
+
+          using (Pen pen = new Pen(this.CellBorderColor))
+            e.Graphics.DrawRectangle(pen, bounds.Left, bounds.Top, bounds.Width - 1, bounds.Height - 1);
+          e.Graphics.DrawRectangle(Pens.White, bounds.Left + 1, bounds.Top + 1, bounds.Width - 3, bounds.Height - 3);
+          using (Pen pen = new Pen(Color.FromArgb(32, shadedOuter.ToRgbColor())))
+            e.Graphics.DrawRectangle(pen, bounds.Left + 2, bounds.Top + 2, bounds.Width - 5, bounds.Height - 5);
+          using (Pen pen = new Pen(Color.FromArgb(32, shadedInner.ToRgbColor())))
+            e.Graphics.DrawRectangle(pen, bounds.Left + 3, bounds.Top + 3, bounds.Width - 7, bounds.Height - 7);
+          break;
       }
 
       if (this.HotIndex != InvalidIndex && this.HotIndex == cellIndex)
@@ -1380,7 +1479,9 @@ namespace Cyotek.Windows.Forms
       if (this.AllowPainting)
       {
         this.CalculateRows();
-        if (this.AutoSize)
+        if (this.AutoFit)
+          this.CalculateCellSize();
+        else if (this.AutoSize)
           this.SizeToFit();
 
         this.ColorRegions.Clear();

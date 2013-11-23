@@ -17,6 +17,28 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public class PaintNetPaletteSerializer : PaletteSerializer
   {
+    #region Overridden Properties
+
+    /// <summary>
+    /// Gets the default extension for files generated with this palette format.
+    /// </summary>
+    /// <value>The default extension for files generated with this palette format.</value>
+    public override string DefaultExtension
+    {
+      get { return ".txt"; }
+    }
+
+    /// <summary>
+    /// Gets a descriptive name of the palette format
+    /// </summary>
+    /// <value>The descriptive name of the palette format.</value>
+    public override string Name
+    {
+      get { return "Paint.NET Palette"; }
+    }
+
+    #endregion
+
     #region Overridden Members
 
     /// <summary>

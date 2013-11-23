@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Cyotek.Windows.Forms.Demo;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
@@ -9,7 +10,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   // If you use this code in your applications, donations or attribution are welcome
 
-  internal partial class MainForm : BaseForm
+  internal partial class MainForm : AboutDialog
   {
     #region Constructors
 
@@ -20,13 +21,48 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Event Handlers
+    #region Overridden Members
+
+    protected override void OnLoad(EventArgs e)
+    {
+      TabPage demoPage;
+
+      base.OnLoad(e);
+
+      demoPage = new TabPage
+      {
+        UseVisualStyleBackColor = true,
+        Padding = new Padding(9),
+        Text = "Demonstrations"
+      };
+
+      groupBox1.Dock = DockStyle.Fill;
+      demoPage.Controls.Add(groupBox1);
+
+      this.TabControl.TabPages.Insert(0, demoPage);
+      this.TabControl.SelectedTab = demoPage;
+
+      this.Text = "Cyotek ColorPicker Controls for Windows Forms";
+    }
+
+    #endregion
+
+    #region Members
 
     private void aboutButton_Click(object sender, EventArgs e)
     {
       using (Form dialog = new AboutDialog())
         dialog.ShowDialog(this);
     }
+
+    private void exitButton_Click(object sender, EventArgs e)
+    {
+      this.Close();
+    }
+
+    #endregion
+
+    #region Event Handlers
 
     private void colorEditorDemoButton_Click(object sender, EventArgs e)
     {
@@ -62,11 +98,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     {
       using (Form dialog = new ColorWheelDemoForm())
         dialog.ShowDialog(this);
-    }
-
-    private void exitButton_Click(object sender, EventArgs e)
-    {
-      this.Close();
     }
 
     private void screenColorPickerDemoButton_Click(object sender, EventArgs e)

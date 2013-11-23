@@ -19,6 +19,11 @@
     /// <summary>
     /// A single line border.
     /// </summary>
-    FixedSingle
+    FixedSingle,
+
+    /// <summary>
+    /// A contrasting double border with a soft inner outline using the color of the cell.
+    /// </summary>
+    DoubleSoft
   }
 }

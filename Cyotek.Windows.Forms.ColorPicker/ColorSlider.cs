@@ -5,11 +5,11 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
+
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Win32;
 #else
 using NativeConstants = Cyotek.Windows.Forms.NativeMethods;
-
 #endif
 
 namespace Cyotek.Windows.Forms
@@ -74,7 +74,6 @@ namespace Cyotek.Windows.Forms
     public ColorSlider()
     {
       this.SetStyle(ControlStyles.SupportsTransparentBackColor | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.Selectable, true);
-      this.UpdateStyles();
       this.Orientation = Orientation.Horizontal;
       this.Color1 = Color.Black;
       this.Color2 = Color.FromArgb(127, 127, 127);

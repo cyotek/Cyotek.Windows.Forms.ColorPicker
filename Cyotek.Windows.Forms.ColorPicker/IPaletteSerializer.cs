@@ -13,6 +13,22 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public interface IPaletteSerializer
   {
+    #region Properties
+
+    /// <summary>
+    /// Gets the default extension for files generated with this palette format.
+    /// </summary>
+    /// <value>The default extension for files generated with this palette format.</value>
+    string DefaultExtension { get; }
+
+    /// <summary>
+    /// Gets a descriptive name of the palette format
+    /// </summary>
+    /// <value>The descriptive name of the palette format.</value>
+    string Name { get; }
+
+    #endregion
+
     #region Members
 
     /// <summary>

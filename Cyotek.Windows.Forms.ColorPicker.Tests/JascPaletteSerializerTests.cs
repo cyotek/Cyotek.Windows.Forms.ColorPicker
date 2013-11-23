@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using FluentAssertions;
 using NUnit.Framework;
 
 // Cyotek Color Picker controls library
@@ -36,6 +37,24 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       // assert
       CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    public void GetSerializerTest()
+    {
+      // arrange
+      IPaletteSerializer expected;
+      IPaletteSerializer actual;
+      string fileName;
+
+      expected = new JascPaletteSerializer();
+      fileName = "test" + expected.DefaultExtension;
+
+      // act
+      actual = PaletteSerializer.GetSerializer(fileName);
+
+      // assert
+      actual.Should().BeOfType<JascPaletteSerializer>();
     }
 
     [Test]

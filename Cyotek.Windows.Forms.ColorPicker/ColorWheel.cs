@@ -49,7 +49,6 @@ namespace Cyotek.Windows.Forms
     public ColorWheel()
     {
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, true);
-      this.UpdateStyles();
       this.Color = Color.Black;
       this.ColorStep = 4;
       this.SelectionSize = 10;
@@ -257,6 +256,16 @@ namespace Cyotek.Windows.Forms
 
         if (_brush != null)
           e.Graphics.FillPie(_brush, this.ClientRectangle, 0, 360);
+
+        // smooth out the edge of the wheel
+        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        using (Pen pen = new Pen(this.BackColor, 2))
+        {
+          float radius;
+
+          radius = this.GetRadius(_centerPoint);
+          e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - radius, _centerPoint.Y - radius, radius * 2, radius * 2));
+        }
 
         this.PaintCurrentColor(e);
       }

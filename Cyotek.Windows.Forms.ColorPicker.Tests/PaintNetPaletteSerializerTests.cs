@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using System.Text;
+using FluentAssertions;
 using NUnit.Framework;
 
 // Cyotek Color Picker controls library
@@ -40,6 +40,24 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     }
 
     [Test]
+    public void GetSerializerTest()
+    {
+      // arrange
+      IPaletteSerializer expected;
+      IPaletteSerializer actual;
+      string fileName;
+
+      expected = new PaintNetPaletteSerializer();
+      fileName = "test" + expected.DefaultExtension;
+
+      // act
+      actual = PaletteSerializer.GetSerializer(fileName);
+
+      // assert
+      actual.Should().BeOfType<PaintNetPaletteSerializer>();
+    }
+
+    [Test]
     public void SerializeTest()
     {
       // arrange
@@ -55,8 +73,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       // act
       target.Serialize(write, expected);
-
-      string s = Encoding.UTF8.GetString(write.ToArray());
 
       using (MemoryStream read = new MemoryStream(write.ToArray()))
         actual = new PaintNetPaletteSerializer().Deserialize(read);
