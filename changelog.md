@@ -6,6 +6,7 @@
 * Added `Save` method to `ColorCollection`
 * Added new constructor to `ColorCollection` that accepts a `System.Drawing.Imaging.ColorPalette` class.
 * Added new `AutoFit` property to the `ColorGrid`. When set, the `CellSize` property is automatically calculated based on the size of the control, and its contents. You can't combine `AutoFit` with `AutoSize`.
+
 ### Bug Fixes
 * Removed unnecessary `UpdateStyles` calls.
 * Fixed a problem if a window was opened by pressing `Enter`, and a `ColorGrid` was the first focusable control on the new window, the popup color editing dialog would be activated, regardless of the `ColorGrid`'s editing settings 
