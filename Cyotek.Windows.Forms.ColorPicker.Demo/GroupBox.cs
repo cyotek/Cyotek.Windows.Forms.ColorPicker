@@ -7,8 +7,13 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek GroupBox Component
-  // www.cyotek.com
+  // Cyotek Color Picker controls library
+  // Copyright © 2013-2014 Cyotek.
+  // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+
+  // If you use this code in your applications, donations or attribution are welcome
 
   /// <summary>
   /// Represents a Windows control that displays a frame at the top of a group of controls with an optional caption and icon.
@@ -42,7 +47,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GroupBox"/> class.
@@ -112,7 +117,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     /// <summary> 
     /// Clean up any resources being used.
@@ -210,7 +215,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     [Category("Appearance")]
     [DefaultValue(typeof(Border3DSide), "Top")]
@@ -320,7 +325,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Private Members
 
     /// <summary>
     /// Cleans up GDI resources.

@@ -86,6 +86,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GimpPaletteSerializer.cs" />
+    <Compile Include="InterleavedBitmapPaletteSerializer.cs" />
     <Compile Include="JascPaletteSerializer.cs" />
     <Compile Include="IPaletteSerializer.cs" />
     <Compile Include="LightnessColorSlider.cs">

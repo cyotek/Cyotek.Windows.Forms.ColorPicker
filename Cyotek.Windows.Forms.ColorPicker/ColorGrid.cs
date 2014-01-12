@@ -8,13 +8,16 @@ using System.Windows.Forms;
 
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
+
 #endif
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -75,7 +78,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     public ColorGrid(IEnumerable<Color> colors)
       : this(new ColorCollection(colors))
@@ -96,6 +99,10 @@ namespace Cyotek.Windows.Forms
     public ColorGrid()
       : this(ColorPalette.Named)
     { }
+
+    #endregion
+
+    #region Protected Constructors
 
     protected ColorGrid(ColorCollection colors, ColorCollection customColors, ColorPalette palette)
     {
@@ -264,7 +271,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     public override Size GetPreferredSize(Size proposedSize)
     {
@@ -525,7 +532,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     [Category("Behavior")]
     [DefaultValue(true)]
@@ -797,6 +804,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion
+
+    #region Protected Properties
+
     /// <summary>
     ///   Gets a value indicating whether painting of the control is allowed.
     /// </summary>
@@ -824,7 +835,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Public Members
 
     public virtual int AddCustomColor(Color value)
     {
@@ -951,6 +962,10 @@ namespace Cyotek.Windows.Forms
 
       return result;
     }
+
+    #endregion
+
+    #region Protected Members
 
     protected virtual void CalculateCellSize()
     {
@@ -1520,6 +1535,10 @@ namespace Cyotek.Windows.Forms
       if (this.ShowToolTips)
         _toolTip.SetToolTip(this, this.HotIndex != InvalidIndex ? this.GetColor(this.HotIndex).Name : null);
     }
+
+    #endregion
+
+    #region Private Members
 
     private Point GetCell(int index)
     {

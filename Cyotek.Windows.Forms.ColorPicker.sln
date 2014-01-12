@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorPicker.Demo", "Cyotek.Windows.Forms.ColorPicker.Demo\Cyotek.Windows.Forms.ColorPicker.Demo.csproj", "{638299BD-079A-4F2B-A1E6-EFA711C2EDB2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorPicker", "Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj", "{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}"
@@ -8,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{9563C21E-04F8-4FB7-AD31-2A0DDDE91142}"
 	ProjectSection(SolutionItems) = preProject
 		changelog.md = changelog.md
+		colorpicker-license.txt = colorpicker-license.txt
 		readme.md = readme.md
 	EndProjectSection
 EndProject

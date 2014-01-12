@@ -1,10 +1,13 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -13,6 +16,16 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public static class ColorComparer
   {
+    #region Constants
+
+    private const double _redLuminance = 0.212655;
+
+    private const double _greenLuminance = 0.715158;
+
+    private const double _blueLuminance = 0.072187;
+
+    #endregion
+
     #region Class Members
 
     /// <summary>
@@ -22,12 +35,12 @@ namespace Cyotek.Windows.Forms
     /// <param name="y">A color to compare to x.</param>
     public static int Brightness(Color x, Color y)
     {
-      float v1;
-      float v2;
+      int v1;
+      int v2;
       int result;
 
-      v1 = x.GetBrightness();
-      v2 = y.GetBrightness();
+      v1 = GetBrightness(x);
+      v2 = GetBrightness(y);
 
       if (v1 < v2)
         result = -1;
@@ -83,6 +96,42 @@ namespace Cyotek.Windows.Forms
         result = 1;
       else
         result = 0;
+
+      return result;
+    }
+
+    private static int GetBrightness(Color color)
+    {
+      //http://stackoverflow.com/a/13558570/148962
+
+      // GRAY VALUE ("brightness")
+
+      return GetGamma(_redLuminance * GetInverseGamma(color.R) + _greenLuminance * GetInverseGamma(color.G) + _blueLuminance * GetInverseGamma(color.B));
+    }
+
+    private static int GetGamma(double v)
+    {
+      // sRGB "gamma" function (approx 2.2)
+
+      if (v <= 0.0031308)
+        v *= 12.92;
+      else
+        v = 1.055 * Math.Pow(v, 1.0 / 2.4) - 0.055;
+
+      return (int)(v * 255 + .5);
+    }
+
+    private static double GetInverseGamma(int ic)
+    {
+      double result;
+
+      // Inverse of sRGB "gamma" function. (approx 2.2)
+
+      double c = ic / 255.0;
+      if (c <= 0.04045)
+        result = c / 12.92;
+      else
+        result = Math.Pow(((c + 0.055) / (1.055)), 2.4);
 
       return result;
     }

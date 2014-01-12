@@ -3,8 +3,10 @@ using System.Drawing;
 using System.IO;
 
 // Cyotek Color Picker controls library
-// Copyright © 2013 Cyotek. All Rights Reserved.
+// Copyright © 2013-2014 Cyotek.
 // http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
 // If you use this code in your applications, donations or attribution are welcome
 
@@ -15,7 +17,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   /// </summary>
   public abstract class TestBase
   {
-    #region Properties
+    #region Protected Properties
 
     /// <summary>
     /// Gets the path where testing resources are located.
@@ -28,7 +30,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
     #endregion
 
-    #region Members
+    #region Protected Members
 
     /// <summary>
     /// Creates the DB16 palette.

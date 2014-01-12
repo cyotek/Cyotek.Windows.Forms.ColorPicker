@@ -3,8 +3,10 @@ using FluentAssertions;
 using NUnit.Framework;
 
 // Cyotek Color Picker controls library
-// Copyright © 2013 Cyotek. All Rights Reserved.
+// Copyright © 2013-2014 Cyotek.
 // http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
 // If you use this code in your applications, donations or attribution are welcome
 
@@ -16,6 +18,38 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   [TestFixture]
   public class JascPaletteSerializerTests : TestBase
   {
+    [Test]
+    public void CanReadTest()
+    {
+      // arrange
+      IPaletteSerializer target;
+      bool actual;
+
+      target = new JascPaletteSerializer();
+
+      // act
+      actual = target.CanRead;
+
+      // assert
+      actual.Should().BeTrue();
+    }
+
+    [Test]
+    public void CanWriteTest()
+    {
+      // arrange
+      IPaletteSerializer target;
+      bool actual;
+
+      target = new JascPaletteSerializer();
+
+      // act
+      actual = target.CanWrite;
+
+      // assert
+      actual.Should().BeTrue();
+    }
+
     [Test]
     public void DeserializeTest()
     {
@@ -48,7 +82,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       string fileName;
 
       expected = new JascPaletteSerializer();
-      fileName = "test" + expected.DefaultExtension;
+      fileName = "test." + expected.DefaultExtension;
 
       // act
       actual = PaletteSerializer.GetSerializer(fileName);

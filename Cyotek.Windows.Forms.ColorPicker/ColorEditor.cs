@@ -8,13 +8,16 @@ using System.Windows.Forms;
 
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
+
 #endif
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -27,13 +30,15 @@ namespace Cyotek.Windows.Forms
   {
     #region Instance Fields
 
+    private Color _color;
+
     private HslColor _hslColor;
 
     private Orientation _orientation;
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorEditor"/> class.
@@ -45,11 +50,6 @@ namespace Cyotek.Windows.Forms
       this.Color = Color.Black;
       this.Orientation = Orientation.Vertical;
       this.Size = new Size(200, 260);
-
-      this.AddColorProperties<SystemColors>();
-      this.AddColorProperties<Color>();
-
-      this.SetDropDownWidth();
     }
 
     #endregion
@@ -70,7 +70,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Control.DockChanged" /> event.
@@ -125,7 +125,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>
     /// Gets or sets the component color.
@@ -135,8 +135,24 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Color), "0, 0, 0")]
     public virtual Color Color
     {
-      get { return this.HslColor.ToRgbColor(); }
-      set { this.HslColor = new HslColor(value); }
+      get { return _color; }
+      set
+      {
+        if (_color != value)
+        {
+          _color = value;
+
+          if (!this.LockUpdates)
+          {
+            this.LockUpdates = true;
+            this.HslColor = new HslColor(value);
+            this.LockUpdates = false;
+            this.UpdateFields(false);
+          }
+          else
+            this.OnColorChanged(EventArgs.Empty);
+        }
+      }
     }
 
     /// <summary>
@@ -154,7 +170,15 @@ namespace Cyotek.Windows.Forms
         {
           _hslColor = value;
 
-          this.OnColorChanged(EventArgs.Empty);
+          if (!this.LockUpdates)
+          {
+            this.LockUpdates = true;
+            this.Color = value.ToRgbColor();
+            this.LockUpdates = false;
+            this.UpdateFields(false);
+          }
+          else
+            this.OnColorChanged(EventArgs.Empty);
         }
       }
     }
@@ -179,6 +203,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets a value indicating whether input changes should be processed.
     /// </summary>
@@ -187,7 +215,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Protected Members
 
     /// <summary>
     /// Raises the <see cref="ColorChanged" /> event.
@@ -243,10 +271,12 @@ namespace Cyotek.Windows.Forms
         int labelOffset;
         int colorBarOffset;
         int editOffset;
+        int hexEditOffset;
 
         top = this.Padding.Top;
         innerMargin = 3;
         editWidth = TextRenderer.MeasureText(new string('W', 6), this.Font).Width;
+        hexEditOffset = editWidth / 2;
         rowHeight = Math.Max(Math.Max(rLabel.Height, rColorBar.Height), rNumericUpDown.Height);
         labelOffset = (rowHeight - rLabel.Height) / 2;
         colorBarOffset = (rowHeight - rColorBar.Height) / 2;
@@ -305,7 +335,7 @@ namespace Cyotek.Windows.Forms
 
         // Hex row
         hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        hexTextBox.SetBounds(group1EditLeft, top + colorBarOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+        hexTextBox.SetBounds(group1EditLeft - hexEditOffset, top + colorBarOffset, hexEditOffset + editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
         top += rowHeight + innerMargin;
 
         // reset top
@@ -375,7 +405,7 @@ namespace Cyotek.Windows.Forms
 
           // HTML
           if (!(userAction && hexTextBox.Focused))
-            hexTextBox.Text = string.Format("{0:X2}{1:X2}{2:X2}", this.Color.R, this.Color.G, this.Color.B);
+            hexTextBox.Text = this.Color.IsNamedColor ? this.Color.Name : string.Format("{0:X2}{1:X2}{2:X2}", this.Color.R, this.Color.G, this.Color.B);
 
           // HSL
           if (!(userAction && hNumericUpDown.Focused))
@@ -402,6 +432,10 @@ namespace Cyotek.Windows.Forms
         }
       }
     }
+
+    #endregion
+
+    #region Private Members
 
     private void AddColorProperties<T>()
     {
@@ -446,6 +480,13 @@ namespace Cyotek.Windows.Forms
       return result;
     }
 
+    private void FillNamedColors()
+    {
+      this.AddColorProperties<SystemColors>();
+      this.AddColorProperties<Color>();
+      this.SetDropDownWidth();
+    }
+
     private void SetDropDownWidth()
     {
       if (hexTextBox.Items.Count != 0)
@@ -467,9 +508,11 @@ namespace Cyotek.Windows.Forms
       {
         bool useHsl;
         bool useRgb;
+        bool useNamed;
 
         useHsl = false;
         useRgb = false;
+        useNamed = false;
 
         this.LockUpdates = true;
 
@@ -481,6 +524,9 @@ namespace Cyotek.Windows.Forms
           text = hexTextBox.Text;
           if (text.StartsWith("#"))
             text = text.Substring(1);
+
+          if (hexTextBox.Items.Count == 0)
+            this.FillNamedColors();
 
           namedIndex = hexTextBox.FindStringExact(text);
 
@@ -503,6 +549,8 @@ namespace Cyotek.Windows.Forms
             { }
             // ReSharper restore EmptyGeneralCatchClause
           }
+          else
+            useNamed = true;
         }
         else if (sender == aColorBar || sender == rColorBar || sender == gColorBar || sender == bColorBar)
         {
@@ -526,11 +574,13 @@ namespace Cyotek.Windows.Forms
         else if (sender == hNumericUpDown || sender == sNumericUpDown || sender == lNumericUpDown)
           useHsl = true;
 
-        if (useRgb)
+        if (useRgb || useNamed)
         {
           Color color;
 
-          color = Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
+          color = useNamed ? Color.FromName((string)hexTextBox.SelectedItem) : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
+
+          this.Color = color;
           this.HslColor = new HslColor(color);
         }
         else if (useHsl)
@@ -539,6 +589,7 @@ namespace Cyotek.Windows.Forms
 
           color = new HslColor((int)aNumericUpDown.Value, (double)hNumericUpDown.Value, (double)sNumericUpDown.Value / 100, (double)lNumericUpDown.Value / 100);
           this.HslColor = color;
+          this.Color = color.ToRgbColor();
         }
 
         this.LockUpdates = false;
@@ -575,10 +626,34 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private void hexTextBox_DropDown(object sender, EventArgs e)
+    {
+      if (hexTextBox.Items.Count == 0)
+        this.FillNamedColors();
+    }
+
+    private void hexTextBox_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.KeyCode)
+      {
+        case Keys.Up:
+        case Keys.Down:
+        case Keys.PageUp:
+        case Keys.PageDown:
+          if (hexTextBox.Items.Count == 0)
+            this.FillNamedColors();
+          break;
+      }
+    }
+
     private void hexTextBox_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (hexTextBox.SelectedIndex != -1)
+      {
+        this.LockUpdates = true;
         this.Color = Color.FromName((string)hexTextBox.SelectedItem);
+        this.LockUpdates = false;
+      }
     }
 
     #endregion

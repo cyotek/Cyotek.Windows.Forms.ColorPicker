@@ -4,13 +4,16 @@ using System.Drawing;
 
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
+
 #endif
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -25,7 +28,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     public SaturationColorSlider()
     {
@@ -103,7 +106,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "Black")]
@@ -123,7 +126,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Protected Members
 
     protected virtual void CreateScale()
     {

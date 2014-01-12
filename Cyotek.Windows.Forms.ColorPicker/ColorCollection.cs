@@ -8,8 +8,10 @@ using System.Linq;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -22,7 +24,15 @@ namespace Cyotek.Windows.Forms
   /// </remarks>
   public class ColorCollection : Collection<Color>, ICloneable
   {
-    #region Constructors
+    #region Instance Fields
+
+    private readonly object _lock = new object();
+
+    private IDictionary<Color, int> _indexedLookup;
+
+    #endregion
+
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorCollection"/> class.
@@ -40,12 +50,20 @@ namespace Cyotek.Windows.Forms
       this.AddRange(collection);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorCollection"/> class that contains elements copied from the specified collection.
+    /// </summary>
+    /// <param name="collection">The collection whose elements are copied to the new collection.</param>
     public ColorCollection(IEnumerable<int> collection)
       : this()
     {
       this.AddRange(collection.Select(Color.FromArgb));
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorCollection"/> class that contains elements copied from the specified collection.
+    /// </summary>
+    /// <param name="collection">The collection whose elements are copied to the new collection.</param>
     public ColorCollection(System.Drawing.Imaging.ColorPalette collection)
       : this()
     {
@@ -65,9 +83,22 @@ namespace Cyotek.Windows.Forms
 
     #region Class Members
 
+    /// <summary>
+    /// Creates a new instance of the <see cref="ColorCollection" /> class that contains elements loaded from the specified file.
+    /// </summary>
+    /// <param name="fileName">Name of the file to load.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown if the <c>fileName</c> argument is not specified.</exception>
+    /// <exception cref="System.IO.FileNotFoundException">Thrown if the file specified by <c>fileName</c> cannot be found.</exception>
+    /// <exception cref="System.ArgumentException">Thrown if no <see cref="IPaletteSerializer"/> is available for the file specified by <c>fileName</c>.</exception>
     public static ColorCollection LoadPalette(string fileName)
     {
       IPaletteSerializer serializer;
+
+      if (string.IsNullOrEmpty(fileName))
+        throw new ArgumentNullException("fileName");
+
+      if (!File.Exists(fileName))
+        throw new FileNotFoundException(string.Format("Cannot find file '{0}'", fileName), fileName);
 
       serializer = PaletteSerializer.GetSerializer(fileName);
       if (serializer == null)
@@ -79,7 +110,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     /// <summary>
     /// Removes all elements from the <see cref="T:System.Collections.ObjectModel.Collection`1" />.
@@ -132,7 +163,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Public Members
 
     /// <summary>Adds the elements of the specified collection to the end of the <see cref="ColorCollection"/>.</summary>
     /// <param name="colors">The collection whose elements should be added to the end of the <see cref="ColorCollection"/>.</param>
@@ -142,11 +173,84 @@ namespace Cyotek.Windows.Forms
         this.Add(color);
     }
 
+    /// <summary>
+    /// Creates a new object that is a copy of the current instance.
+    /// </summary>
+    /// <returns>A new object that is a copy of this instance.</returns>
     public virtual ColorCollection Clone()
     {
       return new ColorCollection(this);
     }
 
+    /// <summary>
+    /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="ColorCollection"/>.
+    /// </summary>
+    /// <param name="item">The <see cref="Color"/> to locate in the <see cref="ColorCollection"/>.</param>
+    /// <returns>The zero-based index of the first occurrence of <c>item</c> within the entire <see cref="ColorCollection"/>, if found; otherwise, –1.</returns>
+    public int Find(Color item)
+    {
+      int result;
+
+      if (_indexedLookup == null)
+        this.BuildIndexedLookup();
+
+      if (!_indexedLookup.TryGetValue(item, out result))
+        result = -1;
+
+      return result;
+    }
+
+    /// <summary>
+    /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="ColorCollection" />.
+    /// </summary>
+    /// <param name="item">The <see cref="Color"/> to locate in the <see cref="ColorCollection" />.</param>
+    /// <param name="ignoreAlphaChannel">If set to <c>true</c> only the red, green and blue channels of items in the <see cref="ColorCollection"/> will be compared.</param>
+    /// <returns>The zero-based index of the first occurrence of <c>item</c> within the entire <see cref="ColorCollection" />, if found; otherwise, –1.</returns>
+    public int Find(Color item, bool ignoreAlphaChannel)
+    {
+      int result;
+
+      if (!ignoreAlphaChannel)
+        result = this.Find(item);
+      else
+      {
+        // TODO: This is much much slower than the lookup based fine
+
+        result = -1;
+
+        for (int i = 0; i < this.Count; i++)
+        {
+          Color original;
+
+          original = this[i];
+          if (original.R == item.R && original.G == item.G && original.B == item.B)
+          {
+            result = i;
+            break;
+          }
+        }
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire <see cref="ColorCollection"/>.
+    /// </summary>
+    /// <param name="item">The ARGB color to locate in the <see cref="ColorCollection"/>.</param>
+    /// <returns>The zero-based index of the first occurrence of <c>item</c> within the entire <see cref="ColorCollection"/>, if found; otherwise, –1.</returns>
+    public int Find(int item)
+    {
+      return this.Find(Color.FromArgb(item));
+    }
+
+    /// <summary>
+    /// Populates this <see cref="ColorCollection"/> with items loaded from the specified file.
+    /// </summary>
+    /// <param name="fileName">Name of the file to load.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown if the <c>fileName</c> argument is not specified.</exception>
+    /// <exception cref="System.IO.FileNotFoundException">Thrown if the file specified by <c>fileName</c> cannot be found.</exception>
+    /// <exception cref="System.ArgumentException">Thrown if no <see cref="IPaletteSerializer"/> is available for the file specified by <c>fileName</c>.</exception>
     public void Load(string fileName)
     {
       ColorCollection palette;
@@ -157,9 +261,18 @@ namespace Cyotek.Windows.Forms
       this.AddRange(palette);
     }
 
+    /// <summary>
+    /// Saves the contents of this <see cref="ColorCollection"/> into the specified file.
+    /// </summary>
+    /// <param name="fileName">Name of the file to save.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown if the <c>fileName</c> argument is not specified.</exception>
+    /// <exception cref="System.ArgumentException">Thrown if no <see cref="IPaletteSerializer"/> is available for the file specified by <c>fileName</c>.</exception>
     public void Save(string fileName)
     {
       IPaletteSerializer serializer;
+
+      if (string.IsNullOrEmpty(fileName))
+        throw new ArgumentNullException("fileName");
 
       serializer = PaletteSerializer.GetSerializer(fileName);
       if (serializer == null)
@@ -202,6 +315,10 @@ namespace Cyotek.Windows.Forms
       this.AddRange(orderedItems);
     }
 
+    #endregion
+
+    #region Protected Members
+
     /// <summary>
     /// Raises the <see cref="CollectionChanged" /> event.
     /// </summary>
@@ -209,6 +326,8 @@ namespace Cyotek.Windows.Forms
     protected virtual void OnCollectionChanged(ColorCollectionEventArgs e)
     {
       EventHandler<ColorCollectionEventArgs> handler;
+
+      _indexedLookup = null; // reset the internal lookup
 
       handler = this.CollectionChanged;
 
@@ -218,8 +337,37 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
+    #region Private Members
+
+    /// <summary>
+    /// Builds an indexed lookup for quick searching.
+    /// </summary>
+    private void BuildIndexedLookup()
+    {
+      lock (_lock)
+      {
+        _indexedLookup = new Dictionary<Color, int>();
+
+        for (int i = 0; i < this.Count; i++)
+        {
+          Color color;
+
+          color = this[i];
+
+          if (!_indexedLookup.ContainsKey(color))
+            _indexedLookup.Add(color, i);
+        }
+      }
+    }
+
+    #endregion
+
     #region ICloneable Members
 
+    /// <summary>
+    /// Creates a new object that is a copy of the current instance.
+    /// </summary>
+    /// <returns>A new object that is a copy of this instance.</returns>
     object ICloneable.Clone()
     {
       return this.Clone();

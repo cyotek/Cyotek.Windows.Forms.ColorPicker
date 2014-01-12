@@ -6,8 +6,10 @@ using System.Text;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -24,7 +26,7 @@ namespace Cyotek.Windows.Forms
     /// <value>The default extension for files generated with this palette format.</value>
     public override string DefaultExtension
     {
-      get { return ".gpl"; }
+      get { return "gpl"; }
     }
 
     /// <summary>
@@ -38,13 +40,13 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     /// <summary>
     /// Deserializes the <see cref="ColorCollection" /> contained by the specified <see cref="Stream" />.
     /// </summary>
     /// <param name="stream">The <see cref="Stream" /> that contains the palette to deserialize.</param>
-    /// <returns>The <see cref="ColorCollection" /> being deserialized..</returns>
+    /// <returns>The <see cref="ColorCollection" /> being deserialized.</returns>
     public override ColorCollection Deserialize(Stream stream)
     {
       ColorCollection results;

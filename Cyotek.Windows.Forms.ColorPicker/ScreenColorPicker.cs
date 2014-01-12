@@ -8,8 +8,10 @@ using System.Windows.Forms;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -38,7 +40,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScreenColorPicker"/> class.
@@ -98,7 +100,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
@@ -235,7 +237,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>
     /// Gets or sets the component color.
@@ -392,6 +394,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets a value indicating snapshot capture is in progress.
     /// </summary>
@@ -412,7 +418,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Protected Members
 
     /// <summary>
     /// Creates the snapshot image.

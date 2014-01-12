@@ -8,13 +8,16 @@ using System.Windows.Forms;
 
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
+
 #endif
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -44,7 +47,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     public ColorWheel()
     {
@@ -127,7 +130,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     protected override void Dispose(bool disposing)
     {
@@ -257,7 +260,8 @@ namespace Cyotek.Windows.Forms
         if (_brush != null)
           e.Graphics.FillPie(_brush, this.ClientRectangle, 0, 360);
 
-        // smooth out the edge of the wheel
+        // HACK: smooth out the edge of the wheel.
+        // https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker/issues/1 - the linked source doesn't do this hack yet draws with a smoother edge
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
         using (Pen pen = new Pen(this.BackColor, 2))
         {
@@ -280,7 +284,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "Black")]
@@ -383,6 +387,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion
+
+    #region Protected Properties
+
     /// <summary>
     ///   Gets a value indicating whether painting of the control is allowed.
     /// </summary>
@@ -404,7 +412,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Public Members
 
     /// <summary>
     ///   Disables any redrawing of the image box
@@ -425,6 +433,10 @@ namespace Cyotek.Windows.Forms
       if (this.AllowPainting)
         this.Invalidate();
     }
+
+    #endregion
+
+    #region Protected Members
 
     protected virtual void CalculateWheel()
     {
@@ -628,7 +640,7 @@ namespace Cyotek.Windows.Forms
         this.SelectionGlyph.Dispose();
 
       this.SelectionGlyph = this.CreateSelectionGlyph();
-      this.Invalidate();
+      this.RefreshWheel();
 
       handler = this.SelectionSizeChanged;
 
@@ -706,6 +718,10 @@ namespace Cyotek.Windows.Forms
       this.Color = this.HslColor.ToRgbColor();
       this.LockUpdates = false;
     }
+
+    #endregion
+
+    #region Private Members
 
     private void RefreshWheel()
     {

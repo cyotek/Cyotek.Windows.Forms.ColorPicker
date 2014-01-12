@@ -2,12 +2,20 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+// Cyotek Color Picker controls library
+// Copyright © 2013-2014 Cyotek.
+// http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See colorpicker-license.txt for the full text.
+
+// If you use this code in your applications, donations or attribution are welcome
+
 [assembly: AssemblyTitle("Cyotek Color Picker Controls Demonstration")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Cyotek Color Picker Controls Library")]
-[assembly: AssemblyCopyright("Copyright © 2013 Cyotek. All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2013-2014 Cyotek.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

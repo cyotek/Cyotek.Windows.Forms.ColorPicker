@@ -5,14 +5,16 @@ using Cyotek.Windows.Forms.Demo;
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
   internal partial class MainForm : AboutDialog
   {
-    #region Constructors
+    #region Public Constructors
 
     public MainForm()
     {
@@ -21,7 +23,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     protected override void OnLoad(EventArgs e)
     {
@@ -47,7 +49,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Members
+    #region Private Members
 
     private void aboutButton_Click(object sender, EventArgs e)
     {

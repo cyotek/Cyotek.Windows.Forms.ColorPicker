@@ -183,8 +183,10 @@
       this.hexTextBox.Size = new System.Drawing.Size(58, 21);
       this.hexTextBox.TabIndex = 11;
       this.hexTextBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.hexTextBox_DrawItem);
+      this.hexTextBox.DropDown += new System.EventHandler(this.hexTextBox_DropDown);
       this.hexTextBox.SelectedIndexChanged += new System.EventHandler(this.hexTextBox_SelectedIndexChanged);
       this.hexTextBox.TextChanged += new System.EventHandler(this.ValueChangedHandler);
+      this.hexTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.hexTextBox_KeyDown);
       // 
       // lNumericUpDown
       // 

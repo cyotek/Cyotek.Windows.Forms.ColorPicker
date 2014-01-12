@@ -4,13 +4,16 @@ using System.Drawing;
 
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
+
 #endif
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -20,6 +23,8 @@ namespace Cyotek.Windows.Forms
   public class ColorEditorManager : Component, IColorEditor
   {
     #region Instance Fields
+
+    private Color _color;
 
     private ColorEditor _colorEditor;
 
@@ -75,7 +80,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>
     /// Gets or sets the component color.
@@ -85,8 +90,17 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual Color Color
     {
-      get { return this.HslColor.ToRgbColor(); }
-      set { this.HslColor = new HslColor(value); }
+      get { return _color; }
+      set
+      {
+        if (_color != value)
+        {
+          _color = value;
+          _hslColor = new HslColor(value);
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
+      }
     }
 
     /// <summary>
@@ -160,6 +174,7 @@ namespace Cyotek.Windows.Forms
         if (this.HslColor != value)
         {
           _hslColor = value;
+          _color = value.ToRgbColor();
 
           this.OnColorChanged(EventArgs.Empty);
         }
@@ -204,6 +219,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets a value indicating whether updating of linked components is disabled.
     /// </summary>
@@ -212,7 +231,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Protected Members
 
     /// <summary>
     /// Binds events for the specified editor.

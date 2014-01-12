@@ -45,6 +45,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InterleavedBitmapPaletteSerializerTests.cs" />
     <Compile Include="PaintNetPaletteSerializerTests.cs" />
     <Compile Include="JascPaletteSerializerTests.cs" />
     <Compile Include="GimpPaletteSerializerTests.cs" />
@@ -53,6 +54,12 @@
     <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\background.lbm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="data\background.pal">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="data\db16.gpl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -4,13 +4,16 @@ using System.Drawing;
 
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
+
 #endif
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -22,7 +25,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     public LightnessColorSlider()
     {
@@ -100,7 +103,32 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Overridden Methods
+
+    /// <summary>
+    /// Raises the <see cref="ColorSlider.ValueChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected override void OnValueChanged(EventArgs e)
+    {
+      if (!this.LockUpdates)
+      {
+        HslColor color;
+
+        this.LockUpdates = true;
+        color = new HslColor(this.Color);
+        color.L = this.Value / 100D;
+        _color = color.ToRgbColor();
+        this.OnColorChanged(e);
+        this.LockUpdates = false;
+      }
+
+      base.OnValueChanged(e);
+    }
+
+    #endregion
+
+    #region Public Properties
 
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "Black")]
@@ -113,14 +141,30 @@ namespace Cyotek.Windows.Forms
         {
           _color = value;
 
-          this.OnColorChanged(EventArgs.Empty);
+          if (!this.LockUpdates)
+          {
+            this.LockUpdates = true;
+            this.Value = (float)new HslColor(value).L * 100;
+            this.OnColorChanged(EventArgs.Empty);
+            this.LockUpdates = false;
+          }
         }
       }
     }
 
     #endregion
 
-    #region Members
+    #region Protected Properties
+
+    /// <summary>
+    /// Gets or sets a value indicating whether input changes should be processed.
+    /// </summary>
+    /// <value><c>true</c> if input changes should be processed; otherwise, <c>false</c>.</value>
+    protected bool LockUpdates { get; set; }
+
+    #endregion
+
+    #region Protected Members
 
     protected virtual void CreateScale()
     {

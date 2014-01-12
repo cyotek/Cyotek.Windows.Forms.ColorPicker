@@ -8,6 +8,14 @@ using System.Text;
 
 namespace Cyotek.Windows.Forms
 {
+  // Cyotek Color Picker controls library
+  // Copyright © 2013-2014 Cyotek.
+  // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+
+  // If you use this code in your applications, donations or attribution are welcome
+
   /// <summary>
   /// Serializes and deserializes color palettes into and from other documents.
   /// </summary>
@@ -18,6 +26,17 @@ namespace Cyotek.Windows.Forms
     private static string _defaultOpenFilter;
 
     private static string _defaultSaveFileter;
+
+    private static readonly List<IPaletteSerializer> _serializerCache;
+
+    #endregion
+
+    #region Static Constructors
+
+    static PaletteSerializer()
+    {
+      _serializerCache = new List<IPaletteSerializer>();
+    }
 
     #endregion
 
@@ -45,8 +64,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private static List<IPaletteSerializer> SerializerCache { get; set; }
-
     #endregion
 
     #region Class Members
@@ -59,63 +76,82 @@ namespace Cyotek.Windows.Forms
       if (string.IsNullOrEmpty(fileName))
         throw new ArgumentNullException("fileName");
 
-      if (SerializerCache == null)
+      if (_serializerCache.Count == 0)
         LoadSerializers();
 
       fileExtension = Path.GetExtension(fileName);
-      result = null;
-
-      // ReSharper disable AssignNullToNotNullAttribute
-      foreach (IPaletteSerializer serializer in SerializerCache.Where(serializer => !(string.IsNullOrEmpty(serializer.DefaultExtension))))
-        // ReSharper restore AssignNullToNotNullAttribute
+      if (fileExtension.Length != 0 && fileExtension[0] == '.')
+        fileExtension = fileExtension.Remove(0, 1);
+      result = _serializerCache.FirstOrDefault(s => !string.IsNullOrEmpty(s.DefaultExtension) && s.DefaultExtension.Split(new[]
       {
-        string extension;
-
-        extension = serializer.DefaultExtension;
-        if (extension[0] != '.')
-          extension = extension.Insert(0, ".");
-
-        if (string.Equals(fileExtension, extension, StringComparison.InvariantCultureIgnoreCase))
-        {
-          result = serializer;
-          break;
-        }
-      }
+        ';'
+      }, StringSplitOptions.RemoveEmptyEntries).Contains(fileExtension, StringComparer.InvariantCultureIgnoreCase));
 
       return result;
     }
 
     private static void CreateFilters()
     {
-      StringBuilder sb;
-      List<string> extensions;
+      StringBuilder openFilter;
+      StringBuilder saveFilter;
+      List<string> openExtensions;
 
-      sb = new StringBuilder();
-      extensions = new List<string>();
+      openExtensions = new List<string>();
+      openFilter = new StringBuilder();
+      saveFilter = new StringBuilder();
 
-      if (SerializerCache == null)
+      if (_serializerCache.Count == 0)
         LoadSerializers();
 
-      // ReSharper disable AssignNullToNotNullAttribute
-      foreach (IPaletteSerializer serializer in SerializerCache.Where(serializer => !(string.IsNullOrEmpty(serializer.DefaultExtension) || extensions.Contains(serializer.DefaultExtension))).OrderBy(serializer => serializer.Name))
-        // ReSharper restore AssignNullToNotNullAttribute
+      foreach (IPaletteSerializer serializer in _serializerCache.Where(serializer => !(string.IsNullOrEmpty(serializer.DefaultExtension) || openExtensions.Contains(serializer.DefaultExtension))).OrderBy(serializer => serializer.Name))
       {
-        string extension;
+        StringBuilder extensionMask;
+        string filter;
 
-        extension = serializer.DefaultExtension;
-        if (extension[0] != '.')
-          extension = extension.Insert(0, ".");
-        extension = extension.Insert(0, "*");
+        extensionMask = new StringBuilder();
 
-        extensions.Add(extension);
+        foreach (string extension in serializer.DefaultExtension.Split(new[]
+        {
+          ';'
+        }, StringSplitOptions.RemoveEmptyEntries))
+        {
+          string mask;
 
-        if (sb.Length != 0)
-          sb.Append("|");
-        sb.AppendFormat("{0} Files ({1})|{1}", serializer.Name, extension);
+          mask = "*." + extension;
+
+          if (!openExtensions.Contains(mask))
+            openExtensions.Add(mask);
+
+          if (extensionMask.Length != 0)
+            extensionMask.Append(";");
+          extensionMask.Append(mask);
+        }
+
+        filter = string.Format("{0} Files ({1})|{1}", serializer.Name, extensionMask);
+
+        if (serializer.CanRead)
+        {
+          if (openFilter.Length != 0)
+            openFilter.Append("|");
+          openFilter.Append(filter);
+        }
+
+        if (serializer.CanWrite)
+        {
+          if (saveFilter.Length != 0)
+            saveFilter.Append("|");
+          saveFilter.Append(filter);
+        }
       }
 
-      _defaultOpenFilter = string.Format("All Supported Palettes ({0})|{0}|{1}|All Files (*.*)|*.*", string.Join(";", extensions.ToArray()), sb);
-      _defaultSaveFileter = sb.ToString();
+      if (openExtensions.Count != 0)
+        openFilter.Insert(0, string.Format("All Supported Palettes ({0})|{0}|", string.Join(";", openExtensions.ToArray())));
+      if (openFilter.Length != 0)
+        openFilter.Append("|");
+      openFilter.Append("All Files (*.*)|*.*");
+
+      _defaultOpenFilter = openFilter.ToString();
+      _defaultSaveFileter = saveFilter.ToString();
     }
 
     private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
@@ -132,16 +168,15 @@ namespace Cyotek.Windows.Forms
 
     private static void LoadSerializers()
     {
-      if (SerializerCache == null)
-        SerializerCache = new List<IPaletteSerializer>();
-      else
-        SerializerCache.Clear();
+      _serializerCache.Clear();
+      _defaultOpenFilter = null;
+      _defaultSaveFileter = null;
 
       foreach (Type type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => GetLoadableTypes(assembly).Where(type => !type.IsAbstract && type.IsPublic && typeof(IPaletteSerializer).IsAssignableFrom(type))))
       {
         try
         {
-          SerializerCache.Add((IPaletteSerializer)Activator.CreateInstance(type));
+          _serializerCache.Add((IPaletteSerializer)Activator.CreateInstance(type));
         }
           // ReSharper disable EmptyGeneralCatchClause
         catch
@@ -154,7 +189,27 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
+
+    /// <summary>
+    /// Gets a value indicating whether this serializer can be used to read palettes.
+    /// </summary>
+    /// <value><c>true</c> if palettes can be read using this serializer; otherwise, <c>false</c>.</value>
+    [Browsable(false)]
+    public virtual bool CanRead
+    {
+      get { return true; }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether this serializer can be used to write palettes.
+    /// </summary>
+    /// <value><c>true</c> if palettes can be written using this serializer; otherwise, <c>false</c>.</value>
+    [Browsable(false)]
+    public virtual bool CanWrite
+    {
+      get { return true; }
+    }
 
     /// <summary>
     /// Gets the default extension for files generated with this palette format.
@@ -172,13 +227,13 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Public Members
 
     /// <summary>
     /// Deserializes the <see cref="ColorCollection" /> contained by the specified <see cref="Stream" />.
     /// </summary>
     /// <param name="stream">The <see cref="Stream" /> that contains the palette to deserialize.</param>
-    /// <returns>The <see cref="ColorCollection" /> being deserialized..</returns>
+    /// <returns>The <see cref="ColorCollection" /> being deserialized.</returns>
     public abstract ColorCollection Deserialize(Stream stream);
 
     /// <summary>
@@ -231,7 +286,7 @@ namespace Cyotek.Windows.Forms
     /// Deserializes the <see cref="ColorCollection" /> contained by the specified <see cref="Stream" />.
     /// </summary>
     /// <param name="stream">The <see cref="Stream" /> that contains the palette to deserialize.</param>
-    /// <returns>The <see cref="ColorCollection" /> being deserialized..</returns>
+    /// <returns>The <see cref="ColorCollection" /> being deserialized.</returns>
     ColorCollection IPaletteSerializer.Deserialize(Stream stream)
     {
       return this.Deserialize(stream);
@@ -253,6 +308,16 @@ namespace Cyotek.Windows.Forms
     string IPaletteSerializer.DefaultExtension
     {
       get { return this.DefaultExtension; }
+    }
+
+    bool IPaletteSerializer.CanRead
+    {
+      get { return this.CanRead; }
+    }
+
+    bool IPaletteSerializer.CanWrite
+    {
+      get { return this.CanWrite; }
     }
 
     #endregion

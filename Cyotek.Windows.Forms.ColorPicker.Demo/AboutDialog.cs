@@ -8,18 +8,17 @@ using Cyotek.Windows.Forms.ColorPicker.Demo;
 
 namespace Cyotek.Windows.Forms.Demo
 {
-  // Cyotek ImageBox
-  // Copyright (c) 2010-2013 Cyotek.
-  // http://cyotek.com
-  // http://cyotek.com/blog/tag/imagebox
+  // Cyotek Color Picker controls library
+  // Copyright © 2013-2014 Cyotek.
+  // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See imagebox-license.txt for the full text.
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
-  // If you use this control in your applications, attribution, donations or contributions are welcome.
+  // If you use this code in your applications, donations or attribution are welcome
 
   internal partial class AboutDialog : BaseForm
   {
-    #region Constructors
+    #region Public Constructors
 
     public AboutDialog()
     {
@@ -38,7 +37,7 @@ namespace Cyotek.Windows.Forms.Demo
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     protected override void OnLoad(EventArgs e)
     {
@@ -68,7 +67,7 @@ namespace Cyotek.Windows.Forms.Demo
 
     #endregion
 
-    #region Properties
+    #region Protected Properties
 
     protected TabControl TabControl
     {
@@ -77,7 +76,7 @@ namespace Cyotek.Windows.Forms.Demo
 
     #endregion
 
-    #region Members
+    #region Private Members
 
     private void AddReadme(string fileName)
     {

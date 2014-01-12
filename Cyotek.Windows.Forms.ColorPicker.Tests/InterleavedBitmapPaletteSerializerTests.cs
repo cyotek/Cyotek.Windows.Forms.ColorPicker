@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -10,13 +11,16 @@ using NUnit.Framework;
 
 // If you use this code in your applications, donations or attribution are welcome
 
+// The sample image and paletted used by this test class by by MindChamber works.
+// http://opengameart.org/content/background-art
+
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
   /// <summary>
-  /// Tests for the <see cref="PaintNetPaletteSerializer"/> class.
+  /// Tests for the <see cref="InterleavedBitmapPaletteSerializer"/> class.
   /// </summary>
   [TestFixture]
-  public class PaintNetPaletteSerializerTests : TestBase
+  public class InterleavedBitmapPaletteSerializerTests : TestBase
   {
     [Test]
     public void CanReadTest()
@@ -25,7 +29,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       IPaletteSerializer target;
       bool actual;
 
-      target = new PaintNetPaletteSerializer();
+      target = new InterleavedBitmapPaletteSerializer();
 
       // act
       actual = target.CanRead;
@@ -41,13 +45,13 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       IPaletteSerializer target;
       bool actual;
 
-      target = new PaintNetPaletteSerializer();
+      target = new InterleavedBitmapPaletteSerializer();
 
       // act
       actual = target.CanWrite;
 
       // assert
-      actual.Should().BeTrue();
+      actual.Should().BeFalse();
     }
 
     [Test]
@@ -59,11 +63,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       ColorCollection expected;
       ColorCollection actual;
 
-      fileName = Path.Combine(this.DataPath, "PaintNet.txt");
+      fileName = Path.Combine(this.DataPath, "background.lbm");
 
-      target = new PaintNetPaletteSerializer();
+      target = new InterleavedBitmapPaletteSerializer();
 
-      expected = ColorPalettes.PaintPalette;
+      expected = new JascPaletteSerializer().Deserialize(Path.Combine(this.DataPath, "background.pal"));
 
       // act
       using (Stream stream = File.OpenRead(fileName))
@@ -74,24 +78,39 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     }
 
     [Test]
-    public void GetSerializerTest()
+    public void GetSerializerBbmTest()
     {
       // arrange
-      IPaletteSerializer expected;
       IPaletteSerializer actual;
       string fileName;
 
-      expected = new PaintNetPaletteSerializer();
-      fileName = "test." + expected.DefaultExtension;
+      fileName = "test.bbm";
 
       // act
       actual = PaletteSerializer.GetSerializer(fileName);
 
       // assert
-      actual.Should().BeOfType<PaintNetPaletteSerializer>();
+      actual.Should().BeOfType<InterleavedBitmapPaletteSerializer>();
     }
 
     [Test]
+    public void GetSerializerLbmTest()
+    {
+      // arrange
+      IPaletteSerializer actual;
+      string fileName;
+
+      fileName = "test.lbm";
+
+      // act
+      actual = PaletteSerializer.GetSerializer(fileName);
+
+      // assert
+      actual.Should().BeOfType<InterleavedBitmapPaletteSerializer>();
+    }
+
+    [Test]
+    [ExpectedException(typeof(NotImplementedException))]
     public void SerializeTest()
     {
       // arrange
@@ -100,7 +119,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       ColorCollection actual;
       MemoryStream write;
 
-      target = new PaintNetPaletteSerializer();
+      target = new InterleavedBitmapPaletteSerializer();
 
       expected = this.CreateDawnBringer32Palette(false);
       write = new MemoryStream();
@@ -109,7 +128,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       target.Serialize(write, expected);
 
       using (MemoryStream read = new MemoryStream(write.ToArray()))
-        actual = new PaintNetPaletteSerializer().Deserialize(read);
+        actual = new InterleavedBitmapPaletteSerializer().Deserialize(read);
 
       // assert
       CollectionAssert.AreEqual(expected, actual);

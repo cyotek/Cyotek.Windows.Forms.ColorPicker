@@ -5,18 +5,21 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Win32;
+
 #else
 using NativeConstants = Cyotek.Windows.Forms.NativeMethods;
+
 #endif
 
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013 Cyotek. All Rights Reserved.
+  // Copyright © 2013-2014 Cyotek.
   // http://cyotek.com/blog/tag/colorpicker
+
+  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -66,7 +69,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorSlider"/> class.
@@ -244,7 +247,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Members
+    #region Overridden Methods
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
@@ -414,7 +417,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>
     /// Gets or sets the location and size of the color bar.
@@ -771,6 +774,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets the selection glyph.
     /// </summary>
@@ -779,7 +786,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Members
+    #region Protected Members
 
     /// <summary>
     /// Creates the selection nub glyph.
@@ -1284,7 +1291,7 @@ namespace Cyotek.Windows.Forms
     {
       float angle;
 
-      angle = (this.Orientation == Orientation.Horizontal) ? 0 : 270;
+      angle = (this.Orientation == Orientation.Horizontal) ? 0 : 90;
 
       if (this.BarBounds.Height > 0 && this.BarBounds.Width > 0)
       {
