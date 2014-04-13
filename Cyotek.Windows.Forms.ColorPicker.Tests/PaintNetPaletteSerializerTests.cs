@@ -18,6 +18,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   [TestFixture]
   public class PaintNetPaletteSerializerTests : TestBase
   {
+    #region Tests
+
     [Test]
     public void CanReadTest()
     {
@@ -67,7 +69,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       // act
       using (Stream stream = File.OpenRead(fileName))
+      {
         actual = target.Deserialize(stream);
+      }
 
       // assert
       CollectionAssert.AreEqual(expected, actual);
@@ -77,15 +81,15 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     public void GetSerializerTest()
     {
       // arrange
-      IPaletteSerializer expected;
       IPaletteSerializer actual;
-      string fileName;
+      string workFileName;
 
-      expected = new PaintNetPaletteSerializer();
-      fileName = "test." + expected.DefaultExtension;
+      workFileName = Path.GetTempFileName();
+      File.Copy(Path.Combine(this.DataPath, "PaintNet.txt"), workFileName, true);
 
       // act
-      actual = PaletteSerializer.GetSerializer(fileName);
+      actual = PaletteSerializer.GetSerializer(workFileName);
+      File.Delete(workFileName);
 
       // assert
       actual.Should().BeOfType<PaintNetPaletteSerializer>();
@@ -109,10 +113,14 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       target.Serialize(write, expected);
 
       using (MemoryStream read = new MemoryStream(write.ToArray()))
+      {
         actual = new PaintNetPaletteSerializer().Deserialize(read);
+      }
 
       // assert
       CollectionAssert.AreEqual(expected, actual);
     }
+
+    #endregion
   }
 }

@@ -64,7 +64,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void panel_Paint(object sender, PaintEventArgs e)
     {
       using (Brush brush = new SolidBrush(_color))
+      {
         e.Graphics.FillRectangle(brush, panel.ClientRectangle);
+      }
     }
 
     #endregion

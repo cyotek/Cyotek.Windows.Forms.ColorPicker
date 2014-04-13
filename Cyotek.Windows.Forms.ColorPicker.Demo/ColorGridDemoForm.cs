@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
@@ -24,13 +25,32 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
+    #region Private Class Properties
+
+    private string PalettePath
+    {
+      get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "palettes"); }
+    }
+
+    #endregion
+
     #region Overridden Methods
 
     protected override void OnLoad(EventArgs e)
     {
       base.OnLoad(e);
 
-      colorGrid.Color = Color.SeaGreen;
+      colorGrid.Color = Color.LightSkyBlue;
+
+      palettesListBox.BeginUpdate();
+
+      foreach (string fileName in Directory.GetFiles(this.PalettePath))
+      {
+        // ReSharper disable once AssignNullToNotNullAttribute
+        palettesListBox.Items.Add(Path.GetFileName(fileName));
+      }
+
+      palettesListBox.EndUpdate();
     }
 
     #endregion
@@ -82,16 +102,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       colorGrid.Colors = ColorPalettes.HexagonPalette;
     }
 
-    private void jascPaletteFileButton_Click(object sender, EventArgs e)
-    {
-      colorGrid.Colors = new JascPaletteSerializer().Deserialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\Hex256.pal"));
-    }
-
-    private void loadGimpPaletteButton_Click(object sender, EventArgs e)
-    {
-      colorGrid.Colors = new GimpPaletteSerializer().Deserialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\db32.gpl"));
-    }
-
     private void office2010Button_Click(object sender, EventArgs e)
     {
       // NOTE: Predefined palettes can now be set via the Palette property (this does not affect other properties such as Columns below though!)
@@ -105,14 +115,39 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       colorGrid.Colors = ColorPalettes.PaintPalette;
     }
 
-    private void paintNetPaletteFileButton_Click(object sender, EventArgs e)
+    private void palettesListBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-      colorGrid.Colors = new PaintNetPaletteSerializer().Deserialize(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"palettes\PaintNet.txt"));
+      if (palettesListBox.SelectedIndex != -1)
+      {
+        colorGrid.Colors = ColorCollection.LoadPalette(Path.Combine(PalettePath, palettesListBox.SelectedItem.ToString()));
+      }
     }
 
     private void resetCustomColorsButton_Click(object sender, EventArgs e)
     {
       colorGrid.CustomColors = new ColorCollection(Enumerable.Repeat(Color.White, 32));
+    }
+
+    private void savePaletteButton_Click(object sender, EventArgs e)
+    {
+      using (FileDialog dialog = new SaveFileDialog
+                                 {
+                                   Filter = PaletteSerializer.DefaultSaveFilter,
+                                   Title = "Save Palette As"
+                                 })
+      {
+        if (dialog.ShowDialog(this) == DialogResult.OK)
+        {
+          IPaletteSerializer serializer;
+
+          serializer = PaletteSerializer.AllSerializers.Where(s => s.CanWrite).ElementAt(dialog.FilterIndex - 1);
+
+          using (Stream stream = File.Create(dialog.FileName))
+          {
+            serializer.Serialize(stream, colorGrid.Colors);
+          }
+        }
+      }
     }
 
     private void shadesOfBlueButton_Click(object sender, EventArgs e)

@@ -28,7 +28,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Class Members
+    #region Public Class Members
 
     [DllImport("user32.dll", EntryPoint = "GetDC", CallingConvention = CallingConvention.StdCall)]
     public static extern IntPtr GetDC(IntPtr hWnd);

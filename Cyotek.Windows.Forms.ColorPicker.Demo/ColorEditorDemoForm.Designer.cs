@@ -35,10 +35,10 @@
       this.propertyGrid = new System.Windows.Forms.PropertyGrid();
       this.colorEditor = new Cyotek.Windows.Forms.ColorEditor();
       this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
+      this.demoLabel = new System.Windows.Forms.Label();
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.demoLabel = new System.Windows.Forms.Label();
       this.statusStrip.SuspendLayout();
       this.propertiesSplitContainer.Panel1.SuspendLayout();
       this.propertiesSplitContainer.Panel2.SuspendLayout();
@@ -98,7 +98,7 @@
       this.colorEditor.Location = new System.Drawing.Point(0, 0);
       this.colorEditor.Name = "colorEditor";
       this.colorEditor.Padding = new System.Windows.Forms.Padding(9);
-      this.colorEditor.Size = new System.Drawing.Size(245, 327);
+      this.colorEditor.Size = new System.Drawing.Size(244, 327);
       this.colorEditor.TabIndex = 0;
       this.colorEditor.ColorChanged += new System.EventHandler(this.colorEditor_ColorChanged);
       // 
@@ -117,9 +117,24 @@
       // 
       this.optionsSplitContainer.Panel2.Controls.Add(this.demoLabel);
       this.optionsSplitContainer.Size = new System.Drawing.Size(562, 327);
-      this.optionsSplitContainer.SplitterDistance = 245;
+      this.optionsSplitContainer.SplitterDistance = 244;
       this.optionsSplitContainer.SplitterWidth = 5;
       this.optionsSplitContainer.TabIndex = 0;
+      // 
+      // demoLabel
+      // 
+      this.demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.demoLabel.AutoEllipsis = true;
+      this.demoLabel.BackColor = System.Drawing.SystemColors.Info;
+      this.demoLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
+      this.demoLabel.Location = new System.Drawing.Point(14, 11);
+      this.demoLabel.Name = "demoLabel";
+      this.demoLabel.Padding = new System.Windows.Forms.Padding(9);
+      this.demoLabel.Size = new System.Drawing.Size(287, 217);
+      this.demoLabel.TabIndex = 0;
+      this.demoLabel.Text = resources.GetString("demoLabel.Text");
       // 
       // menuStrip
       // 
@@ -145,21 +160,6 @@
       this.closeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
       this.closeToolStripMenuItem.Text = "&Close";
       this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
-      // 
-      // demoLabel
-      // 
-      this.demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.demoLabel.AutoEllipsis = true;
-      this.demoLabel.BackColor = System.Drawing.SystemColors.Info;
-      this.demoLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
-      this.demoLabel.Location = new System.Drawing.Point(14, 11);
-      this.demoLabel.Name = "demoLabel";
-      this.demoLabel.Padding = new System.Windows.Forms.Padding(9);
-      this.demoLabel.Size = new System.Drawing.Size(286, 204);
-      this.demoLabel.TabIndex = 0;
-      this.demoLabel.Text = resources.GetString("demoLabel.Text");
       // 
       // ColorEditorDemoForm
       // 

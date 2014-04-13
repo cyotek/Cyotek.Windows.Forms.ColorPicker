@@ -48,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdobePhotoshopColorSwatchColorSpace.cs" />
+    <Compile Include="AdobePhotoshopColorSwatchFileVersion.cs" />
     <Compile Include="ColorCellBorderStyle.cs" />
     <Compile Include="ColorGridSelectedCellStyle.cs" />
     <Compile Include="ColorPickerDialog.cs">
@@ -85,7 +87,11 @@
     <Compile Include="ColorWheel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="EditColorCancelEventArgs.cs" />
     <Compile Include="GimpPaletteSerializer.cs" />
+    <Compile Include="AdobePhotoshopColorSwatchSerializer.cs" />
+    <Compile Include="NavigationOrigin.cs" />
+    <Compile Include="RawPaletteSerializer.cs" />
     <Compile Include="InterleavedBitmapPaletteSerializer.cs" />
     <Compile Include="JascPaletteSerializer.cs" />
     <Compile Include="IPaletteSerializer.cs" />

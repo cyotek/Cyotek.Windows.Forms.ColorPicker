@@ -46,6 +46,13 @@ namespace Cyotek.Windows.Forms
     #region Methods
 
     /// <summary>
+    /// Determines whether this instance can read palette data from the specified stream.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <returns><c>true</c> if this instance can read palette data from the specified stream; otherwise, <c>false</c>.</returns>
+    bool CanReadFrom(Stream stream);
+
+    /// <summary>
     /// Deserializes the <see cref="ColorCollection"/> contained by the specified <see cref="Stream"/>.
     /// </summary>
     /// <param name="stream">The <see cref="Stream"/> that contains the palette to deserialize.</param>

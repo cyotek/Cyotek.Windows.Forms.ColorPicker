@@ -4,9 +4,10 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using Cyotek.Windows.Forms.ColorPicker.Demo;
+using HtmlRenderer;
+using MarkdownSharp;
 
-namespace Cyotek.Windows.Forms.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   // Cyotek Color Picker controls library
   // Copyright © 2013-2014 Cyotek.
@@ -27,12 +28,14 @@ namespace Cyotek.Windows.Forms.Demo
 
     #endregion
 
-    #region Class Members
+    #region Internal Class Members
 
     internal static void ShowAboutDialog()
     {
       using (Form dialog = new AboutDialog())
+      {
         dialog.ShowDialog();
+      }
     }
 
     #endregion
@@ -54,13 +57,13 @@ namespace Cyotek.Windows.Forms.Demo
         title = info.ProductName;
 
         this.Text = string.Format("About {0}", title);
-        nameLabel.Text = title;
-        versionLabel.Text = string.Format("Version {0}", info.FileVersion);
-        copyrightLabel.Text = info.LegalCopyright;
+        this.nameLabel.Text = title;
+        this.versionLabel.Text = string.Format("Version {0}", info.FileVersion);
+        this.copyrightLabel.Text = info.LegalCopyright;
 
         this.AddReadme("changelog.md");
         this.AddReadme("readme.md");
-        //this.AddReadme("acknowledgements.md");
+        this.AddReadme("acknowledgements.md");
         this.AddReadme("colorpicker-license.txt");
       }
     }
@@ -71,7 +74,7 @@ namespace Cyotek.Windows.Forms.Demo
 
     protected TabControl TabControl
     {
-      get { return docsTabControl; }
+      get { return this.docsTabControl; }
     }
 
     #endregion
@@ -80,38 +83,19 @@ namespace Cyotek.Windows.Forms.Demo
 
     private void AddReadme(string fileName)
     {
-      TabPage page;
-      TextBox textBox;
-      string fullPath;
-      string text;
+      this.docsTabControl.TabPages.Add(new TabPage
+                                       {
+                                         UseVisualStyleBackColor = true,
+                                         Padding = new Padding(9),
+                                         ToolTipText = this.GetFullReadmePath(fileName),
+                                         Text = fileName,
+                                         Tag = fileName
+                                       });
+    }
 
-      fullPath = Path.GetFullPath(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"), fileName));
-      text = File.Exists(fullPath) ? File.ReadAllText(fullPath) : string.Format("Cannot find file '{0}'", fullPath);
-
-      if (text.IndexOf('\n') != -1 && text.IndexOf('\r') == -1)
-        text = text.Replace("\n", "\r\n");
-
-      page = new TabPage
-      {
-        UseVisualStyleBackColor = true,
-        Padding = new Padding(9),
-        ToolTipText = fullPath,
-        Text = fileName
-      };
-
-      textBox = new TextBox
-      {
-        ReadOnly = true,
-        Multiline = true,
-        WordWrap = true,
-        ScrollBars = ScrollBars.Vertical,
-        Dock = DockStyle.Fill,
-        Text = text
-      };
-
-      page.Controls.Add(textBox);
-
-      docsTabControl.TabPages.Add(page);
+    private string GetFullReadmePath(string fileName)
+    {
+      return Path.GetFullPath(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"), fileName));
     }
 
     #endregion
@@ -123,10 +107,66 @@ namespace Cyotek.Windows.Forms.Demo
       this.Close();
     }
 
+    private void docsTabControl_Selecting(object sender, TabControlCancelEventArgs e)
+    {
+      TabPage page;
+
+      page = e.TabPage;
+
+      if (page.Controls.Count == 0 && page.Tag != null)
+      {
+        Control documentView;
+        string fullPath;
+        string text;
+
+        Cursor.Current = Cursors.WaitCursor;
+
+        Debug.Print("Loading readme: {0}", page.Tag);
+
+        fullPath = this.GetFullReadmePath(page.Tag.ToString());
+        text = File.Exists(fullPath) ? File.ReadAllText(fullPath) : string.Format("Cannot find file '{0}'", fullPath);
+
+        if (text.IndexOf('\n') != -1 && text.IndexOf('\r') == -1)
+        {
+          text = text.Replace("\n", "\r\n");
+        }
+
+        switch (Path.GetExtension(fullPath))
+        {
+          case ".md":
+            Markdown parser;
+
+            parser = new Markdown();
+
+            documentView = new HtmlPanel
+                           {
+                             Dock = DockStyle.Fill,
+                             Text = parser.Transform(text)
+                           };
+            break;
+          default:
+            documentView = new TextBox
+                           {
+                             ReadOnly = true,
+                             Multiline = true,
+                             WordWrap = true,
+                             ScrollBars = ScrollBars.Vertical,
+                             Dock = DockStyle.Fill,
+                             Text = text
+                           };
+            break;
+        }
+
+        page.Controls.Add(documentView);
+
+        Cursor.Current = Cursors.Default;
+      }
+    }
+
     private void footerGroupBox_Paint(object sender, PaintEventArgs e)
     {
-      e.Graphics.DrawLine(SystemPens.ControlDark, 0, 0, footerGroupBox.Width, 0);
-      e.Graphics.DrawLine(SystemPens.ControlLightLight, 0, 1, footerGroupBox.Width, 1);
+      e.Graphics.DrawLine(SystemPens.ControlDark, 0, 0, this.footerGroupBox.Width, 0);
+      e.Graphics.DrawLine(SystemPens.ControlLightLight, 0, 1, this.footerGroupBox.Width, 1);
     }
 
     private void webLinkLabel_Click(object sender, EventArgs e)

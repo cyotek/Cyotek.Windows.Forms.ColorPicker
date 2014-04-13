@@ -43,6 +43,39 @@ namespace Cyotek.Windows.Forms
     #region Overridden Methods
 
     /// <summary>
+    /// Determines whether this instance can read palette from data the specified stream.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <returns><c>true</c> if this instance can read palette data from the specified stream; otherwise, <c>false</c>.</returns>
+    public override bool CanReadFrom(Stream stream)
+    {
+      bool result;
+
+      if (stream == null)
+      {
+        throw new ArgumentNullException("stream");
+      }
+
+      try
+      {
+        using (StreamReader reader = new StreamReader(stream))
+        {
+          string header;
+
+          header = reader.ReadLine();
+
+          result = (header == "GIMP Palette");
+        }
+      }
+      catch
+      {
+        result = false;
+      }
+
+      return result;
+    }
+
+    /// <summary>
     /// Deserializes the <see cref="ColorCollection" /> contained by the specified <see cref="Stream" />.
     /// </summary>
     /// <param name="stream">The <see cref="Stream" /> that contains the palette to deserialize.</param>
@@ -52,7 +85,9 @@ namespace Cyotek.Windows.Forms
       ColorCollection results;
 
       if (stream == null)
+      {
         throw new ArgumentNullException("stream");
+      }
 
       results = new ColorCollection();
 
@@ -60,16 +95,23 @@ namespace Cyotek.Windows.Forms
       {
         string header;
         string startHeader;
+        int swatchIndex;
 
         // check signature
         header = reader.ReadLine();
         startHeader = reader.ReadLine();
 
         if (header != "GIMP Palette")
+        {
           throw new InvalidDataException("Invalid palette file");
+        }
 
         while (startHeader != "#")
+        {
           startHeader = reader.ReadLine();
+        }
+
+        swatchIndex = 0;
 
         while (!reader.EndOfStream)
         {
@@ -78,17 +120,26 @@ namespace Cyotek.Windows.Forms
           int b;
           string data;
           string[] parts;
+          string name;
 
           data = reader.ReadLine();
           parts = !string.IsNullOrEmpty(data) ? data.Split(new[]
-          {
-            ' ', '\t'
-          }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
+                                                           {
+                                                             ' ', '\t'
+                                                           }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
+          name = parts.Length > 3 ? string.Join(" ", parts, 3, parts.Length - 3) : null;
 
           if (!int.TryParse(parts[0], out r) || !int.TryParse(parts[1], out g) || !int.TryParse(parts[2], out b))
+          {
             throw new InvalidDataException(string.Format("Invalid palette contents found with data '{0}'", data));
+          }
 
           results.Add(Color.FromArgb(r, g, b));
+#if USENAMEHACK
+          results.SetName(swatchIndex, name);
+#endif
+
+          swatchIndex++;
         }
       }
 
@@ -102,11 +153,19 @@ namespace Cyotek.Windows.Forms
     /// <param name="palette">The <see cref="ColorCollection" /> to serialize.</param>
     public override void Serialize(Stream stream, ColorCollection palette)
     {
+      int swatchIndex;
+
       if (stream == null)
+      {
         throw new ArgumentNullException("stream");
+      }
 
       if (palette == null)
+      {
         throw new ArgumentNullException("palette");
+      }
+
+      swatchIndex = 0;
 
       // TODO: Allow name and columns attributes to be specified
 
@@ -116,16 +175,27 @@ namespace Cyotek.Windows.Forms
         writer.WriteLine("Name: ");
         writer.WriteLine("Columns: 8");
         writer.WriteLine("#");
+
         foreach (Color color in palette)
         {
           writer.Write("{0,-3} ", color.R);
           writer.Write("{0,-3} ", color.G);
           writer.Write("{0,-3} ", color.B);
+#if USENAMEHACK
+          writer.Write(palette.GetName(swatchIndex));
+#else
           if (color.IsNamedColor)
+          {
             writer.Write(color.Name);
+          }
           else
+          {
             writer.Write("#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
+          }
+#endif
           writer.WriteLine();
+
+          swatchIndex++;
         }
       }
     }

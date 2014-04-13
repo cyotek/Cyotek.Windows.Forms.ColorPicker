@@ -36,6 +36,8 @@ namespace Cyotek.Windows.Forms
 
     private Orientation _orientation;
 
+    private bool _showAlphaChannel;
+
     #endregion
 
     #region Public Constructors
@@ -50,6 +52,7 @@ namespace Cyotek.Windows.Forms
       this.Color = Color.Black;
       this.Orientation = Orientation.Vertical;
       this.Size = new Size(200, 260);
+      this.ShowAlphaChannel = true;
     }
 
     #endregion
@@ -67,6 +70,12 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     [Category("Property Changed")]
     public event EventHandler OrientationChanged;
+
+    /// <summary>
+    /// Occurs when the ShowAlphaChannel property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowAlphaChannelChanged;
 
     #endregion
 
@@ -150,7 +159,9 @@ namespace Cyotek.Windows.Forms
             this.UpdateFields(false);
           }
           else
+          {
             this.OnColorChanged(EventArgs.Empty);
+          }
         }
       }
     }
@@ -178,7 +189,9 @@ namespace Cyotek.Windows.Forms
             this.UpdateFields(false);
           }
           else
+          {
             this.OnColorChanged(EventArgs.Empty);
+          }
         }
       }
     }
@@ -199,6 +212,22 @@ namespace Cyotek.Windows.Forms
           _orientation = value;
 
           this.OnOrientationChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Behavior")]
+    [DefaultValue(true)]
+    public virtual bool ShowAlphaChannel
+    {
+      get { return _showAlphaChannel; }
+      set
+      {
+        if (this.ShowAlphaChannel != value)
+        {
+          _showAlphaChannel = value;
+
+          this.OnShowAlphaChannelChanged(EventArgs.Empty);
         }
       }
     }
@@ -230,7 +259,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -246,7 +277,27 @@ namespace Cyotek.Windows.Forms
       handler = this.OrientationChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowAlphaChannelChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowAlphaChannelChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.SetControlStates();
+
+      handler = this.ShowAlphaChannelChanged;
+
+      if (handler != null)
+      {
+        handler(this, e);
+      }
     }
 
     /// <summary>
@@ -340,7 +391,9 @@ namespace Cyotek.Windows.Forms
 
         // reset top
         if (this.Orientation == Orientation.Horizontal)
+        {
           top = this.Padding.Top;
+        }
 
         // HSL header
         hslLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
@@ -391,11 +444,17 @@ namespace Cyotek.Windows.Forms
 
           // RGB
           if (!(userAction && rNumericUpDown.Focused))
+          {
             rNumericUpDown.Value = this.Color.R;
+          }
           if (!(userAction && gNumericUpDown.Focused))
+          {
             gNumericUpDown.Value = this.Color.G;
+          }
           if (!(userAction && bNumericUpDown.Focused))
+          {
             bNumericUpDown.Value = this.Color.B;
+          }
           rColorBar.Value = this.Color.R;
           rColorBar.Color = this.Color;
           gColorBar.Value = this.Color.G;
@@ -405,15 +464,23 @@ namespace Cyotek.Windows.Forms
 
           // HTML
           if (!(userAction && hexTextBox.Focused))
+          {
             hexTextBox.Text = this.Color.IsNamedColor ? this.Color.Name : string.Format("{0:X2}{1:X2}{2:X2}", this.Color.R, this.Color.G, this.Color.B);
+          }
 
           // HSL
           if (!(userAction && hNumericUpDown.Focused))
+          {
             hNumericUpDown.Value = (int)this.HslColor.H;
+          }
           if (!(userAction && sNumericUpDown.Focused))
+          {
             sNumericUpDown.Value = (int)(this.HslColor.S * 100);
+          }
           if (!(userAction && lNumericUpDown.Focused))
+          {
             lNumericUpDown.Value = (int)(this.HslColor.L * 100);
+          }
           hColorBar.Value = (int)this.HslColor.H;
           sColorBar.Color = this.Color;
           sColorBar.Value = (int)(this.HslColor.S * 100);
@@ -422,7 +489,9 @@ namespace Cyotek.Windows.Forms
 
           // Alpha
           if (!(userAction && aNumericUpDown.Focused))
+          {
             aNumericUpDown.Value = this.Color.A;
+          }
           aColorBar.Color = this.Color;
           aColorBar.Value = this.Color.A;
         }
@@ -449,7 +518,9 @@ namespace Cyotek.Windows.Forms
 
         color = (Color)property.GetValue(type, null);
         if (!color.IsEmpty)
+        {
           hexTextBox.Items.Add(color.Name);
+        }
       }
     }
 
@@ -468,14 +539,18 @@ namespace Cyotek.Windows.Forms
         for (int i = 1; i < text.Length; i++)
         {
           if (char.IsUpper(text[i]) && text[i - 1] != ' ')
+          {
             newText.Append(' ');
+          }
           newText.Append(text[i]);
         }
 
         result = newText.ToString();
       }
       else
+      {
         result = null;
+      }
 
       return result;
     }
@@ -487,10 +562,19 @@ namespace Cyotek.Windows.Forms
       this.SetDropDownWidth();
     }
 
+    private void SetControlStates()
+    {
+      aLabel.Visible = this.ShowAlphaChannel;
+      aColorBar.Visible = this.ShowAlphaChannel;
+      aNumericUpDown.Visible = this.ShowAlphaChannel;
+    }
+
     private void SetDropDownWidth()
     {
       if (hexTextBox.Items.Count != 0)
+      {
         hexTextBox.DropDownWidth = (hexTextBox.ItemHeight * 2) + hexTextBox.Items.Cast<string>().Max(s => TextRenderer.MeasureText(s, this.Font).Width);
+      }
     }
 
     #endregion
@@ -523,10 +607,14 @@ namespace Cyotek.Windows.Forms
 
           text = hexTextBox.Text;
           if (text.StartsWith("#"))
+          {
             text = text.Substring(1);
+          }
 
           if (hexTextBox.Items.Count == 0)
+          {
             this.FillNamedColors();
+          }
 
           namedIndex = hexTextBox.FindStringExact(text);
 
@@ -550,7 +638,9 @@ namespace Cyotek.Windows.Forms
             // ReSharper restore EmptyGeneralCatchClause
           }
           else
+          {
             useNamed = true;
+          }
         }
         else if (sender == aColorBar || sender == rColorBar || sender == gColorBar || sender == bColorBar)
         {
@@ -562,7 +652,9 @@ namespace Cyotek.Windows.Forms
           useRgb = true;
         }
         else if (sender == aNumericUpDown || sender == rNumericUpDown || sender == gNumericUpDown || sender == bNumericUpDown)
+        {
           useRgb = true;
+        }
         else if (sender == hColorBar || sender == lColorBar || sender == sColorBar)
         {
           hNumericUpDown.Value = (int)hColorBar.Value;
@@ -572,13 +664,15 @@ namespace Cyotek.Windows.Forms
           useHsl = true;
         }
         else if (sender == hNumericUpDown || sender == sNumericUpDown || sender == lNumericUpDown)
+        {
           useHsl = true;
+        }
 
         if (useRgb || useNamed)
         {
           Color color;
 
-          color = useNamed ? Color.FromName((string)hexTextBox.SelectedItem) : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
+          color = useNamed ? Color.FromName(hexTextBox.Text) : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
 
           this.Color = color;
           this.HslColor = new HslColor(color);
@@ -614,7 +708,9 @@ namespace Cyotek.Windows.Forms
         colorBox = new Rectangle(e.Bounds.Left + 1, e.Bounds.Top + 1, e.Bounds.Height - 3, e.Bounds.Height - 3);
 
         using (Brush brush = new SolidBrush(color))
+        {
           e.Graphics.FillRectangle(brush, colorBox);
+        }
         e.Graphics.DrawRectangle(SystemPens.ControlText, colorBox);
 
         TextRenderer.DrawText(e.Graphics, this.AddSpaces(name), this.Font, new Point(colorBox.Right + 3, colorBox.Top), e.ForeColor);
@@ -629,7 +725,9 @@ namespace Cyotek.Windows.Forms
     private void hexTextBox_DropDown(object sender, EventArgs e)
     {
       if (hexTextBox.Items.Count == 0)
+      {
         this.FillNamedColors();
+      }
     }
 
     private void hexTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -641,7 +739,9 @@ namespace Cyotek.Windows.Forms
         case Keys.PageUp:
         case Keys.PageDown:
           if (hexTextBox.Items.Count == 0)
+          {
             this.FillNamedColors();
+          }
           break;
       }
     }

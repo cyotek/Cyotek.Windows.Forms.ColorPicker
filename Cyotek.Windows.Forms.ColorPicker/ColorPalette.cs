@@ -18,6 +18,10 @@
 
     Paint,
 
-    Standard
+    Standard,
+
+    WebSafe,
+
+    Standard256
   }
 }

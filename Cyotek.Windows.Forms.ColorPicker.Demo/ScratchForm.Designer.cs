@@ -28,35 +28,41 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.colorEditor1 = new Cyotek.Windows.Forms.ColorEditor();
-      this.label1 = new System.Windows.Forms.Label();
+      this.colorGrid1 = new Cyotek.Windows.Forms.ColorGrid();
+      this.colorGrid2 = new Cyotek.Windows.Forms.ColorGrid();
       this.SuspendLayout();
       // 
-      // colorEditor1
+      // colorGrid1
       // 
-      this.colorEditor1.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-      this.colorEditor1.Location = new System.Drawing.Point(162, 95);
-      this.colorEditor1.Name = "colorEditor1";
-      this.colorEditor1.Size = new System.Drawing.Size(200, 260);
-      this.colorEditor1.TabIndex = 0;
-      this.colorEditor1.ColorChanged += new System.EventHandler(this.colorEditor1_ColorChanged);
+      this.colorGrid1.AutoAddColors = false;
+      this.colorGrid1.CellSize = new System.Drawing.Size(32, 32);
+      this.colorGrid1.Columns = 0;
+      this.colorGrid1.Location = new System.Drawing.Point(105, 81);
+      this.colorGrid1.Name = "colorGrid1";
+      this.colorGrid1.Palette = Cyotek.Windows.Forms.ColorPalette.Standard;
+      this.colorGrid1.ShowCustomColors = false;
+      this.colorGrid1.Size = new System.Drawing.Size(294, 77);
+      this.colorGrid1.TabIndex = 0;
       // 
-      // label1
+      // colorGrid2
       // 
-      this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(487, 134);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(35, 13);
-      this.label1.TabIndex = 1;
-      this.label1.Text = "label1";
+      this.colorGrid2.AutoAddColors = false;
+      this.colorGrid2.CellSize = new System.Drawing.Size(32, 32);
+      this.colorGrid2.Columns = 0;
+      this.colorGrid2.Location = new System.Drawing.Point(405, 81);
+      this.colorGrid2.Name = "colorGrid2";
+      this.colorGrid2.Palette = Cyotek.Windows.Forms.ColorPalette.Standard;
+      this.colorGrid2.ShowCustomColors = false;
+      this.colorGrid2.Size = new System.Drawing.Size(294, 77);
+      this.colorGrid2.TabIndex = 1;
       // 
       // ScratchForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(1106, 579);
-      this.Controls.Add(this.label1);
-      this.Controls.Add(this.colorEditor1);
+      this.Controls.Add(this.colorGrid2);
+      this.Controls.Add(this.colorGrid1);
       this.Name = "ScratchForm";
       this.Text = "ScratchForm";
       this.Load += new System.EventHandler(this.ScratchForm_Load);
@@ -67,8 +73,9 @@
 
     #endregion
 
-    private ColorEditor colorEditor1;
-    private System.Windows.Forms.Label label1;
+    private ColorGrid colorGrid1;
+    private ColorGrid colorGrid2;
+
 
 
   }

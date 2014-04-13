@@ -155,7 +155,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     #endregion

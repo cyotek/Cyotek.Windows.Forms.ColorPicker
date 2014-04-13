@@ -19,9 +19,7 @@ namespace Cyotek.Windows.Forms
   {
     #region Instance Fields
 
-    private readonly Image _cellBackground;
-
-    private readonly TextureBrush _cellBackgroundBrush;
+    private Brush _cellBackgroundBrush;
 
     private RgbaChannel _channel;
 
@@ -33,8 +31,6 @@ namespace Cyotek.Windows.Forms
 
     public RgbaColorSlider()
     {
-      _cellBackground = new Bitmap(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.cellbackground.png")));
-      _cellBackgroundBrush = new TextureBrush(_cellBackground, WrapMode.Tile);
       this.BarStyle = ColorBarStyle.Custom;
       this.Maximum = 255;
       this.Color = Color.Black;
@@ -123,11 +119,10 @@ namespace Cyotek.Windows.Forms
     {
       if (disposing)
       {
-        if (_cellBackground != null)
-          _cellBackground.Dispose();
-
         if (_cellBackgroundBrush != null)
+        {
           _cellBackgroundBrush.Dispose();
+        }
       }
 
       base.Dispose(disposing);
@@ -135,7 +130,15 @@ namespace Cyotek.Windows.Forms
 
     protected override void PaintBar(PaintEventArgs e)
     {
-      e.Graphics.FillRectangle(_cellBackgroundBrush, this.BarBounds);
+      if (this.Color.A != 255)
+      {
+        if (_cellBackgroundBrush == null)
+        {
+          _cellBackgroundBrush = this.CreateTransparencyBrush();
+        }
+
+        e.Graphics.FillRectangle(_cellBackgroundBrush, this.BarBounds);
+      }
 
       base.PaintBar(e);
     }
@@ -185,6 +188,18 @@ namespace Cyotek.Windows.Forms
       this.CustomColors = new ColorCollection(Enumerable.Range(0, 254).Select(i => Color.FromArgb(this.Channel == RgbaChannel.Alpha ? i : this.Color.A, this.Channel == RgbaChannel.Red ? i : this.Color.R, this.Channel == RgbaChannel.Green ? i : this.Color.G, this.Channel == RgbaChannel.Blue ? i : this.Color.B)));
     }
 
+    protected virtual Brush CreateTransparencyBrush()
+    {
+      Type type;
+
+      type = typeof(RgbaColorSlider);
+
+      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(type.Namespace, ".Resources.cellbackground.png"))))
+      {
+        return new TextureBrush(background, WrapMode.Tile);
+      }
+    }
+
     /// <summary>
     /// Raises the <see cref="ChannelChanged" /> event.
     /// </summary>
@@ -198,7 +213,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ChannelChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -215,7 +232,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     #endregion

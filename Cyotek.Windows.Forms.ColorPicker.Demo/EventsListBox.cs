@@ -42,7 +42,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
           eventData.AppendFormat("{0} = {1}", values.Keys.ElementAt(i), values.Values.ElementAt(i));
 
           if (i < values.Count - 1)
+          {
             eventData.Append(", ");
+          }
         }
       }
       eventData.Append(")");

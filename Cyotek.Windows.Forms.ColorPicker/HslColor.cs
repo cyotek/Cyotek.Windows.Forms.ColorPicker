@@ -42,9 +42,9 @@ namespace Cyotek.Windows.Forms
     static HslColor()
     {
       Empty = new HslColor
-      {
-        IsEmpty = true
-      };
+              {
+                IsEmpty = true
+              };
     }
 
     #endregion
@@ -115,7 +115,9 @@ namespace Cyotek.Windows.Forms
         result = (this == color);
       }
       else
+      {
         result = false;
+      }
 
       return result;
     }
@@ -161,9 +163,13 @@ namespace Cyotek.Windows.Forms
         _hue = value;
 
         if (_hue > 359)
+        {
           _hue = 0;
+        }
         if (_hue < 0)
+        {
           _hue = 359;
+        }
       }
     }
 
@@ -198,37 +204,53 @@ namespace Cyotek.Windows.Forms
     {
       double q;
       if (this.L < 0.5)
+      {
         q = this.L * (1 + this.S);
+      }
       else
+      {
         q = this.L + this.S - (this.L * this.S);
+      }
       double p = 2 * this.L - q;
       double hk = this.H / 360;
 
       // r,g,b colors
       double[] tc = new[]
-      {
-        hk + (1d / 3d), hk, hk - (1d / 3d)
-      };
+                    {
+                      hk + (1d / 3d), hk, hk - (1d / 3d)
+                    };
       double[] colors = new[]
-      {
-        0.0, 0.0, 0.0
-      };
+                        {
+                          0.0, 0.0, 0.0
+                        };
 
       for (int color = 0; color < colors.Length; color++)
       {
         if (tc[color] < 0)
+        {
           tc[color] += 1;
+        }
         if (tc[color] > 1)
+        {
           tc[color] -= 1;
+        }
 
         if (tc[color] < (1d / 6d))
+        {
           colors[color] = p + ((q - p) * 6 * tc[color]);
+        }
         else if (tc[color] >= (1d / 6d) && tc[color] < (1d / 2d))
+        {
           colors[color] = q;
+        }
         else if (tc[color] >= (1d / 2d) && tc[color] < (2d / 3d))
+        {
           colors[color] = p + ((q - p) * 6 * (2d / 3d - tc[color]));
+        }
         else
+        {
           colors[color] = p;
+        }
 
         colors[color] *= 255;
       }

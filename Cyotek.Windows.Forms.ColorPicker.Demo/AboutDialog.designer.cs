@@ -1,4 +1,4 @@
-namespace Cyotek.Windows.Forms.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   partial class AboutDialog
   {
@@ -13,9 +13,9 @@ namespace Cyotek.Windows.Forms.Demo
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
-      if (disposing && (components != null))
+      if (disposing && (this.components != null))
       {
-        components.Dispose();
+        this.components.Dispose();
       }
       base.Dispose(disposing);
     }
@@ -131,6 +131,7 @@ namespace Cyotek.Windows.Forms.Demo
       this.docsTabControl.SelectedIndex = 0;
       this.docsTabControl.Size = new System.Drawing.Size(591, 360);
       this.docsTabControl.TabIndex = 3;
+      this.docsTabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.docsTabControl_Selecting);
       // 
       // AboutDialog
       // 

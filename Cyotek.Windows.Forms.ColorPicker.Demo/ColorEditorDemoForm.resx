@@ -121,7 +121,7 @@
     <value>17, 17</value>
   </metadata>
   <data name="demoLabel.Text" xml:space="preserve">
-    <value>The ColorEditor control allows a color be defined using either direct RGB values, or via HSL, including alpha. You can also directly enter either a 6 or 8 character hex color string. The different sliders all update color ranges according to the current color.
+    <value>The ColorEditor control allows a color be defined using either direct RGB values, or via HSL, including alpha. You can also directly enter either a 6 or 8 character hex color string, or select from a list of named system and web colors. The different sliders all update color ranges according to the current color.
 
 This control can also be bound to a ColorEditorManager component, allowing several color editing components to notify each other of color changes for creating composite color editors.</value>
   </data>

@@ -22,13 +22,13 @@ namespace Cyotek.Windows.Forms
   /// 	<para>ColorCollection allows duplicate elements.</para>
   /// 	<para>Elements in this collection can be accessed using an integer index. Indexes in this collection are zero-based.</para>
   /// </remarks>
-  public class ColorCollection : Collection<Color>, ICloneable
+  public class ColorCollection : Collection<Color>, ICloneable, IEquatable<ColorCollection>
   {
     #region Instance Fields
 
     private readonly object _lock = new object();
 
-    private IDictionary<Color, int> _indexedLookup;
+    private IDictionary<int, int> _indexedLookup;
 
     #endregion
 
@@ -38,7 +38,11 @@ namespace Cyotek.Windows.Forms
     /// Initializes a new instance of the <see cref="ColorCollection"/> class.
     /// </summary>
     public ColorCollection()
-    { }
+    {
+#if USENAMEHACK
+      this.SwatchNames = new List<string>();
+#endif
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorCollection"/> class that contains elements copied from the specified collection.
@@ -79,6 +83,14 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     public event EventHandler<ColorCollectionEventArgs> CollectionChanged;
 
+    public event EventHandler<ColorCollectionEventArgs> ItemInserted;
+
+    public event EventHandler<ColorCollectionEventArgs> ItemRemoved;
+
+    public event EventHandler<ColorCollectionEventArgs> ItemReplaced;
+
+    public event EventHandler<ColorCollectionEventArgs> ItemsCleared;
+
     #endregion
 
     #region Class Members
@@ -95,17 +107,25 @@ namespace Cyotek.Windows.Forms
       IPaletteSerializer serializer;
 
       if (string.IsNullOrEmpty(fileName))
+      {
         throw new ArgumentNullException("fileName");
+      }
 
       if (!File.Exists(fileName))
+      {
         throw new FileNotFoundException(string.Format("Cannot find file '{0}'", fileName), fileName);
+      }
 
       serializer = PaletteSerializer.GetSerializer(fileName);
       if (serializer == null)
+      {
         throw new ArgumentException(string.Format("Cannot find a palette serializer for '{0}'", fileName), "fileName");
+      }
 
       using (FileStream file = File.OpenRead(fileName))
+      {
         return serializer.Deserialize(file);
+      }
     }
 
     #endregion
@@ -117,9 +137,19 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     protected override void ClearItems()
     {
+      ColorCollectionEventArgs e;
+
       base.ClearItems();
 
-      this.OnCollectionChanged(new ColorCollectionEventArgs(-1, Color.Empty));
+      _indexedLookup = null;
+
+#if USENAMEHACK
+      this.SwatchNames.Clear();
+#endif
+
+      e = new ColorCollectionEventArgs(-1, Color.Empty);
+      this.OnItemInserted(e);
+      this.OnCollectionChanged(e);
     }
 
     /// <summary>
@@ -129,9 +159,34 @@ namespace Cyotek.Windows.Forms
     /// <param name="item">The object to insert.</param>
     protected override void InsertItem(int index, Color item)
     {
+      ColorCollectionEventArgs e;
+      int key;
+
       base.InsertItem(index, item);
 
-      this.OnCollectionChanged(new ColorCollectionEventArgs(index, item));
+#if USENAMEHACK
+      this.SwatchNames.Insert(index, string.Empty);
+#endif
+      key = item.ToArgb();
+
+      if (_indexedLookup != null && index == this.Count - 1 && !_indexedLookup.ContainsKey(key))
+      {
+        lock (_lock)
+        {
+          if (!_indexedLookup.ContainsKey(key))
+          {
+            _indexedLookup.Add(key, index);
+          }
+        }
+      }
+      else
+      {
+        _indexedLookup = null;
+      }
+
+      e = new ColorCollectionEventArgs(index, item);
+      this.OnItemInserted(e);
+      this.OnCollectionChanged(e);
     }
 
     /// <summary>
@@ -140,13 +195,30 @@ namespace Cyotek.Windows.Forms
     /// <param name="index">The zero-based index of the element to remove.</param>
     protected override void RemoveItem(int index)
     {
-      Color color;
+      Color item;
+      ColorCollectionEventArgs e;
+      int key;
 
-      color = this[index];
+#if USENAMEHACK
+      this.SwatchNames.RemoveAt(index);
+#endif
+
+      item = this[index];
+      key = item.ToArgb();
+
+      if (_indexedLookup != null && _indexedLookup.ContainsKey(key))
+      {
+        lock (_lock)
+        {
+          _indexedLookup.Remove(key);
+        }
+      }
 
       base.RemoveItem(index);
 
-      this.OnCollectionChanged(new ColorCollectionEventArgs(index, color));
+      e = new ColorCollectionEventArgs(index, item);
+      this.OnItemRemoved(e);
+      this.OnCollectionChanged(e);
     }
 
     /// <summary>
@@ -156,9 +228,37 @@ namespace Cyotek.Windows.Forms
     /// <param name="item">The new value for the element at the specified index.</param>
     protected override void SetItem(int index, Color item)
     {
+      ColorCollectionEventArgs e;
+      Color oldItem;
+
+      oldItem = this[index];
+
+      if (_indexedLookup != null)
+      {
+        int key;
+        int oldKey;
+
+        key = item.ToArgb();
+        oldKey = oldItem.ToArgb();
+
+        lock (_lock)
+        {
+          if (_indexedLookup.ContainsKey(oldKey))
+          {
+            _indexedLookup.Remove(oldKey);
+          }
+          if (!_indexedLookup.ContainsKey(key))
+          {
+            _indexedLookup.Add(key, index);
+          }
+        }
+      }
+
       base.SetItem(index, item);
 
-      this.OnCollectionChanged(new ColorCollectionEventArgs(index, item));
+      e = new ColorCollectionEventArgs(index, item);
+      this.OnItemReplaced(e);
+      this.OnCollectionChanged(e);
     }
 
     #endregion
@@ -170,7 +270,9 @@ namespace Cyotek.Windows.Forms
     public void AddRange(IEnumerable<Color> colors)
     {
       foreach (Color color in colors)
+      {
         this.Add(color);
+      }
     }
 
     /// <summary>
@@ -189,15 +291,7 @@ namespace Cyotek.Windows.Forms
     /// <returns>The zero-based index of the first occurrence of <c>item</c> within the entire <see cref="ColorCollection"/>, if found; otherwise, –1.</returns>
     public int Find(Color item)
     {
-      int result;
-
-      if (_indexedLookup == null)
-        this.BuildIndexedLookup();
-
-      if (!_indexedLookup.TryGetValue(item, out result))
-        result = -1;
-
-      return result;
+      return this.Find(item.ToArgb());
     }
 
     /// <summary>
@@ -211,10 +305,12 @@ namespace Cyotek.Windows.Forms
       int result;
 
       if (!ignoreAlphaChannel)
+      {
         result = this.Find(item);
+      }
       else
       {
-        // TODO: This is much much slower than the lookup based fine
+        // TODO: This is much much slower than the lookup based find
 
         result = -1;
 
@@ -241,7 +337,19 @@ namespace Cyotek.Windows.Forms
     /// <returns>The zero-based index of the first occurrence of <c>item</c> within the entire <see cref="ColorCollection"/>, if found; otherwise, –1.</returns>
     public int Find(int item)
     {
-      return this.Find(Color.FromArgb(item));
+      int result;
+
+      if (_indexedLookup == null)
+      {
+        this.BuildIndexedLookup();
+      }
+
+      if (_indexedLookup == null || !_indexedLookup.TryGetValue(item, out result))
+      {
+        result = -1;
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -267,19 +375,21 @@ namespace Cyotek.Windows.Forms
     /// <param name="fileName">Name of the file to save.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if the <c>fileName</c> argument is not specified.</exception>
     /// <exception cref="System.ArgumentException">Thrown if no <see cref="IPaletteSerializer"/> is available for the file specified by <c>fileName</c>.</exception>
-    public void Save(string fileName)
+    public void Save<T>(string fileName) where T : IPaletteSerializer, new()
     {
       IPaletteSerializer serializer;
 
       if (string.IsNullOrEmpty(fileName))
+      {
         throw new ArgumentNullException("fileName");
+      }
 
-      serializer = PaletteSerializer.GetSerializer(fileName);
-      if (serializer == null)
-        throw new ArgumentException(string.Format("Cannot find a palette serializer for '{0}'", fileName), "fileName");
+      serializer = Activator.CreateInstance<T>();
 
       using (FileStream file = File.OpenWrite(fileName))
+      {
         serializer.Serialize(file, this);
+      }
     }
 
     /// <summary>
@@ -327,12 +437,76 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler<ColorCollectionEventArgs> handler;
 
-      _indexedLookup = null; // reset the internal lookup
-
       handler = this.CollectionChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ItemInserted" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="ColorCollectionEventArgs" /> instance containing the event data.</param>
+    protected virtual void OnItemInserted(ColorCollectionEventArgs e)
+    {
+      EventHandler<ColorCollectionEventArgs> handler;
+
+      handler = this.ItemInserted;
+
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ItemRemoved" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="ColorCollectionEventArgs" /> instance containing the event data.</param>
+    protected virtual void OnItemRemoved(ColorCollectionEventArgs e)
+    {
+      EventHandler<ColorCollectionEventArgs> handler;
+
+      handler = this.ItemRemoved;
+
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ItemReplaced" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="ColorCollectionEventArgs" /> instance containing the event data.</param>
+    protected virtual void OnItemReplaced(ColorCollectionEventArgs e)
+    {
+      EventHandler<ColorCollectionEventArgs> handler;
+
+      handler = this.ItemReplaced;
+
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ItemsCleared" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnItemsCleared(ColorCollectionEventArgs e)
+    {
+      EventHandler<ColorCollectionEventArgs> handler;
+
+      handler = this.ItemsCleared;
+
+      if (handler != null)
+      {
+        handler(this, e);
+      }
     }
 
     #endregion
@@ -346,16 +520,20 @@ namespace Cyotek.Windows.Forms
     {
       lock (_lock)
       {
-        _indexedLookup = new Dictionary<Color, int>();
+        _indexedLookup = new Dictionary<int, int>();
 
         for (int i = 0; i < this.Count; i++)
         {
           Color color;
+          int key;
 
           color = this[i];
+          key = color.ToArgb();
 
-          if (!_indexedLookup.ContainsKey(color))
-            _indexedLookup.Add(color, i);
+          if (!_indexedLookup.ContainsKey(key))
+          {
+            _indexedLookup.Add(key, i);
+          }
         }
       }
     }
@@ -374,5 +552,103 @@ namespace Cyotek.Windows.Forms
     }
 
     #endregion
+
+#if USENAMEHACK
+    protected IList<string> SwatchNames { get; set; }
+
+    public string GetName(int index)
+    {
+      return this.SwatchNames[index];
+    }
+
+    public void SetName(int index, string name)
+    {
+      if (!string.Equals(this.SwatchNames[index], name))
+      {
+        this.SwatchNames[index] = name;
+        this.OnCollectionChanged(new ColorCollectionEventArgs(index, this[index]));
+      }
+    }
+
+#endif
+
+    /// <summary>
+    /// Compares two <see cref="ColorCollection"/> objects. The result specifies whether the values of the two <see cref="ColorCollection"/> objects are equal.
+    /// </summary>
+    /// <param name="left">A <see cref="ColorCollection"/> to compare.</param>
+    /// <param name="right">A <see cref="ColorCollection"/> to compare.</param>
+    /// <returns><c>true</c> if the values of <paramref name="left"/> and <paramref name="right"/> are equal; otherwise, <c>false</c>.</returns>
+    public static bool operator ==(ColorCollection left, ColorCollection right)
+    {
+      return ReferenceEquals(left, right) || !((object)left == null || (object)right == null) && left.Equals(right);
+    }
+
+    /// <summary>
+    /// Compares two <see cref="ColorCollection"/> objects. The result specifies whether the values of the two <see cref="ColorCollection"/> objects are unequal.
+    /// </summary>
+    /// <param name="left">A <see cref="ColorCollection"/> to compare.</param>
+    /// <param name="right">A <see cref="ColorCollection"/> to compare.</param>
+    /// <returns><c>true</c> if the values of <paramref name="left"/> and <paramref name="right"/> differ; otherwise, <c>false</c>.</returns>
+    public static bool operator !=(ColorCollection left, ColorCollection right)
+    {
+      return !(left == right);
+    }
+
+    /// <summary>
+    /// Specifies whether this <see cref="ColorCollection"/> contains the same coordinates as the specified <see cref="T:System.Object"/>.
+    /// </summary>
+    /// <param name="obj">The <see cref="T:System.Object" /> to test.</param>
+    /// <returns><c>true</c> if <paramref name="obj"/> is a <see cref="ColorCollection"/> and has the same values as this <see cref="ColorCollection"/>.</returns>
+    public override bool Equals(object obj)
+    {
+      return obj is ColorCollection && this.Equals((ColorCollection)obj);
+    }
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <returns>
+    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+    /// </returns>
+    /// <param name="other">An object to compare with this object.</param>
+    public bool Equals(ColorCollection other)
+    {
+      bool result;
+
+      result = other != null && other.Count == this.Count;
+      if (result)
+      {
+        // check colors - by value though, as Color.Cornflowerblue != Color.FromArgb(255, 100, 149, 237)
+        for (int i = 0; i < this.Count; i++)
+        {
+          Color expected;
+          Color actual;
+
+          expected = other[i];
+          actual = this[i];
+
+          if (expected.ToArgb() != actual.ToArgb())
+          {
+            result = false;
+            break;
+          }
+        }
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Serves as a hash function for a particular type. 
+    /// </summary>
+    /// <returns>
+    /// A hash code for the current <see cref="T:System.Object"/>.
+    /// </returns>
+    public override int GetHashCode()
+    {
+      // http://stackoverflow.com/a/10567511/148962
+
+      return this.Aggregate(0, (current, value) => current ^ value.GetHashCode());
+    }
   }
 }

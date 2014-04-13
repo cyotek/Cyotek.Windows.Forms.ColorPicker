@@ -1,4 +1,6 @@
-﻿namespace Cyotek.Windows.Forms
+﻿using System;
+
+namespace Cyotek.Windows.Forms
 {
   partial class ColorPickerDialog
   {
@@ -141,6 +143,7 @@
       this.colorGrid.Size = new System.Drawing.Size(192, 72);
       this.colorGrid.Spacing = new System.Drawing.Size(0, 0);
       this.colorGrid.TabIndex = 7;
+      this.colorGrid.EditingColor += new EventHandler<EditColorCancelEventArgs>(this.colorGrid_EditingColor);
       // 
       // colorEditorManager
       // 

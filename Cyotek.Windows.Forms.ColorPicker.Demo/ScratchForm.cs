@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 // Cyotek Color Picker controls library
@@ -27,13 +27,28 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void ScratchForm_Load(object sender, EventArgs e)
     {
-      colorEditor1.Color = SystemColors.Highlight;
-    }
+      string fileName;
+      ColorCollection source;
+      ColorCollection destination;
+      AdobePhotoshopColorSwatchSerializer serializer;
 
-    private void colorEditor1_ColorChanged(object sender, EventArgs e)
-    {
-      label1.BackColor = colorEditor1.Color;
-      label1.Text = colorEditor1.Color.Name;
+      fileName = Path.GetTempFileName();
+      //source = ColorCollection.LoadPalette(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "palettes"), "grayscale.pal"));
+      source = ColorCollection.LoadPalette(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "palettes"), "db32.gpl"));
+      serializer = new AdobePhotoshopColorSwatchSerializer();
+
+      using (Stream stream = File.Create(fileName))
+      {
+        serializer.Serialize(stream, source, AdobePhotoshopColorSwatchColorSpace.Hsb);
+        //serializer.Serialize(stream, source, AdobePhotoShopColorSwatchColorSpace.Grayscale);
+      }
+
+      destination = ColorCollection.LoadPalette(fileName);
+
+      colorGrid1.Colors = source;
+      colorGrid2.Colors = destination;
+
+      File.Delete(fileName);
     }
 
     #endregion

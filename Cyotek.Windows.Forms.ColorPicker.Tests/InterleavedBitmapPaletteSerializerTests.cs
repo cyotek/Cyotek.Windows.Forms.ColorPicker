@@ -22,6 +22,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   [TestFixture]
   public class InterleavedBitmapPaletteSerializerTests : TestBase
   {
+    #region Tests
+
     [Test]
     public void CanReadTest()
     {
@@ -71,46 +73,34 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       // act
       using (Stream stream = File.OpenRead(fileName))
+      {
         actual = target.Deserialize(stream);
+      }
 
       // assert
       CollectionAssert.AreEqual(expected, actual);
     }
 
     [Test]
-    public void GetSerializerBbmTest()
+    public void GetSerializerTest()
     {
       // arrange
       IPaletteSerializer actual;
-      string fileName;
+      string workFileName;
 
-      fileName = "test.bbm";
+      workFileName = Path.GetTempFileName();
+      File.Copy(Path.Combine(this.DataPath, "background.lbm"), workFileName, true);
 
       // act
-      actual = PaletteSerializer.GetSerializer(fileName);
+      actual = PaletteSerializer.GetSerializer(workFileName);
+      File.Delete(workFileName);
 
       // assert
       actual.Should().BeOfType<InterleavedBitmapPaletteSerializer>();
     }
 
     [Test]
-    public void GetSerializerLbmTest()
-    {
-      // arrange
-      IPaletteSerializer actual;
-      string fileName;
-
-      fileName = "test.lbm";
-
-      // act
-      actual = PaletteSerializer.GetSerializer(fileName);
-
-      // assert
-      actual.Should().BeOfType<InterleavedBitmapPaletteSerializer>();
-    }
-
-    [Test]
-    [ExpectedException(typeof(NotImplementedException))]
+    [ExpectedException(typeof(NotSupportedException))]
     public void SerializeTest()
     {
       // arrange
@@ -128,10 +118,14 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       target.Serialize(write, expected);
 
       using (MemoryStream read = new MemoryStream(write.ToArray()))
+      {
         actual = new InterleavedBitmapPaletteSerializer().Deserialize(read);
+      }
 
       // assert
       CollectionAssert.AreEqual(expected, actual);
     }
+
+    #endregion
   }
 }

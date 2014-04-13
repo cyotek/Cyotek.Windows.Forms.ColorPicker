@@ -1,6 +1,11 @@
-﻿using System;
+﻿#if DEBUG
+//#define DEBUGPAINT
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -36,13 +41,11 @@ namespace Cyotek.Windows.Forms
 
     #region Instance Fields
 
-    private readonly Image _cellBackground;
-
-    private readonly TextureBrush _cellBackgroundBrush;
-
     private bool _autoAddColors;
 
     private bool _autoFit;
+
+    private Brush _cellBackgroundBrush;
 
     private Color _cellBorderColor;
 
@@ -106,15 +109,20 @@ namespace Cyotek.Windows.Forms
 
     protected ColorGrid(ColorCollection colors, ColorCollection customColors, ColorPalette palette)
     {
-      _cellBackground = new Bitmap(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.cellbackground.png")));
-      _cellBackgroundBrush = new TextureBrush(_cellBackground, WrapMode.Tile);
+      this.BeginUpdate();
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick | ControlStyles.SupportsTransparentBackColor, true);
-      this.HotIndex = InvalidIndex;
+      _previousHotIndex = InvalidIndex;
+      _previousColorIndex = InvalidIndex;
+      _hotIndex = InvalidIndex;
       this.ColorRegions = new Dictionary<int, Rectangle>();
       if (this.Palette != ColorPalette.None)
+      {
         this.Colors = colors;
+      }
       else
+      {
         this.Palette = palette;
+      }
       this.CustomColors = customColors;
       this.ShowCustomColors = true;
       this.CellSize = new Size(12, 12);
@@ -130,6 +138,7 @@ namespace Cyotek.Windows.Forms
       this.Color = Color.Black;
       this.CellBorderStyle = ColorCellBorderStyle.FixedSingle;
       this.SelectedCellStyle = ColorGridSelectedCellStyle.Zoomed;
+      this.EndUpdate();
     }
 
     #endregion
@@ -195,6 +204,8 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     [Category("Property Changed")]
     public event EventHandler EditModeChanged;
+
+    public event EventHandler<EditColorCancelEventArgs> EditingColor;
 
     /// <summary>
     /// Occurs when the HotIndex property value changes
@@ -283,13 +294,14 @@ namespace Cyotek.Windows.Forms
       if (disposing)
       {
         if (_toolTip != null)
+        {
           _toolTip.Dispose();
-
-        if (_cellBackground != null)
-          _cellBackground.Dispose();
+        }
 
         if (_cellBackgroundBrush != null)
+        {
           _cellBackgroundBrush.Dispose();
+        }
       }
 
       base.Dispose(disposing);
@@ -300,9 +312,13 @@ namespace Cyotek.Windows.Forms
       bool result;
 
       if (keyData == Keys.Left || keyData == Keys.Up || keyData == Keys.Down || keyData == Keys.Right || keyData == Keys.Enter || keyData == Keys.Home || keyData == Keys.End)
+      {
         result = true;
+      }
       else
+      {
         result = base.IsInputKey(keyData);
+      }
 
       return result;
     }
@@ -310,107 +326,102 @@ namespace Cyotek.Windows.Forms
     protected override void OnAutoSizeChanged(EventArgs e)
     {
       if (this.AutoSize && this.AutoFit)
+      {
         this.AutoFit = false;
+      }
 
       base.OnAutoSizeChanged(e);
 
       if (this.AutoSize)
+      {
         this.SizeToFit();
+      }
     }
 
     protected override void OnGotFocus(EventArgs e)
     {
       base.OnGotFocus(e);
 
-      this.Invalidate();
+      if (this.AllowPainting)
+      {
+        this.Invalidate(this.ColorIndex);
+      }
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
-      Point cellLocation;
-      bool processed;
-      int row;
-      int column;
-      int lastStandardRowOffset;
-      int lastStandardRowLastColumn;
-
       this.WasKeyPressed = true;
-
-      lastStandardRowOffset = (this.PrimaryRows * this.Columns) - this.Colors.Count;
-      lastStandardRowLastColumn = this.Columns - lastStandardRowOffset;
-      cellLocation = this.GetCell(this.ColorIndex);
-      column = cellLocation.X;
-      row = cellLocation.Y;
 
       switch (e.KeyData)
       {
         case Keys.Down:
-          row++;
-          if (row == this.PrimaryRows - 1 && column >= lastStandardRowLastColumn)
-            column = lastStandardRowLastColumn - 1;
-          processed = true;
+          this.Navigate(0, 1);
+          e.Handled = true;
           break;
         case Keys.Up:
-          row--;
-          if (row == this.PrimaryRows - 1 && column > lastStandardRowLastColumn)
-            column = lastStandardRowLastColumn - 1;
-          processed = true;
+          this.Navigate(0, -1);
+          e.Handled = true;
           break;
         case Keys.Left:
-          column--;
-          if (column < 0)
-          {
-            column = this.Columns - 1;
-            row--;
-            if (row == this.PrimaryRows - 1)
-              column = this.Columns - (lastStandardRowOffset + 1);
-          }
-          processed = true;
+          this.Navigate(-1, 0);
+          e.Handled = true;
           break;
         case Keys.Right:
-          column++;
-          if (row == this.PrimaryRows - 1 && column >= this.Columns - lastStandardRowOffset || column >= this.Columns)
-          {
-            column = 0;
-            row++;
-          }
-          processed = true;
+          this.Navigate(1, 0);
+          e.Handled = true;
           break;
         case Keys.Home:
-          column = 0;
-          row = 0;
-          processed = true;
+          this.Navigate(0, 0, NavigationOrigin.Begin);
+          e.Handled = true;
           break;
         case Keys.End:
-          column = this.Columns - 1;
-          row = this.PrimaryRows + this.CustomRows - 1;
-          processed = true;
+          this.Navigate(0, 0, NavigationOrigin.End);
+          e.Handled = true;
           break;
-        default:
-          processed = false;
-          break;
-      }
-
-      if (processed)
-      {
-        int index;
-
-        index = this.GetCellIndex(column, row);
-        if (index != InvalidIndex)
-        {
-          // setting the Color property will automatically set the ColorIndex to the index of the first match
-          // which is not exactly what you want when navigating the grid with the keyboard! Disable painting
-          // so that no flicker is displayed if the index flicks between two values with a forced repaint inbetween
-          this.BeginUpdate();
-          this.Color = this.GetColor(index);
-          this.ColorIndex = index;
-          this.EndUpdate();
-        }
-
-        e.Handled = true;
       }
 
       base.OnKeyDown(e);
+    }
+
+    public void Navigate(int offsetX, int offsetY)
+    {
+      this.Navigate(offsetX, offsetY, NavigationOrigin.Current);
+    }
+
+    public virtual void Navigate(int offsetX, int offsetY, NavigationOrigin origin)
+    {
+      Point cellLocation;
+      Point offsetCellLocation;
+      int row;
+      int column;
+      int index;
+
+      switch (origin)
+      {
+        case NavigationOrigin.Begin:
+          cellLocation = Point.Empty;
+          break;
+        case NavigationOrigin.End:
+          cellLocation = new Point(this.ActualColumns - 1, this.PrimaryRows + this.CustomRows - 1);
+          break;
+        default:
+          cellLocation = this.CurrentCell;
+          break;
+      }
+
+      if (cellLocation.X == -1 && cellLocation.Y == -1)
+      {
+        cellLocation = Point.Empty; // If no cell is selected, assume the first one is for the purpose of keyboard navigation
+      }
+
+      offsetCellLocation = this.GetCellOffset(cellLocation, offsetX, offsetY);
+      row = offsetCellLocation.Y;
+      column = offsetCellLocation.X;
+      index = this.GetCellIndex(column, row);
+      if (index != InvalidIndex)
+      {
+        this.ColorIndex = index;
+      }
     }
 
     protected override void OnKeyUp(KeyEventArgs e)
@@ -423,7 +434,8 @@ namespace Cyotek.Windows.Forms
         if (source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || source == ColorSource.Standard && this.EditMode == ColorEditingMode.Both)
         {
           e.Handled = true;
-          this.EditColor(this.ColorIndex);
+
+          this.StartColorEdit(this.ColorIndex);
         }
       }
 
@@ -436,7 +448,10 @@ namespace Cyotek.Windows.Forms
     {
       base.OnLostFocus(e);
 
-      this.Invalidate();
+      if (this.AllowPainting)
+      {
+        this.Invalidate(this.ColorIndex);
+      }
     }
 
     protected override void OnMouseDoubleClick(MouseEventArgs e)
@@ -447,8 +462,10 @@ namespace Cyotek.Windows.Forms
 
       hitTest = this.HitTest(e.Location);
 
-      if (hitTest.Source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || hitTest.Source == ColorSource.Standard && this.EditMode == ColorEditingMode.Both)
-        this.EditColor(hitTest.Index);
+      if (e.Button == MouseButtons.Left && (hitTest.Source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || hitTest.Source == ColorSource.Standard && this.EditMode == ColorEditingMode.Both))
+      {
+        this.StartColorEdit(hitTest.Index);
+      }
     }
 
     protected override void OnMouseDown(MouseEventArgs e)
@@ -456,7 +473,9 @@ namespace Cyotek.Windows.Forms
       base.OnMouseDown(e);
 
       if (!this.Focused && this.TabStop)
+      {
         this.Focus();
+      }
 
       this.ProcessMouseClick(e);
     }
@@ -481,8 +500,11 @@ namespace Cyotek.Windows.Forms
     {
       base.OnPaddingChanged(e);
 
-      this.RefreshColors();
-      this.Invalidate();
+      if (this.AllowPainting)
+      {
+        this.RefreshColors();
+        this.Invalidate();
+      }
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -491,21 +513,33 @@ namespace Cyotek.Windows.Forms
 
       if (this.AllowPainting)
       {
+        Debug.Print(e.ClipRectangle.Size == this.ClientSize ? "Performing full paint!" : "Performing partial paint!");
+
         base.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc as the PaintBackground event is no longer being called
 
         // draw a design time dotted grid
         if (this.DesignMode)
         {
           using (Pen pen = new Pen(SystemColors.ButtonShadow)
+                           {
+                             DashStyle = DashStyle.Dot
+                           })
           {
-            DashStyle = DashStyle.Dot
-          })
             e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+          }
         }
 
         // draw cells for all current colors
         for (int i = 0; i < this.Colors.Count; i++)
-          this.PaintCell(e, i, i, this.Colors[i], this.ColorRegions[i]);
+        {
+          Rectangle bounds;
+
+          bounds = this.ColorRegions[i];
+          if (e.ClipRectangle.IntersectsWith(bounds))
+          {
+            this.PaintCell(e, i, i, this.Colors[i], bounds);
+          }
+        }
 
         if (this.CustomColors.Count != 0 && this.ShowCustomColors)
         {
@@ -514,14 +548,39 @@ namespace Cyotek.Windows.Forms
 
           // and the custom colors
           for (int i = 0; i < this.CustomColors.Count; i++)
-            this.PaintCell(e, i, this.Colors.Count + i, this.CustomColors[i], this.ColorRegions[this.Colors.Count + i]);
+          {
+            Rectangle bounds;
+
+            bounds = this.ColorRegions[this.Colors.Count + i];
+            if (e.ClipRectangle.IntersectsWith(bounds))
+            {
+              this.PaintCell(e, i, this.Colors.Count + i, this.CustomColors[i], bounds);
+            }
+          }
         }
 
         // draw the selected color
         if (this.SelectedCellStyle != ColorGridSelectedCellStyle.None && this.ColorIndex >= 0)
-          this.PaintSelectedCell(e, this.ColorIndex, this.Color, this.ColorRegions[this.ColorIndex]);
+        {
+          Rectangle bounds;
+
+          bounds = this.ColorRegions[this.ColorIndex];
+          if (e.ClipRectangle.IntersectsWith(bounds))
+          {
+            this.PaintSelectedCell(e, this.ColorIndex, this.Color, bounds);
+          }
+        }
+
+#if DEBUGPAINT
+        using (Brush brush = new SolidBrush(new HslColor(64, _random.Next(0, 356), 0.5, 0.5).ToRgbColor()))
+          e.Graphics.FillRectangle(brush, e.ClipRectangle);
+#endif
       }
     }
+
+#if DEBUGPAINT
+    private readonly Random _random = new Random();
+#endif
 
     protected override void OnResize(EventArgs e)
     {
@@ -533,6 +592,10 @@ namespace Cyotek.Windows.Forms
     #endregion
 
     #region Public Properties
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int ActualColumns { get; protected set; }
 
     [Category("Behavior")]
     [DefaultValue(true)]
@@ -625,10 +688,22 @@ namespace Cyotek.Windows.Forms
 
         _color = value;
 
-        newIndex = this.GetColorIndex(value);
+        if (!value.IsEmpty)
+        {
+          // the new color matches the color at the current index, so don't change the index
+          // this stops the selection hopping about if you have duplicate colors in a palette
+          // otherwise, if the colors don't match, then find the index that does
+          newIndex = this.GetColor(this.ColorIndex) == value ? this.ColorIndex : this.GetColorIndex(value);
 
-        if (newIndex == InvalidIndex)
-          newIndex = this.AddCustomColor(value);
+          if (newIndex == InvalidIndex)
+          {
+            newIndex = this.AddCustomColor(value);
+          }
+        }
+        else
+        {
+          newIndex = InvalidIndex;
+        }
 
         this.ColorIndex = newIndex;
 
@@ -659,14 +734,25 @@ namespace Cyotek.Windows.Forms
       get { return _columns; }
       set
       {
+        if (value < 0)
+        {
+          throw new ArgumentOutOfRangeException("value", value, "Number of columns cannot be less than zero.");
+        }
+
         if (this.Columns != value)
         {
           _columns = value;
-          this.CalculateRows();
+          this.CalculateGridSize();
 
           this.OnColumnsChanged(EventArgs.Empty);
         }
       }
+    }
+
+    [Browsable(false)]
+    public Point CurrentCell
+    {
+      get { return this.GetCell(this.ColorIndex); }
     }
 
     [Browsable(false)]
@@ -710,12 +796,20 @@ namespace Cyotek.Windows.Forms
       {
         if (this.HotIndex != value)
         {
+          _previousHotIndex = this.HotIndex;
           _hotIndex = value;
 
           this.OnHotIndexChanged(EventArgs.Empty);
         }
       }
     }
+
+    private Rectangle GetClipRectangle(int cellIndex, bool expand)
+    {
+      return Rectangle.Empty;
+    }
+
+    private int _previousHotIndex;
 
     [DefaultValue(typeof(Padding), "5, 5, 5, 5")]
     public new Padding Padding
@@ -819,13 +913,63 @@ namespace Cyotek.Windows.Forms
       get { return _updateCount == 0; }
     }
 
-    protected int ColorIndex { get; set; }
+    private int _colorIndex;
+
+    private int _previousColorIndex;
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public virtual int ColorIndex
+    {
+      get { return _colorIndex; }
+      set
+      {
+        if (this.ColorIndex != value)
+        {
+          _previousColorIndex = this.ColorIndex;
+          _colorIndex = value;
+
+          if (value != InvalidIndex)
+          {
+            this.Color = this.GetColor(value);
+          }
+
+          this.OnColorIndexChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Occurs when the ColorIndex property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ColorIndexChanged;
+
+    /// <summary>
+    /// Raises the <see cref="ColorIndexChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnColorIndexChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      if (this.AllowPainting)
+      {
+        this.Invalidate(_previousColorIndex);
+        this.Invalidate(this.ColorIndex);
+      }
+
+      handler = this.ColorIndexChanged;
+
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
 
     protected IDictionary<int, Rectangle> ColorRegions { get; set; }
 
     protected int CustomRows { get; set; }
-
-    protected bool LockUpdates { get; set; }
 
     protected int PrimaryRows { get; set; }
 
@@ -846,7 +990,9 @@ namespace Cyotek.Windows.Forms
       if (newIndex == InvalidIndex)
       {
         if (this.AutoAddColors)
+        {
           this.CustomColors.Add(value);
+        }
         else
         {
           if (this.CustomColors == null)
@@ -855,7 +1001,9 @@ namespace Cyotek.Windows.Forms
             this.CustomColors.Add(value);
           }
           else
+          {
             this.CustomColors[0] = value;
+          }
 
           newIndex = this.GetColorIndex(value);
         }
@@ -880,10 +1028,14 @@ namespace Cyotek.Windows.Forms
     public virtual void EndUpdate()
     {
       if (_updateCount > 0)
+      {
         _updateCount--;
+      }
 
       if (this.AllowPainting)
+      {
         this.Invalidate();
+      }
     }
 
     public Color GetColor(int index)
@@ -896,9 +1048,13 @@ namespace Cyotek.Windows.Forms
       customColorCount = this.CustomColors != null ? this.CustomColors.Count : 0;
 
       if (index < 0 || index > (colorCount + customColorCount))
+      {
         result = Color.Empty;
+      }
       else
+      {
         result = index > colorCount - 1 ? this.CustomColors[index - colorCount] : this.Colors[index];
+      }
 
       return result;
     }
@@ -913,9 +1069,13 @@ namespace Cyotek.Windows.Forms
       customColorCount = this.CustomColors != null ? this.CustomColors.Count : 0;
 
       if (colorCount < 0 || colorIndex > (colorCount + customColorCount))
+      {
         result = ColorSource.None;
+      }
       else
+      {
         result = colorIndex > colorCount - 1 ? ColorSource.Custom : ColorSource.Standard;
+      }
 
       return result;
     }
@@ -927,7 +1087,9 @@ namespace Cyotek.Windows.Forms
 
       index = this.Colors.IndexOf(color);
       if (index != InvalidIndex)
+      {
         result = ColorSource.Standard;
+      }
       else
       {
         index = this.CustomColors.IndexOf(color);
@@ -958,7 +1120,9 @@ namespace Cyotek.Windows.Forms
         result.Source = this.GetColorSource(colorIndex);
       }
       else
+      {
         result.Source = ColorSource.None;
+      }
 
       return result;
     }
@@ -972,26 +1136,48 @@ namespace Cyotek.Windows.Forms
       int w;
       int h;
 
-      w = ((this.ClientSize.Width - this.Padding.Horizontal) / this.Columns) - this.Spacing.Width;
+      w = ((this.ClientSize.Width - this.Padding.Horizontal) / this.ActualColumns) - this.Spacing.Width;
       h = ((this.ClientSize.Height - this.Padding.Vertical) / (this.PrimaryRows + this.CustomRows)) - this.Spacing.Height;
 
       if (w > 0 && h > 0)
+      {
         this.CellSize = new Size(w, h);
+      }
     }
 
-    protected virtual void CalculateRows()
+    protected virtual void CalculateGridSize()
     {
       int primaryRows;
       int customRows;
 
+      this.ActualColumns = this.Columns != 0 ? this.Columns : (this.ClientSize.Width + this.Spacing.Width - this.Padding.Vertical) / (this.CellSize.Width + this.Spacing.Width);
+      if (this.ActualColumns < 1)
+      {
+        this.ActualColumns = 1;
+      }
+
       primaryRows = this.GetRows(this.Colors != null ? this.Colors.Count : 0);
       if (primaryRows == 0)
+      {
         primaryRows = 1;
+      }
 
       customRows = this.ShowCustomColors ? this.GetRows(this.CustomColors != null ? this.CustomColors.Count : 0) : 0;
 
       this.PrimaryRows = primaryRows;
       this.CustomRows = customRows;
+    }
+
+    protected virtual Brush CreateTransparencyBrush()
+    {
+      Type type;
+
+      type = typeof(ColorGrid);
+
+      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(type.Namespace, ".Resources.cellbackground.png"))))
+      {
+        return new TextureBrush(background, WrapMode.Tile);
+      }
     }
 
     protected void DefineColorRegions(ColorCollection colors, int rangeStart, int offset)
@@ -1006,10 +1192,12 @@ namespace Cyotek.Windows.Forms
 
         for (int row = 0; row < rows; row++)
         {
-          for (int column = 0; column < this.Columns; column++)
+          for (int column = 0; column < this.ActualColumns; column++)
           {
             if (index < colors.Count)
+            {
               this.ColorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + (column * (this.CellSize.Width + this.Spacing.Width)), offset + (row * (this.CellSize.Height + this.Spacing.Height)), this.CellSize.Width, this.CellSize.Height));
+            }
 
             index++;
           }
@@ -1035,34 +1223,100 @@ namespace Cyotek.Windows.Forms
     protected Size GetAutoSize()
     {
       int offset;
+      int width;
 
       offset = this.CustomRows != 0 ? this.SeparatorHeight : 0;
+      if (this.Columns != 0)
+      {
+        width = ((this.CellSize.Width + this.Spacing.Width) * this.ActualColumns) + this.Padding.Horizontal - this.Spacing.Width;
+      }
+      else
+      {
+        width = this.ClientSize.Width;
+      }
 
-      return new Size(((this.CellSize.Width + this.Spacing.Width) * this.Columns) + this.Padding.Horizontal - this.Spacing.Width, ((this.CellSize.Height + this.Spacing.Height) * (this.PrimaryRows + this.CustomRows)) + offset + this.Padding.Vertical - this.Spacing.Height);
+      return new Size(width, ((this.CellSize.Height + this.Spacing.Height) * (this.PrimaryRows + this.CustomRows)) + offset + this.Padding.Vertical - this.Spacing.Height);
+    }
+
+    protected int GetCellIndex(Point point)
+    {
+      return this.GetCellIndex(point.X, point.Y);
     }
 
     protected virtual int GetCellIndex(int column, int row)
     {
       int result;
 
-      if (column >= 0 && column < this.Columns && row >= 0 && row < (this.PrimaryRows + this.CustomRows))
+      if (column >= 0 && column < this.ActualColumns && row >= 0 && row < (this.PrimaryRows + this.CustomRows))
       {
         int lastStandardRowOffset;
 
-        lastStandardRowOffset = (this.PrimaryRows * this.Columns) - this.Colors.Count;
-        result = row * this.Columns + column;
-        if (row == this.PrimaryRows - 1 && column >= (this.Columns - lastStandardRowOffset))
+        lastStandardRowOffset = (this.PrimaryRows * this.ActualColumns) - this.Colors.Count;
+        result = row * this.ActualColumns + column;
+        if (row == this.PrimaryRows - 1 && column >= (this.ActualColumns - lastStandardRowOffset))
+        {
           result -= lastStandardRowOffset;
+        }
         if (row >= this.PrimaryRows)
+        {
           result -= lastStandardRowOffset;
+        }
 
         if (result > (this.Colors.Count + this.CustomColors.Count) - 1)
+        {
           result = InvalidIndex;
+        }
       }
       else
+      {
         result = InvalidIndex;
+      }
 
       return result;
+    }
+
+    protected Point GetCellOffset(int columnOffset, int rowOffset)
+    {
+      return this.GetCellOffset(this.CurrentCell, columnOffset, rowOffset);
+    }
+
+    protected Point GetCellOffset(Point cell, int columnOffset, int rowOffset)
+    {
+      int row;
+      int column;
+      int lastStandardRowOffset;
+      int lastStandardRowLastColumn;
+
+      lastStandardRowOffset = (this.PrimaryRows * this.ActualColumns) - this.Colors.Count;
+      lastStandardRowLastColumn = this.ActualColumns - lastStandardRowOffset;
+      column = cell.X + columnOffset;
+      row = cell.Y + rowOffset;
+
+      // if the row is the last row, but there aren't enough columns to fill the row - nudge it to the last available
+      if (row == this.PrimaryRows - 1 && column >= lastStandardRowLastColumn)
+      {
+        column = lastStandardRowLastColumn - 1;
+      }
+
+      // wrap the column to the end of the previous row
+      if (column < 0)
+      {
+        column = this.ActualColumns - 1;
+        row--;
+        if (row == this.PrimaryRows - 1)
+        {
+          column = this.ActualColumns - (lastStandardRowOffset + 1);
+        }
+      }
+
+      // wrap to column to the start of the next row
+      if (row == this.PrimaryRows - 1 && column >= this.ActualColumns - lastStandardRowOffset || column >= this.ActualColumns)
+      {
+        column = 0;
+        row++;
+      }
+
+      return new Point(column, row);
     }
 
     protected virtual int GetColorIndex(Color value)
@@ -1070,11 +1324,13 @@ namespace Cyotek.Windows.Forms
       int index;
 
       index = this.Colors != null ? this.Colors.IndexOf(value) : InvalidIndex;
-      if (index == InvalidIndex && this.CustomColors != null)
+      if (index == InvalidIndex && this.ShowCustomColors && this.CustomColors != null)
       {
         index = this.CustomColors.IndexOf(value);
         if (index != InvalidIndex)
+        {
           index += this.Colors.Count;
+        }
       }
 
       return index;
@@ -1089,14 +1345,18 @@ namespace Cyotek.Windows.Forms
     {
       int rows;
 
-      if (count != 0 && this.Columns > 0)
+      if (count != 0 && this.ActualColumns > 0)
       {
-        rows = count / this.Columns;
-        if ((count % Columns) != 0)
+        rows = count / this.ActualColumns;
+        if ((count % this.ActualColumns) != 0)
+        {
           rows++;
+        }
       }
       else
+      {
         rows = 0;
+      }
 
       return rows;
     }
@@ -1112,7 +1372,9 @@ namespace Cyotek.Windows.Forms
       handler = this.AutoAddColorsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1124,14 +1386,18 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.AutoFit && this.AutoSize)
+      {
         this.AutoSize = false;
+      }
 
       this.RefreshColors();
 
       handler = this.AutoFitChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1142,12 +1408,17 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      this.Invalidate();
+      if (this.AllowPainting)
+      {
+        this.Invalidate();
+      }
 
       handler = this.CellBorderColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1158,12 +1429,17 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      this.Invalidate();
+      if (this.AllowPainting)
+      {
+        this.Invalidate();
+      }
 
       handler = this.CellBorderStyleChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1175,14 +1451,22 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.AutoSize)
+      {
         this.SizeToFit();
-      this.RefreshColors();
-      this.Invalidate();
+      }
+
+      if (this.AllowPainting)
+      {
+        this.RefreshColors();
+        this.Invalidate();
+      }
 
       handler = this.CellSizeChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1193,13 +1477,12 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      if (this.AllowPainting)
-        this.Refresh();
-
       handler = this.ColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1211,13 +1494,42 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.Colors != null)
-        this.Colors.CollectionChanged += this.ColorsCollectionChangedHandler;
+      {
+        this.Colors.ItemInserted += this.ColorsCollectionChangedHandler;
+        this.Colors.ItemRemoved += this.ColorsCollectionChangedHandler;
+        this.Colors.ItemsCleared += this.ColorsCollectionChangedHandler;
+        this.Colors.ItemReplaced += this.ColorsCollectionItemReplacedHandler;
+      }
+
       this.RefreshColors();
 
       handler = this.ColorsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
+    }
+
+    private void ColorsCollectionItemReplacedHandler(object sender, ColorCollectionEventArgs e)
+    {
+      ColorCollection collection;
+      int index;
+
+      collection = (ColorCollection)sender;
+      index = this.ColorIndex;
+      if (index != InvalidIndex && collection == this.CustomColors)
+      {
+        index -= this.Colors.Count;
+      }
+
+      if (index >= 0 && index < collection.Count && collection[index] != this.Color)
+      {
+        Debug.Print("Replacing index {0} with {1}", index, collection[index]);
+        this.Color = collection[index];
+      }
+
+      this.Invalidate(e.Index);
     }
 
     /// <summary>
@@ -1233,7 +1545,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ColumnsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1245,13 +1559,17 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.CustomColors != null)
+      {
         this.CustomColors.CollectionChanged += this.ColorsCollectionChangedHandler;
+      }
       this.RefreshColors();
 
       handler = this.CustomColorsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1265,7 +1583,25 @@ namespace Cyotek.Windows.Forms
       handler = this.EditModeChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="EditingColor" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="CancelEventArgs" /> instance containing the event data.</param>
+    protected virtual void OnEditingColor(EditColorCancelEventArgs e)
+    {
+      EventHandler<EditColorCancelEventArgs> handler;
+
+      handler = this.EditingColor;
+
+      if (handler != null)
+      {
+        handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1277,12 +1613,37 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       this.SetToolTip();
-      this.Refresh();
+
+      if (this.AllowPainting)
+      {
+        this.Invalidate(_previousHotIndex);
+        this.Invalidate(this.HotIndex);
+      }
 
       handler = this.HotIndexChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
+    }
+
+    public void Invalidate(int index)
+    {
+      if (this.AllowPainting && index != InvalidIndex)
+      {
+        Rectangle bounds;
+
+        if (this.ColorRegions.TryGetValue(index, out bounds))
+        {
+          if (this.SelectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
+          {
+            bounds.Inflate(this.Padding.Left, this.Padding.Top);
+          }
+
+          this.Invalidate(bounds);
+        }
+      }
     }
 
     /// <summary>
@@ -1298,7 +1659,9 @@ namespace Cyotek.Windows.Forms
       handler = this.PaletteChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1309,12 +1672,17 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      this.Invalidate();
+      if (this.AllowPainting)
+      {
+        this.Invalidate();
+      }
 
       handler = this.SelectedCellStyleChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1330,7 +1698,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ShowCustomColorsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1342,7 +1712,9 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.ShowToolTips)
+      {
         _toolTip = new ToolTip();
+      }
       else if (_toolTip != null)
       {
         _toolTip.Dispose();
@@ -1352,7 +1724,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ShowToolTipsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1364,29 +1738,43 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.AutoSize)
+      {
         this.SizeToFit();
-      this.RefreshColors();
-      this.Invalidate();
+      }
+
+      if (this.AllowPainting)
+      {
+        this.RefreshColors();
+        this.Invalidate();
+      }
 
       handler = this.SpacingChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     protected virtual void PaintCell(PaintEventArgs e, int colorIndex, int cellIndex, Color color, Rectangle bounds)
     {
       if (color.A != 255)
-        e.Graphics.FillRectangle(_cellBackgroundBrush, bounds);
+      {
+        this.PaintTransparentCell(e, bounds);
+      }
 
       using (Brush brush = new SolidBrush(color))
+      {
         e.Graphics.FillRectangle(brush, bounds);
+      }
 
       switch (this.CellBorderStyle)
       {
         case ColorCellBorderStyle.FixedSingle:
           using (Pen pen = new Pen(this.CellBorderColor))
+          {
             e.Graphics.DrawRectangle(pen, bounds.Left, bounds.Top, bounds.Width - 1, bounds.Height - 1);
+          }
           break;
         case ColorCellBorderStyle.DoubleSoft:
           HslColor shadedOuter;
@@ -1399,12 +1787,18 @@ namespace Cyotek.Windows.Forms
           shadedInner.L -= 0.20;
 
           using (Pen pen = new Pen(this.CellBorderColor))
+          {
             e.Graphics.DrawRectangle(pen, bounds.Left, bounds.Top, bounds.Width - 1, bounds.Height - 1);
+          }
           e.Graphics.DrawRectangle(Pens.White, bounds.Left + 1, bounds.Top + 1, bounds.Width - 3, bounds.Height - 3);
           using (Pen pen = new Pen(Color.FromArgb(32, shadedOuter.ToRgbColor())))
+          {
             e.Graphics.DrawRectangle(pen, bounds.Left + 2, bounds.Top + 2, bounds.Width - 5, bounds.Height - 5);
+          }
           using (Pen pen = new Pen(Color.FromArgb(32, shadedInner.ToRgbColor())))
+          {
             e.Graphics.DrawRectangle(pen, bounds.Left + 3, bounds.Top + 3, bounds.Width - 7, bounds.Height - 7);
+          }
           break;
       }
 
@@ -1421,24 +1815,37 @@ namespace Cyotek.Windows.Forms
       {
         case ColorGridSelectedCellStyle.Standard:
           if (this.Focused)
+          {
             ControlPaint.DrawFocusRectangle(e.Graphics, bounds);
+          }
           else
+          {
             e.Graphics.DrawRectangle(Pens.Black, bounds.Left, bounds.Top, bounds.Width - 1, bounds.Height - 1);
+          }
           break;
         case ColorGridSelectedCellStyle.Zoomed:
-          // make the cell larger by half
+          // make the cell larger according to the padding
           if (this.SelectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
-            bounds.Inflate((this.CellSize.Width / 2) - 1, (this.CellSize.Height / 2) - 1);
+          {
+            bounds.Inflate(this.Padding.Left, this.Padding.Top);
+          }
 
           // fill the inner
           e.Graphics.FillRectangle(Brushes.White, bounds);
           if (this.SelectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
+          {
             bounds.Inflate(-3, -3);
+          }
           if (color.A != 255)
-            e.Graphics.FillRectangle(_cellBackgroundBrush, bounds);
+          {
+            this.PaintTransparentCell(e, bounds);
+          }
 
           using (Brush brush = new SolidBrush(color))
+          {
             e.Graphics.FillRectangle(brush, bounds);
+          }
+
           // draw a border
           if (this.Focused)
           {
@@ -1450,7 +1857,9 @@ namespace Cyotek.Windows.Forms
             bounds = new Rectangle(bounds.Left - 2, bounds.Top - 2, bounds.Width + 3, bounds.Height + 3);
 
             using (Pen pen = new Pen(this.CellBorderColor))
+            {
               e.Graphics.DrawRectangle(pen, bounds);
+            }
           }
           break;
       }
@@ -1469,7 +1878,19 @@ namespace Cyotek.Windows.Forms
       y2 = y1;
 
       using (Pen pen = new Pen(this.CellBorderColor))
+      {
         e.Graphics.DrawLine(pen, x1, y1, x2, y2);
+      }
+    }
+
+    protected virtual void PaintTransparentCell(PaintEventArgs e, Rectangle bounds)
+    {
+      if (_cellBackgroundBrush == null)
+      {
+        _cellBackgroundBrush = this.CreateTransparencyBrush();
+      }
+
+      e.Graphics.FillRectangle(_cellBackgroundBrush, bounds);
     }
 
     protected virtual void ProcessMouseClick(MouseEventArgs e)
@@ -1484,7 +1905,6 @@ namespace Cyotek.Windows.Forms
         {
           this.Color = hitTest.Color;
           this.ColorIndex = hitTest.Index;
-          this.Invalidate();
         }
       }
     }
@@ -1493,23 +1913,34 @@ namespace Cyotek.Windows.Forms
     {
       if (this.AllowPainting)
       {
-        this.CalculateRows();
+        Debug.Print("Calculating colors...");
+
+        this.CalculateGridSize();
         if (this.AutoFit)
+        {
           this.CalculateCellSize();
+        }
         else if (this.AutoSize)
+        {
           this.SizeToFit();
+        }
 
         this.ColorRegions.Clear();
 
         if (this.Colors != null)
         {
           this.DefineColorRegions(this.Colors, 0, this.Padding.Top);
-          this.DefineColorRegions(this.CustomColors, this.Colors.Count, this.Padding.Top + this.SeparatorHeight + ((this.CellSize.Height + this.Spacing.Height) * this.PrimaryRows));
+          if (this.ShowCustomColors)
+          {
+            this.DefineColorRegions(this.CustomColors, this.Colors.Count, this.Padding.Top + this.SeparatorHeight + ((this.CellSize.Height + this.Spacing.Height) * this.PrimaryRows));
+          }
 
           this.ColorIndex = this.GetColorIndex(this.Color);
 
-          if (!this.Color.IsEmpty && this.ColorIndex == InvalidIndex)
+          if (!this.Color.IsEmpty && this.ColorIndex == InvalidIndex && this.AutoAddColors && this.ShowCustomColors)
+          {
             this.AddCustomColor(this.Color);
+          }
 
           this.Invalidate();
         }
@@ -1522,18 +1953,46 @@ namespace Cyotek.Windows.Forms
 
       colorCount = this.Colors.Count;
       if (colorIndex < 0 || colorIndex > (colorCount + this.CustomColors.Count))
+      {
         throw new ArgumentOutOfRangeException("colorIndex");
+      }
 
       if (colorIndex > colorCount - 1)
+      {
         this.CustomColors[colorIndex - colorCount] = color;
+      }
       else
+      {
         this.Colors[colorIndex] = color;
+      }
     }
 
     protected virtual void SetToolTip()
     {
       if (this.ShowToolTips)
+      {
+#if USENAMEHACK
+        string name;
+
+        if (this.HotIndex != InvalidIndex)
+        {
+          name = this.HotIndex < this.Colors.Count ? this.Colors.GetName(this.HotIndex) : this.CustomColors.GetName(this.HotIndex);
+
+          if (string.IsNullOrEmpty(name))
+          {
+            name = this.GetColor(this.HotIndex).Name;
+          }
+        }
+        else
+        {
+          name = null;
+        }
+
+        _toolTip.SetToolTip(this, name);
+#else
         _toolTip.SetToolTip(this, this.HotIndex != InvalidIndex ? this.GetColor(this.HotIndex).Name : null);
+#endif
+      }
     }
 
     #endregion
@@ -1545,19 +2004,24 @@ namespace Cyotek.Windows.Forms
       int row;
       int column;
 
-      if (index >= this.Colors.Count)
+      if (index == InvalidIndex)
+      {
+        row = -1;
+        column = -1;
+      }
+      else if (index >= this.Colors.Count)
       {
         // custom color
         index -= this.Colors.Count;
-        row = index / this.Columns;
-        column = index - (row * this.Columns);
+        row = index / this.ActualColumns;
+        column = index - (row * this.ActualColumns);
         row += this.PrimaryRows;
       }
       else
       {
         // normal row
-        row = index / this.Columns;
-        column = index - (row * this.Columns);
+        row = index / this.ActualColumns;
+        column = index - (row * this.ActualColumns);
       }
 
       return new Point(column, row);
@@ -1566,6 +2030,19 @@ namespace Cyotek.Windows.Forms
     private void SizeToFit()
     {
       this.Size = this.GetAutoSize();
+    }
+
+    private void StartColorEdit(int index)
+    {
+      EditColorCancelEventArgs e;
+
+      e = new EditColorCancelEventArgs(this.GetColor(index), index);
+      this.OnEditingColor(e);
+
+      if (!e.Cancel)
+      {
+        this.EditColor(index);
+      }
     }
 
     #endregion

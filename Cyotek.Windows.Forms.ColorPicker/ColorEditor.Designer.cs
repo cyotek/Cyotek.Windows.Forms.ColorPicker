@@ -90,7 +90,7 @@
             0});
       this.rNumericUpDown.Name = "rNumericUpDown";
       this.rNumericUpDown.Size = new System.Drawing.Size(58, 20);
-      this.rNumericUpDown.TabIndex = 3;
+      this.rNumericUpDown.TabIndex = 2;
       this.rNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.rNumericUpDown.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
@@ -99,7 +99,7 @@
       this.rColorBar.Location = new System.Drawing.Point(27, 13);
       this.rColorBar.Name = "rColorBar";
       this.rColorBar.Size = new System.Drawing.Size(72, 20);
-      this.rColorBar.TabIndex = 2;
+      this.rColorBar.TabIndex = 3;
       this.rColorBar.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // gLabel
@@ -117,7 +117,7 @@
       this.gColorBar.Location = new System.Drawing.Point(27, 39);
       this.gColorBar.Name = "gColorBar";
       this.gColorBar.Size = new System.Drawing.Size(72, 20);
-      this.gColorBar.TabIndex = 5;
+      this.gColorBar.TabIndex = 6;
       this.gColorBar.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // gNumericUpDown
@@ -130,7 +130,7 @@
             0});
       this.gNumericUpDown.Name = "gNumericUpDown";
       this.gNumericUpDown.Size = new System.Drawing.Size(58, 20);
-      this.gNumericUpDown.TabIndex = 6;
+      this.gNumericUpDown.TabIndex = 5;
       this.gNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.gNumericUpDown.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
@@ -149,7 +149,7 @@
       this.bColorBar.Location = new System.Drawing.Point(27, 65);
       this.bColorBar.Name = "bColorBar";
       this.bColorBar.Size = new System.Drawing.Size(72, 20);
-      this.bColorBar.TabIndex = 8;
+      this.bColorBar.TabIndex = 9;
       this.bColorBar.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // bNumericUpDown
@@ -162,7 +162,7 @@
             0});
       this.bNumericUpDown.Name = "bNumericUpDown";
       this.bNumericUpDown.Size = new System.Drawing.Size(58, 20);
-      this.bNumericUpDown.TabIndex = 9;
+      this.bNumericUpDown.TabIndex = 8;
       this.bNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.bNumericUpDown.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
@@ -193,7 +193,7 @@
       this.lNumericUpDown.Location = new System.Drawing.Point(105, 190);
       this.lNumericUpDown.Name = "lNumericUpDown";
       this.lNumericUpDown.Size = new System.Drawing.Size(58, 20);
-      this.lNumericUpDown.TabIndex = 21;
+      this.lNumericUpDown.TabIndex = 20;
       this.lNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.lNumericUpDown.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
@@ -202,7 +202,7 @@
       this.lColorBar.Location = new System.Drawing.Point(27, 190);
       this.lColorBar.Name = "lColorBar";
       this.lColorBar.Size = new System.Drawing.Size(72, 20);
-      this.lColorBar.TabIndex = 20;
+      this.lColorBar.TabIndex = 21;
       this.lColorBar.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // lLabel
@@ -219,7 +219,7 @@
       this.sNumericUpDown.Location = new System.Drawing.Point(105, 164);
       this.sNumericUpDown.Name = "sNumericUpDown";
       this.sNumericUpDown.Size = new System.Drawing.Size(58, 20);
-      this.sNumericUpDown.TabIndex = 18;
+      this.sNumericUpDown.TabIndex = 17;
       this.sNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.sNumericUpDown.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
@@ -228,7 +228,7 @@
       this.sColorBar.Location = new System.Drawing.Point(27, 164);
       this.sColorBar.Name = "sColorBar";
       this.sColorBar.Size = new System.Drawing.Size(72, 20);
-      this.sColorBar.TabIndex = 17;
+      this.sColorBar.TabIndex = 18;
       this.sColorBar.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // sLabel
@@ -245,7 +245,7 @@
       this.hColorBar.Location = new System.Drawing.Point(27, 138);
       this.hColorBar.Name = "hColorBar";
       this.hColorBar.Size = new System.Drawing.Size(72, 20);
-      this.hColorBar.TabIndex = 14;
+      this.hColorBar.TabIndex = 15;
       this.hColorBar.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // hNumericUpDown
@@ -258,7 +258,7 @@
             0});
       this.hNumericUpDown.Name = "hNumericUpDown";
       this.hNumericUpDown.Size = new System.Drawing.Size(58, 20);
-      this.hNumericUpDown.TabIndex = 15;
+      this.hNumericUpDown.TabIndex = 14;
       this.hNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.hNumericUpDown.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
@@ -300,7 +300,7 @@
       this.aColorBar.Location = new System.Drawing.Point(27, 216);
       this.aColorBar.Name = "aColorBar";
       this.aColorBar.Size = new System.Drawing.Size(72, 20);
-      this.aColorBar.TabIndex = 22;
+      this.aColorBar.TabIndex = 24;
       this.aColorBar.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       // 
       // aLabel
@@ -309,7 +309,7 @@
       this.aLabel.Location = new System.Drawing.Point(3, 218);
       this.aLabel.Name = "aLabel";
       this.aLabel.Size = new System.Drawing.Size(37, 13);
-      this.aLabel.TabIndex = 24;
+      this.aLabel.TabIndex = 22;
       this.aLabel.Text = "Alpha:";
       // 
       // ColorEditor

@@ -44,6 +44,39 @@ namespace Cyotek.Windows.Forms
     #region Overridden Methods
 
     /// <summary>
+    /// Determines whether this instance can read palette from data the specified stream.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <returns><c>true</c> if this instance can read palette data from the specified stream; otherwise, <c>false</c>.</returns>
+    public override bool CanReadFrom(Stream stream)
+    {
+      bool result;
+
+      if (stream == null)
+      {
+        throw new ArgumentNullException("stream");
+      }
+
+      try
+      {
+        using (StreamReader reader = new StreamReader(stream))
+        {
+          string firstLine;
+
+          firstLine = reader.ReadLine();
+
+          result = !string.IsNullOrEmpty(firstLine) && firstLine[0] == ';';
+        }
+      }
+      catch
+      {
+        result = false;
+      }
+
+      return result;
+    }
+
+    /// <summary>
     /// Deserializes the <see cref="ColorCollection" /> contained by the specified <see cref="Stream" />.
     /// </summary>
     /// <param name="stream">The <see cref="Stream" /> that contains the palette to deserialize.</param>
@@ -53,7 +86,9 @@ namespace Cyotek.Windows.Forms
       ColorCollection results;
 
       if (stream == null)
+      {
         throw new ArgumentNullException("stream");
+      }
 
       results = new ColorCollection();
 
@@ -92,10 +127,14 @@ namespace Cyotek.Windows.Forms
     public override void Serialize(Stream stream, ColorCollection palette)
     {
       if (stream == null)
+      {
         throw new ArgumentNullException("stream");
+      }
 
       if (palette == null)
+      {
         throw new ArgumentNullException("palette");
+      }
 
       // TODO: Not writing 96 colors, but the entire contents of the palette, wether that's less than 96 or more
 
@@ -109,7 +148,9 @@ namespace Cyotek.Windows.Forms
 ; A palette must consist of ninety six (96) colors. If there are less than this, the remaining color
 ; slots will be set to white (FFFFFFFF). If there are more, then the remaining colors will be ignored.");
         foreach (Color color in palette)
+        {
           writer.WriteLine("{0:X2}{1:X2}{2:X2}{3:X2}", color.A, color.R, color.G, color.B);
+        }
       }
     }
 

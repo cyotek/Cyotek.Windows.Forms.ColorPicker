@@ -20,6 +20,7 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Represents a control that binds multiple editors together as a single composite unit.
   /// </summary>
+  [DefaultEvent("ColorChanged")]
   public class ColorEditorManager : Component, IColorEditor
   {
     #region Instance Fields
@@ -255,7 +256,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -267,12 +270,16 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.ColorEditor != null)
+      {
         this.BindEvents(this.ColorEditor);
+      }
 
       handler = this.ColorEditorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -284,12 +291,16 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.ColorGrid != null)
+      {
         this.BindEvents(this.ColorGrid);
+      }
 
       handler = this.ColorGridChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -301,12 +312,16 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.ColorWheel != null)
+      {
         this.BindEvents(this.ColorWheel);
+      }
 
       handler = this.ColorWheelChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -318,12 +333,16 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.LightnessColorSlider != null)
+      {
         this.BindEvents(this.LightnessColorSlider);
+      }
 
       handler = this.LightnessColorSliderChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -335,12 +354,16 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       if (this.ScreenColorPicker != null)
+      {
         this.BindEvents(this.ScreenColorPicker);
+      }
 
       handler = this.ScreenColorPickerChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -351,7 +374,9 @@ namespace Cyotek.Windows.Forms
     protected virtual void SetColor(IColorEditor control, IColorEditor sender)
     {
       if (control != null && control != sender)
+      {
         control.Color = sender.Color;
+      }
     }
 
     /// <summary>

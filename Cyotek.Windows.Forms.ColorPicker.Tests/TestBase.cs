@@ -63,7 +63,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       if (pad)
       {
         while (results.Count < 256)
+        {
           results.Add(Color.FromArgb(0, 0, 0));
+        }
       }
 
       return results;
@@ -116,7 +118,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       if (pad)
       {
         while (results.Count < 256)
+        {
           results.Add(Color.FromArgb(0, 0, 0));
+        }
       }
 
       return results;

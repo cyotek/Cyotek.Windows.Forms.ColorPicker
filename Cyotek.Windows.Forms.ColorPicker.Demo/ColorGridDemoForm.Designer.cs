@@ -33,8 +33,8 @@
       this.colorGrid = new Cyotek.Windows.Forms.ColorGrid();
       this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
       this.groupBox4 = new Cyotek.Windows.Forms.GroupBox();
-      this.paintNetPaletteFileButton = new System.Windows.Forms.Button();
-      this.jascPaletteFileButton = new System.Windows.Forms.Button();
+      this.palettesListBox = new System.Windows.Forms.ListBox();
+      this.savePaletteButton = new System.Windows.Forms.Button();
       this.groupBox3 = new Cyotek.Windows.Forms.GroupBox();
       this.addCustomColorsButton = new System.Windows.Forms.Button();
       this.resetCustomColorsButton = new System.Windows.Forms.Button();
@@ -54,7 +54,6 @@
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.loadGimpPaletteButton = new System.Windows.Forms.Button();
       this.propertiesSplitContainer.Panel1.SuspendLayout();
       this.propertiesSplitContainer.Panel2.SuspendLayout();
       this.propertiesSplitContainer.SuspendLayout();
@@ -124,43 +123,48 @@
       this.optionsSplitContainer.Panel2.Controls.Add(this.groupBox1);
       this.optionsSplitContainer.Panel2.Controls.Add(this.addNewColorButton);
       this.optionsSplitContainer.Size = new System.Drawing.Size(667, 428);
-      this.optionsSplitContainer.SplitterDistance = 291;
+      this.optionsSplitContainer.SplitterDistance = 288;
       this.optionsSplitContainer.SplitterWidth = 5;
       this.optionsSplitContainer.TabIndex = 0;
       // 
       // groupBox4
       // 
-      this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.groupBox4.Controls.Add(this.loadGimpPaletteButton);
-      this.groupBox4.Controls.Add(this.paintNetPaletteFileButton);
-      this.groupBox4.Controls.Add(this.jascPaletteFileButton);
+      this.groupBox4.Controls.Add(this.palettesListBox);
+      this.groupBox4.Controls.Add(this.savePaletteButton);
       this.groupBox4.Location = new System.Drawing.Point(3, 315);
       this.groupBox4.Name = "groupBox4";
-      this.groupBox4.Size = new System.Drawing.Size(365, 94);
+      this.groupBox4.Size = new System.Drawing.Size(368, 110);
       this.groupBox4.TabIndex = 4;
       this.groupBox4.TabStop = false;
       this.groupBox4.Text = "External Palette Files";
       // 
-      // paintNetPaletteFileButton
+      // palettesListBox
       // 
-      this.paintNetPaletteFileButton.Location = new System.Drawing.Point(6, 22);
-      this.paintNetPaletteFileButton.Name = "paintNetPaletteFileButton";
-      this.paintNetPaletteFileButton.Size = new System.Drawing.Size(138, 27);
-      this.paintNetPaletteFileButton.TabIndex = 0;
-      this.paintNetPaletteFileButton.Text = "Paint.NET";
-      this.paintNetPaletteFileButton.UseVisualStyleBackColor = true;
-      this.paintNetPaletteFileButton.Click += new System.EventHandler(this.paintNetPaletteFileButton_Click);
+      this.palettesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.palettesListBox.FormattingEnabled = true;
+      this.palettesListBox.IntegralHeight = false;
+      this.palettesListBox.ItemHeight = 15;
+      this.palettesListBox.Location = new System.Drawing.Point(6, 22);
+      this.palettesListBox.Name = "palettesListBox";
+      this.palettesListBox.Size = new System.Drawing.Size(272, 82);
+      this.palettesListBox.TabIndex = 0;
+      this.palettesListBox.SelectedIndexChanged += new System.EventHandler(this.palettesListBox_SelectedIndexChanged);
       // 
-      // jascPaletteFileButton
+      // savePaletteButton
       // 
-      this.jascPaletteFileButton.Location = new System.Drawing.Point(151, 22);
-      this.jascPaletteFileButton.Name = "jascPaletteFileButton";
-      this.jascPaletteFileButton.Size = new System.Drawing.Size(138, 27);
-      this.jascPaletteFileButton.TabIndex = 1;
-      this.jascPaletteFileButton.Text = "JASC 1.0";
-      this.jascPaletteFileButton.UseVisualStyleBackColor = true;
-      this.jascPaletteFileButton.Click += new System.EventHandler(this.jascPaletteFileButton_Click);
+      this.savePaletteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.savePaletteButton.Location = new System.Drawing.Point(284, 81);
+      this.savePaletteButton.Name = "savePaletteButton";
+      this.savePaletteButton.Size = new System.Drawing.Size(75, 23);
+      this.savePaletteButton.TabIndex = 1;
+      this.savePaletteButton.Text = "Save As";
+      this.savePaletteButton.UseVisualStyleBackColor = true;
+      this.savePaletteButton.Click += new System.EventHandler(this.savePaletteButton_Click);
       // 
       // groupBox3
       // 
@@ -170,7 +174,7 @@
       this.groupBox3.Controls.Add(this.resetCustomColorsButton);
       this.groupBox3.Location = new System.Drawing.Point(3, 49);
       this.groupBox3.Name = "groupBox3";
-      this.groupBox3.Size = new System.Drawing.Size(365, 60);
+      this.groupBox3.Size = new System.Drawing.Size(368, 60);
       this.groupBox3.TabIndex = 1;
       this.groupBox3.TabStop = false;
       this.groupBox3.Text = "Custom Colors";
@@ -205,7 +209,7 @@
       this.groupBox2.Controls.Add(this.grayScaleButton);
       this.groupBox2.Location = new System.Drawing.Point(3, 215);
       this.groupBox2.Name = "groupBox2";
-      this.groupBox2.Size = new System.Drawing.Size(365, 94);
+      this.groupBox2.Size = new System.Drawing.Size(368, 94);
       this.groupBox2.TabIndex = 3;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Dynamically Generated Color Palettes";
@@ -260,7 +264,7 @@
       this.groupBox1.Controls.Add(this.office2010Button);
       this.groupBox1.Location = new System.Drawing.Point(3, 115);
       this.groupBox1.Name = "groupBox1";
-      this.groupBox1.Size = new System.Drawing.Size(365, 94);
+      this.groupBox1.Size = new System.Drawing.Size(368, 94);
       this.groupBox1.TabIndex = 2;
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Pre-defined Color Palettes";
@@ -356,16 +360,6 @@
       this.closeToolStripMenuItem.Text = "&Close";
       this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
       // 
-      // loadGimpPaletteButton
-      // 
-      this.loadGimpPaletteButton.Location = new System.Drawing.Point(6, 55);
-      this.loadGimpPaletteButton.Name = "loadGimpPaletteButton";
-      this.loadGimpPaletteButton.Size = new System.Drawing.Size(138, 27);
-      this.loadGimpPaletteButton.TabIndex = 2;
-      this.loadGimpPaletteButton.Text = "Gimp";
-      this.loadGimpPaletteButton.UseVisualStyleBackColor = true;
-      this.loadGimpPaletteButton.Click += new System.EventHandler(this.loadGimpPaletteButton_Click);
-      // 
       // ColorGridDemoForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -423,8 +417,7 @@
     private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     private System.Windows.Forms.Button paintNetPaletteButton;
     private GroupBox groupBox4;
-    private System.Windows.Forms.Button paintNetPaletteFileButton;
-    private System.Windows.Forms.Button jascPaletteFileButton;
-    private System.Windows.Forms.Button loadGimpPaletteButton;
+    private System.Windows.Forms.Button savePaletteButton;
+    private System.Windows.Forms.ListBox palettesListBox;
   }
 }

@@ -33,11 +33,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void ValueChangedHandler(object sender, EventArgs e)
     {
       eventsListBox.AddEvent((Control)sender, "ValueChanged", new Dictionary<string, object>
-      {
-        {
-          "Value", ((ColorSlider)sender).Value
-        }
-      });
+                                                              {
+                                                                {
+                                                                  "Value", ((ColorSlider)sender).Value
+                                                                }
+                                                              });
     }
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)

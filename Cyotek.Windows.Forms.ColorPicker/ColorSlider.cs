@@ -256,7 +256,9 @@ namespace Cyotek.Windows.Forms
     protected override void Dispose(bool disposing)
     {
       if (disposing && this.SelectionGlyph != null)
+      {
         this.SelectionGlyph.Dispose();
+      }
 
       base.Dispose(disposing);
     }
@@ -271,9 +273,13 @@ namespace Cyotek.Windows.Forms
       bool result;
 
       if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown || (keyData & Keys.Home) == Keys.Home || (keyData & Keys.End) == Keys.End)
+      {
         result = true;
+      }
       else
+      {
         result = base.IsInputKey(keyData);
+      }
 
       return result;
     }
@@ -326,10 +332,14 @@ namespace Cyotek.Windows.Forms
       }
 
       if (value < this.Minimum)
+      {
         value = this.Minimum;
+      }
 
       if (value > this.Maximum)
+      {
         value = this.Maximum;
+      }
 
       // ReSharper disable CompareOfFloatsByEqualityOperator
       if (value != this.Value)
@@ -363,10 +373,14 @@ namespace Cyotek.Windows.Forms
       base.OnMouseDown(e);
 
       if (!this.Focused && this.TabStop)
+      {
         this.Focus();
+      }
 
       if (e.Button == MouseButtons.Left)
+      {
         PointToValue(e.Location);
+      }
     }
 
     /// <summary>
@@ -378,7 +392,9 @@ namespace Cyotek.Windows.Forms
       base.OnMouseMove(e);
 
       if (e.Button == MouseButtons.Left)
+      {
         PointToValue(e.Location);
+      }
     }
 
     /// <summary>
@@ -759,9 +775,13 @@ namespace Cyotek.Windows.Forms
       set
       {
         if (value < this.Minimum)
+        {
           value = this.Minimum;
+        }
         if (value > this.Maximum)
+        {
           value = this.Maximum;
+        }
 
         // ReSharper disable CompareOfFloatsByEqualityOperator
         if (this.Value != value)
@@ -838,16 +858,18 @@ namespace Cyotek.Windows.Forms
 
         // draw the shape
         outer = new[]
-        {
-          firstCorner, lastCorner, tipCorner
-        };
+                {
+                  firstCorner, lastCorner, tipCorner
+                };
 
         // TODO: Add 3D edging similar to the mousewheel's diamond
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
         using (Brush brush = new SolidBrush(this.NubColor))
+        {
           g.FillPolygon(brush, outer);
+        }
       }
 
       return image;
@@ -859,7 +881,9 @@ namespace Cyotek.Windows.Forms
     protected virtual void DefineBar()
     {
       if (this.SelectionGlyph != null)
+      {
         this.SelectionGlyph.Dispose();
+      }
 
       this.BarPadding = this.GetBarPadding();
       this.BarBounds = this.GetBarBounds();
@@ -943,7 +967,9 @@ namespace Cyotek.Windows.Forms
       handler = this.BarBoundsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -959,7 +985,9 @@ namespace Cyotek.Windows.Forms
       handler = this.BarPaddingChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -975,7 +1003,9 @@ namespace Cyotek.Windows.Forms
       handler = this.BarStyleChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -991,7 +1021,9 @@ namespace Cyotek.Windows.Forms
       handler = this.Color1Changed;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1007,7 +1039,9 @@ namespace Cyotek.Windows.Forms
       handler = this.Color2Changed;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1023,7 +1057,9 @@ namespace Cyotek.Windows.Forms
       handler = this.Color3Changed;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1039,7 +1075,9 @@ namespace Cyotek.Windows.Forms
       handler = this.CustomColorsChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1053,7 +1091,9 @@ namespace Cyotek.Windows.Forms
       handler = this.LargeChangeChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1067,7 +1107,9 @@ namespace Cyotek.Windows.Forms
       handler = this.MaximumChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1083,7 +1125,9 @@ namespace Cyotek.Windows.Forms
       handler = this.MinimumChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1099,7 +1143,9 @@ namespace Cyotek.Windows.Forms
       handler = this.NubColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1116,7 +1162,9 @@ namespace Cyotek.Windows.Forms
       handler = this.NubSizeChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1133,7 +1181,9 @@ namespace Cyotek.Windows.Forms
       handler = this.NubStyleChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1150,7 +1200,9 @@ namespace Cyotek.Windows.Forms
       handler = this.OrientationChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1166,7 +1218,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ShowValueDividerChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1183,7 +1237,9 @@ namespace Cyotek.Windows.Forms
       handler = this.SliderStyleChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1197,7 +1253,9 @@ namespace Cyotek.Windows.Forms
       handler = this.SmallChangeChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1213,7 +1271,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ValueChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -1262,17 +1322,25 @@ namespace Cyotek.Windows.Forms
         {
           x = point.X - this.NubSize.Width / 2;
           if (this.NubStyle == ColorSliderNubStyle.BottomRight)
+          {
             y = this.BarBounds.Bottom;
+          }
           else
+          {
             y = this.BarBounds.Top - this.NubSize.Height;
+          }
         }
         else
         {
           y = point.Y - this.NubSize.Height / 2;
           if (this.NubStyle == ColorSliderNubStyle.BottomRight)
+          {
             x = this.BarBounds.Right;
+          }
           else
+          {
             x = this.BarBounds.Left - this.NubSize.Width;
+          }
         }
 
         e.Graphics.DrawImage(this.SelectionGlyph, x, y);
@@ -1280,7 +1348,9 @@ namespace Cyotek.Windows.Forms
 
       // focus
       if (this.Focused)
+      {
         ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(this.BarBounds, -2, -2));
+      }
     }
 
     /// <summary>
@@ -1306,23 +1376,23 @@ namespace Cyotek.Windows.Forms
           {
             case ColorBarStyle.TwoColor:
               blend.Colors = new[]
-              {
-                this.Color1, this.Color2
-              };
+                             {
+                               this.Color1, this.Color2
+                             };
               blend.Positions = new[]
-              {
-                0F, 1F
-              };
+                                {
+                                  0F, 1F
+                                };
               break;
             case ColorBarStyle.ThreeColor:
               blend.Colors = new[]
-              {
-                this.Color1, this.Color2, this.Color3
-              };
+                             {
+                               this.Color1, this.Color2, this.Color3
+                             };
               blend.Positions = new[]
-              {
-                0, 0.5F, 1
-              };
+                                {
+                                  0, 0.5F, 1
+                                };
               break;
             case ColorBarStyle.Custom:
               if (this.CustomColors != null && this.CustomColors.Count > 0)
@@ -1333,13 +1403,13 @@ namespace Cyotek.Windows.Forms
               else
               {
                 blend.Colors = new[]
-                {
-                  this.Color1, this.Color2
-                };
+                               {
+                                 this.Color1, this.Color2
+                               };
                 blend.Positions = new[]
-                {
-                  0F, 1F
-                };
+                                  {
+                                    0F, 1F
+                                  };
               }
               break;
           }
@@ -1372,10 +1442,14 @@ namespace Cyotek.Windows.Forms
       }
 
       if (value < this.Minimum)
+      {
         value = this.Minimum;
+      }
 
       if (value > this.Maximum)
+      {
         value = this.Maximum;
+      }
 
       this.Value = value;
     }

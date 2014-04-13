@@ -26,7 +26,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Class Members
+    #region Public Class Members
 
     /// <summary>
     /// Ccompares two colors by brightness and returns an indication of their relative sort order.
@@ -43,11 +43,17 @@ namespace Cyotek.Windows.Forms
       v2 = GetBrightness(y);
 
       if (v1 < v2)
+      {
         result = -1;
+      }
       else if (v1 > v2)
+      {
         result = 1;
+      }
       else
+      {
         result = 0;
+      }
 
       return result;
     }
@@ -67,11 +73,17 @@ namespace Cyotek.Windows.Forms
       v2 = y.GetHue();
 
       if (v1 < v2)
+      {
         result = -1;
+      }
       else if (v1 > v2)
+      {
         result = 1;
+      }
       else
+      {
         result = 0;
+      }
 
       return result;
     }
@@ -91,14 +103,24 @@ namespace Cyotek.Windows.Forms
       v2 = y.R << 16 | y.G << 8 | y.B;
 
       if (v1 > v2)
+      {
         result = -1;
+      }
       else if (v1 < v2)
+      {
         result = 1;
+      }
       else
+      {
         result = 0;
+      }
 
       return result;
     }
+
+    #endregion
+
+    #region Private Class Members
 
     private static int GetBrightness(Color color)
     {
@@ -114,9 +136,13 @@ namespace Cyotek.Windows.Forms
       // sRGB "gamma" function (approx 2.2)
 
       if (v <= 0.0031308)
+      {
         v *= 12.92;
+      }
       else
+      {
         v = 1.055 * Math.Pow(v, 1.0 / 2.4) - 0.055;
+      }
 
       return (int)(v * 255 + .5);
     }
@@ -129,9 +155,13 @@ namespace Cyotek.Windows.Forms
 
       double c = ic / 255.0;
       if (c <= 0.04045)
+      {
         result = c / 12.92;
+      }
       else
+      {
         result = Math.Pow(((c + 0.055) / (1.055)), 2.4);
+      }
 
       return result;
     }

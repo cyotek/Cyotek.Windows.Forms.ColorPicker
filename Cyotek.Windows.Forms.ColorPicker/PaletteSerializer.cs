@@ -33,6 +33,9 @@ namespace Cyotek.Windows.Forms
 
     #region Static Constructors
 
+    /// <summary>
+    /// Initializes static members of the <see cref="PaletteSerializer"/> class.
+    /// </summary>
     static PaletteSerializer()
     {
       _serializerCache = new List<IPaletteSerializer>();
@@ -40,25 +43,48 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Class Properties
+    #region Public Class Properties
 
+    /// <summary>
+    /// Gets all loaded serializers.
+    /// </summary>
+    /// <value>The loaded serializers.</value>
+    public static IEnumerable<IPaletteSerializer> AllSerializers
+    {
+      get { return _serializerCache.AsReadOnly(); }
+    }
+
+    /// <summary>
+    /// Returns a filter suitable for use with the <see cref="System.Windows.Forms.OpenFileDialog"/>.
+    /// </summary>
+    /// <value>A filter suitable for use with the <see cref="System.Windows.Forms.OpenFileDialog"/>.</value>
+    /// <remarks>This filter does not include any serializers that cannot read source data.</remarks>
     public static string DefaultOpenFilter
     {
       get
       {
         if (string.IsNullOrEmpty(_defaultOpenFilter))
+        {
           CreateFilters();
+        }
 
         return _defaultOpenFilter;
       }
     }
 
+    /// <summary>
+    /// Returns a filter suitable for use with the <see cref="System.Windows.Forms.SaveFileDialog"/>.
+    /// </summary>
+    /// <value>A filter suitable for use with the <see cref="System.Windows.Forms.SaveFileDialog"/>.</value>
+    /// <remarks>This filter does not include any serializers that cannot write destination data.</remarks>
     public static string DefaultSaveFilter
     {
       get
       {
         if (string.IsNullOrEmpty(_defaultSaveFileter))
+        {
           CreateFilters();
+        }
 
         return _defaultSaveFileter;
       }
@@ -66,30 +92,51 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Class Members
+    #region Public Class Members
 
     public static IPaletteSerializer GetSerializer(string fileName)
     {
       IPaletteSerializer result;
-      string fileExtension;
 
       if (string.IsNullOrEmpty(fileName))
+      {
         throw new ArgumentNullException("fileName");
+      }
+
+      if (!File.Exists(fileName))
+      {
+        throw new FileNotFoundException(string.Format("Cannot find file '{0}'.", fileName), fileName);
+      }
 
       if (_serializerCache.Count == 0)
-        LoadSerializers();
-
-      fileExtension = Path.GetExtension(fileName);
-      if (fileExtension.Length != 0 && fileExtension[0] == '.')
-        fileExtension = fileExtension.Remove(0, 1);
-      result = _serializerCache.FirstOrDefault(s => !string.IsNullOrEmpty(s.DefaultExtension) && s.DefaultExtension.Split(new[]
       {
-        ';'
-      }, StringSplitOptions.RemoveEmptyEntries).Contains(fileExtension, StringComparer.InvariantCultureIgnoreCase));
+        LoadSerializers();
+      }
+
+      result = null;
+
+      foreach (IPaletteSerializer checkSerializer in AllSerializers)
+      {
+        using (FileStream file = File.OpenRead(fileName))
+        {
+          if (checkSerializer.CanReadFrom(file))
+          {
+            result = checkSerializer;
+            break;
+          }
+        }
+      }
 
       return result;
     }
 
+    #endregion
+
+    #region Private Class Members
+
+    /// <summary>
+    /// Creates the Open and Save As filters.
+    /// </summary>
     private static void CreateFilters()
     {
       StringBuilder openFilter;
@@ -101,9 +148,11 @@ namespace Cyotek.Windows.Forms
       saveFilter = new StringBuilder();
 
       if (_serializerCache.Count == 0)
+      {
         LoadSerializers();
+      }
 
-      foreach (IPaletteSerializer serializer in _serializerCache.Where(serializer => !(string.IsNullOrEmpty(serializer.DefaultExtension) || openExtensions.Contains(serializer.DefaultExtension))).OrderBy(serializer => serializer.Name))
+      foreach (IPaletteSerializer serializer in _serializerCache.Where(serializer => !(string.IsNullOrEmpty(serializer.DefaultExtension) || openExtensions.Contains(serializer.DefaultExtension))))
       {
         StringBuilder extensionMask;
         string filter;
@@ -111,19 +160,23 @@ namespace Cyotek.Windows.Forms
         extensionMask = new StringBuilder();
 
         foreach (string extension in serializer.DefaultExtension.Split(new[]
-        {
-          ';'
-        }, StringSplitOptions.RemoveEmptyEntries))
+                                                                       {
+                                                                         ';'
+                                                                       }, StringSplitOptions.RemoveEmptyEntries))
         {
           string mask;
 
           mask = "*." + extension;
 
           if (!openExtensions.Contains(mask))
+          {
             openExtensions.Add(mask);
+          }
 
           if (extensionMask.Length != 0)
+          {
             extensionMask.Append(";");
+          }
           extensionMask.Append(mask);
         }
 
@@ -132,28 +185,41 @@ namespace Cyotek.Windows.Forms
         if (serializer.CanRead)
         {
           if (openFilter.Length != 0)
+          {
             openFilter.Append("|");
+          }
           openFilter.Append(filter);
         }
 
         if (serializer.CanWrite)
         {
           if (saveFilter.Length != 0)
+          {
             saveFilter.Append("|");
+          }
           saveFilter.Append(filter);
         }
       }
 
       if (openExtensions.Count != 0)
+      {
         openFilter.Insert(0, string.Format("All Supported Palettes ({0})|{0}|", string.Join(";", openExtensions.ToArray())));
+      }
       if (openFilter.Length != 0)
+      {
         openFilter.Append("|");
+      }
       openFilter.Append("All Files (*.*)|*.*");
 
       _defaultOpenFilter = openFilter.ToString();
       _defaultSaveFileter = saveFilter.ToString();
     }
 
+    /// <summary>
+    /// Gets the loadable types from an assembly.
+    /// </summary>
+    /// <param name="assembly">The assembly to load types from.</param>
+    /// <returns>Available types</returns>
     private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
     {
       try
@@ -166,6 +232,9 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Loads the serializers.
+    /// </summary>
     private static void LoadSerializers()
     {
       _serializerCache.Clear();
@@ -185,6 +254,10 @@ namespace Cyotek.Windows.Forms
           // ignore errors
         }
       }
+
+      // sort the cache by name, that way the open/save filters won't need independant sorting
+      // and can easily map FileDialog.FilterIndex to an item in this collection
+      _serializerCache.Sort((a, b) => String.CompareOrdinal(a.Name, b.Name));
     }
 
     #endregion
@@ -230,6 +303,13 @@ namespace Cyotek.Windows.Forms
     #region Public Members
 
     /// <summary>
+    /// Determines whether this instance can read palette from data the specified stream.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <returns><c>true</c> if this instance can read palette data from the specified stream; otherwise, <c>false</c>.</returns>
+    public abstract bool CanReadFrom(Stream stream);
+
+    /// <summary>
     /// Deserializes the <see cref="ColorCollection" /> contained by the specified <see cref="Stream" />.
     /// </summary>
     /// <param name="stream">The <see cref="Stream" /> that contains the palette to deserialize.</param>
@@ -244,10 +324,14 @@ namespace Cyotek.Windows.Forms
     public ColorCollection Deserialize(string fileName)
     {
       if (!File.Exists(fileName))
+      {
         throw new FileNotFoundException(string.Format("Cannot find file '{0}'", fileName), fileName);
+      }
 
       using (Stream stream = File.OpenRead(fileName))
+      {
         return this.Deserialize(stream);
+      }
     }
 
     /// <summary>
@@ -265,7 +349,81 @@ namespace Cyotek.Windows.Forms
     public void Serialize(string fileName, ColorCollection palette)
     {
       using (Stream stream = File.Create(fileName))
+      {
         this.Serialize(stream, palette);
+      }
+    }
+
+    #endregion
+
+    #region Protected Members
+
+    /// <summary>
+    /// Reads a 16bit unsigned integer in big-endian format.
+    /// </summary>
+    /// <param name="stream">The stream to read the data from.</param>
+    /// <returns>The unsigned 16bit integer cast to an <c>Int32</c>.</returns>
+    protected int ReadInt16(Stream stream)
+    {
+      return (stream.ReadByte() << 8) | (stream.ReadByte() << 0);
+    }
+
+    /// <summary>
+    /// Reads a 32bit unsigned integer in big-endian format.
+    /// </summary>
+    /// <param name="stream">The stream to read the data from.</param>
+    /// <returns>The unsigned 32bit integer cast to an <c>Int32</c>.</returns>
+    protected int ReadInt32(Stream stream)
+    {
+      // big endian conversion: http://stackoverflow.com/a/14401341/148962
+
+      return ((byte)stream.ReadByte() << 24) | ((byte)stream.ReadByte() << 16) | ((byte)stream.ReadByte() << 8) | (byte)stream.ReadByte();
+    }
+
+    /// <summary>
+    /// Reads a unicode string of the specified length.
+    /// </summary>
+    /// <param name="stream">The stream to read the data from.</param>
+    /// <param name="length">The number of characters in the string.</param>
+    /// <returns>The string read from the stream.</returns>
+    protected string ReadString(Stream stream, int length)
+    {
+      byte[] buffer;
+
+      buffer = new byte[length * 2];
+
+      stream.Read(buffer, 0, buffer.Length);
+
+      return Encoding.BigEndianUnicode.GetString(buffer);
+    }
+
+    /// <summary>
+    /// Writes a 16bit unsigned integer in big-endian format.
+    /// </summary>
+    /// <param name="stream">The stream to write the data to.</param>
+    /// <param name="value">The value to write</param>
+    protected void WriteInt16(Stream stream, short value)
+    {
+      stream.WriteByte((byte)(value >> 8));
+      stream.WriteByte((byte)(value >> 0));
+    }
+
+    /// <summary>
+    /// Writes a 32bit unsigned integer in big-endian format.
+    /// </summary>
+    /// <param name="stream">The stream to write the data to.</param>
+    /// <param name="value">The value to write</param>
+    protected void WriteInt32(Stream stream, int value)
+    {
+      stream.WriteByte((byte)((value & 0xFF000000) >> 24));
+      stream.WriteByte((byte)((value & 0x00FF0000) >> 16));
+      stream.WriteByte((byte)((value & 0x0000FF00) >> 8));
+      stream.WriteByte((byte)((value & 0x000000FF) >> 0));
+    }
+
+    protected void WriteString(Stream stream, string value)
+    {
+      stream.Write(Encoding.BigEndianUnicode.GetBytes(value), 0, value.Length * 2);
     }
 
     #endregion
@@ -310,14 +468,32 @@ namespace Cyotek.Windows.Forms
       get { return this.DefaultExtension; }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether this serializer can be used to read palettes.
+    /// </summary>
+    /// <value><c>true</c> if palettes can be read using this serializer; otherwise, <c>false</c>.</value>
     bool IPaletteSerializer.CanRead
     {
       get { return this.CanRead; }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether this serializer can be used to write palettes.
+    /// </summary>
+    /// <value><c>true</c> if palettes can be written using this serializer; otherwise, <c>false</c>.</value>
     bool IPaletteSerializer.CanWrite
     {
       get { return this.CanWrite; }
+    }
+
+    /// <summary>
+    /// Determines whether this instance can read palette data from the specified stream.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <returns><c>true</c> if this instance can read palette data from the specified stream; otherwise, <c>false</c>.</returns>
+    bool IPaletteSerializer.CanReadFrom(Stream stream)
+    {
+      return this.CanReadFrom(stream);
     }
 
     #endregion

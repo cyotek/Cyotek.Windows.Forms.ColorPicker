@@ -111,10 +111,14 @@ namespace Cyotek.Windows.Forms
       if (disposing)
       {
         if (_eyedropperCursor != null)
+        {
           _eyedropperCursor.Dispose();
+        }
 
         if (this.SnapshotImage != null)
+        {
           this.SnapshotImage.Dispose();
+        }
       }
 
       base.Dispose(disposing);
@@ -153,8 +157,10 @@ namespace Cyotek.Windows.Forms
       if (e.Button == MouseButtons.Left && !this.IsCapturing)
       {
         if (_eyedropperCursor == null)
+        {
           // ReSharper disable AssignNullToNotNullAttribute
           _eyedropperCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.eyedropper.cur")));
+        }
         // ReSharper restore AssignNullToNotNullAttribute
 
         this.Cursor = _eyedropperCursor;
@@ -172,7 +178,9 @@ namespace Cyotek.Windows.Forms
       base.OnMouseMove(e);
 
       if (this.IsCapturing)
+      {
         this.UpdateSnapshot();
+      }
     }
 
     /// <summary>
@@ -480,7 +488,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -496,7 +506,9 @@ namespace Cyotek.Windows.Forms
       handler = this.GridColorChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -512,7 +524,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ImageChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -528,7 +542,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ShowGridChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -544,7 +560,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ShowTextWithSnapshotChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -560,7 +578,9 @@ namespace Cyotek.Windows.Forms
       handler = this.ZoomChanged;
 
       if (handler != null)
+      {
         handler(this, e);
+      }
     }
 
     /// <summary>
@@ -571,19 +591,27 @@ namespace Cyotek.Windows.Forms
     {
       // grid
       if (this.ShowGrid)
+      {
         this.PaintGrid(e);
+      }
 
       // center marker
       if (this.HasSnapshot)
+      {
         this.PaintCenterMarker(e);
+      }
 
       // image
       if (this.Image != null && (!this.HasSnapshot || this.ShowTextWithSnapshot))
+      {
         e.Graphics.DrawImage(this.Image, (this.ClientSize.Width - this.Image.Size.Width) / 2, (this.ClientSize.Height - this.Image.Size.Height) / 2);
+      }
 
       // draw text
       if (!string.IsNullOrEmpty(this.Text) && (!this.HasSnapshot || this.ShowTextWithSnapshot))
+      {
         TextRenderer.DrawText(e.Graphics, this.Text, this.Font, this.ClientRectangle, this.ForeColor, this.BackColor, TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis);
+      }
     }
 
     /// <summary>
@@ -597,7 +625,9 @@ namespace Cyotek.Windows.Forms
       center = this.GetCenterPoint();
 
       using (Pen pen = new Pen(this.ForeColor))
+      {
         e.Graphics.DrawRectangle(pen, center.X * this.Zoom, center.Y * this.Zoom, this.Zoom + 2, this.Zoom + 2);
+      }
     }
 
     /// <summary>
@@ -613,15 +643,19 @@ namespace Cyotek.Windows.Forms
       viewport = this.ClientRectangle;
 
       using (Pen pen = new Pen(this.GridColor)
-      {
-        DashStyle = DashStyle.Dot
-      })
+                       {
+                         DashStyle = DashStyle.Dot
+                       })
       {
         for (int x = viewport.Left + 1; x < viewport.Right; x += pixelSize)
+        {
           e.Graphics.DrawLine(pen, x, viewport.Top, x, viewport.Bottom);
+        }
 
         for (int y = viewport.Top + 1; y < viewport.Bottom; y += pixelSize)
+        {
           e.Graphics.DrawLine(pen, viewport.Left, y, viewport.Right, y);
+        }
 
         e.Graphics.DrawRectangle(pen, viewport);
       }
