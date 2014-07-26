@@ -513,6 +513,10 @@ namespace Cyotek.Windows.Forms
 
       if (this.AllowPainting)
       {
+        int colorCount;
+
+        colorCount = this.Colors.Count;
+        
         Debug.Print(e.ClipRectangle.Size == this.ClientSize ? "Performing full paint!" : "Performing partial paint!");
 
         base.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc as the PaintBackground event is no longer being called
@@ -530,7 +534,7 @@ namespace Cyotek.Windows.Forms
         }
 
         // draw cells for all current colors
-        for (int i = 0; i < this.Colors.Count; i++)
+        for (int i = 0; i < colorCount; i++)
         {
           Rectangle bounds;
 
@@ -551,10 +555,9 @@ namespace Cyotek.Windows.Forms
           {
             Rectangle bounds;
 
-            bounds = this.ColorRegions[this.Colors.Count + i];
-            if (e.ClipRectangle.IntersectsWith(bounds))
+            if (this.ColorRegions.TryGetValue(colorCount + 1, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
             {
-              this.PaintCell(e, i, this.Colors.Count + i, this.CustomColors[i], bounds);
+              this.PaintCell(e, i, colorCount + i, this.CustomColors[i], bounds);
             }
           }
         }
@@ -564,8 +567,7 @@ namespace Cyotek.Windows.Forms
         {
           Rectangle bounds;
 
-          bounds = this.ColorRegions[this.ColorIndex];
-          if (e.ClipRectangle.IntersectsWith(bounds))
+          if (this.ColorRegions.TryGetValue(this.ColorIndex, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
           {
             this.PaintSelectedCell(e, this.ColorIndex, this.Color, bounds);
           }

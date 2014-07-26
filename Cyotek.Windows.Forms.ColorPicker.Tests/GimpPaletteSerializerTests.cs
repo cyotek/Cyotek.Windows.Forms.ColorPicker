@@ -53,6 +53,34 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     }
 
     [Test]
+    [Timeout(1000)]
+    public void DeserializeWithCommentsTest()
+    {
+      // arrange
+      IPaletteSerializer target;
+      string fileName;
+      ColorCollection expected;
+      ColorCollection actual;
+
+      fileName = Path.Combine(this.DataPath, "db16-comments.gpl");
+
+      target = new GimpPaletteSerializer();
+
+      expected = this.CreateDawnBringer16Palette(false);
+
+      // act
+      using (Stream stream = File.OpenRead(fileName))
+      {
+        actual = target.Deserialize(stream);
+      }
+
+      // assert
+      CollectionAssert.AreEqual(expected, actual);
+    }
+
+    
+
+    [Test]
     public void DeserializeTest()
     {
       // arrange

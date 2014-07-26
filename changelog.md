@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.4.1
+### Bug Fixes
+* Fixed an issue where `GimpPaletteSerializer.Deserialize` could get itself stuck in an infinite loop if a GPL file was formatted a certain way
+* `GimpPaletteSerializer.Serialize` now uses `ASCII` encoding instead of `UTF-8`, fixing a problem where palette files couldn't be opened in Inkscape.
+
 ## 1.0.4.0
 ### Changes and new features
 * Added new `AdobePhotoShopColorSwatchSerializer` serializer for reading and writing Adobe PhotoShop colour swatches (both version 1 and version 2)

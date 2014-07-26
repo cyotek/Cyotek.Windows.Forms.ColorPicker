@@ -422,9 +422,9 @@ namespace Cyotek.Windows.Forms
         aColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
         aNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
       }
-        // ReSharper disable EmptyGeneralCatchClause
+      // ReSharper disable EmptyGeneralCatchClause
       catch
-        // ReSharper restore EmptyGeneralCatchClause
+      // ReSharper restore EmptyGeneralCatchClause
       {
         // ignore errors
       }
@@ -509,17 +509,23 @@ namespace Cyotek.Windows.Forms
     private void AddColorProperties<T>()
     {
       Type type;
+      Type colorType;
 
       type = typeof(T);
+      colorType = typeof(Color);
 
-      foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static).Where(property => property.PropertyType == typeof(Color)))
+      // ReSharper disable once LoopCanBePartlyConvertedToQuery
+      foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static))
       {
-        Color color;
-
-        color = (Color)property.GetValue(type, null);
-        if (!color.IsEmpty)
+        if (property.PropertyType == colorType)
         {
-          hexTextBox.Items.Add(color.Name);
+          Color color;
+
+          color = (Color)property.GetValue(type, null);
+          if (!color.IsEmpty)
+          {
+            hexTextBox.Items.Add(color.Name);
+          }
         }
       }
     }
@@ -632,7 +638,7 @@ namespace Cyotek.Windows.Forms
 
               useRgb = true;
             }
-              // ReSharper disable EmptyGeneralCatchClause
+            // ReSharper disable EmptyGeneralCatchClause
             catch
             { }
             // ReSharper restore EmptyGeneralCatchClause

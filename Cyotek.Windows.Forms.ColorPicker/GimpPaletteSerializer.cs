@@ -94,52 +94,69 @@ namespace Cyotek.Windows.Forms
       using (StreamReader reader = new StreamReader(stream))
       {
         string header;
-        string startHeader;
         int swatchIndex;
+        bool readingPalette;
+
+        readingPalette = false;
 
         // check signature
         header = reader.ReadLine();
-        startHeader = reader.ReadLine();
 
         if (header != "GIMP Palette")
         {
           throw new InvalidDataException("Invalid palette file");
         }
 
-        while (startHeader != "#")
-        {
-          startHeader = reader.ReadLine();
-        }
-
+        // read the swatches
         swatchIndex = 0;
 
         while (!reader.EndOfStream)
         {
-          int r;
-          int g;
-          int b;
           string data;
-          string[] parts;
-          string name;
 
           data = reader.ReadLine();
-          parts = !string.IsNullOrEmpty(data) ? data.Split(new[]
+
+          if (!string.IsNullOrEmpty(data))
+          {
+            if (data[0] == '#')
+            {
+              // comment
+              readingPalette = true;
+            }
+            else if (!readingPalette)
+            {
+              // custom attribute
+
+            }
+            else if (readingPalette)
+            {
+              int r;
+              int g;
+              int b;
+              string[] parts;
+              string name;
+
+              // TODO: Optimize this a touch. Microoptimization? Maybe.
+
+              parts = !string.IsNullOrEmpty(data) ? data.Split(new[]
                                                            {
                                                              ' ', '\t'
                                                            }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
-          name = parts.Length > 3 ? string.Join(" ", parts, 3, parts.Length - 3) : null;
+              name = parts.Length > 3 ? string.Join(" ", parts, 3, parts.Length - 3) : null;
 
-          if (!int.TryParse(parts[0], out r) || !int.TryParse(parts[1], out g) || !int.TryParse(parts[2], out b))
-          {
-            throw new InvalidDataException(string.Format("Invalid palette contents found with data '{0}'", data));
-          }
+              if (!int.TryParse(parts[0], out r) || !int.TryParse(parts[1], out g) || !int.TryParse(parts[2], out b))
+              {
+                throw new InvalidDataException(string.Format("Invalid palette contents found with data '{0}'", data));
+              }
 
-          results.Add(Color.FromArgb(r, g, b));
+              results.Add(Color.FromArgb(r, g, b));
 #if USENAMEHACK
-          results.SetName(swatchIndex, name);
+              results.SetName(swatchIndex, name);
 #endif
 
-          swatchIndex++;
+              swatchIndex++;
+            }
+          }
         }
       }
 
@@ -169,7 +186,7 @@ namespace Cyotek.Windows.Forms
 
       // TODO: Allow name and columns attributes to be specified
 
-      using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8))
+      using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
       {
         writer.WriteLine("GIMP Palette");
         writer.WriteLine("Name: ");
@@ -190,7 +207,7 @@ namespace Cyotek.Windows.Forms
           }
           else
           {
-            writer.Write("#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
+            writer.Write("#{0:X2}{1:X2}{2:X2} Swatch {3}", color.R, color.G, color.B, swatchIndex);
           }
 #endif
           writer.WriteLine();
