@@ -33,6 +33,7 @@
       this.screenColorPickerDemoButton = new System.Windows.Forms.Button();
       this.colorWheelDemoButton = new System.Windows.Forms.Button();
       this.groupBox1 = new Cyotek.Windows.Forms.GroupBox();
+      this.toolstripDemoButton = new System.Windows.Forms.Button();
       this.colorPickerFormDemoButton = new System.Windows.Forms.Button();
       this.colorSliderDemoButton = new System.Windows.Forms.Button();
       this.colorEditorDemoButton = new System.Windows.Forms.Button();
@@ -81,6 +82,7 @@
       this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.groupBox1.Controls.Add(this.toolstripDemoButton);
       this.groupBox1.Controls.Add(this.colorPickerFormDemoButton);
       this.groupBox1.Controls.Add(this.colorSliderDemoButton);
       this.groupBox1.Controls.Add(this.colorEditorDemoButton);
@@ -94,6 +96,18 @@
       this.groupBox1.TabIndex = 0;
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Available Demonstrations";
+      // 
+      // toolstripDemoButton
+      // 
+      this.toolstripDemoButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.toolstripDemoButton.Location = new System.Drawing.Point(6, 254);
+      this.toolstripDemoButton.Name = "toolstripDemoButton";
+      this.toolstripDemoButton.Size = new System.Drawing.Size(573, 27);
+      this.toolstripDemoButton.TabIndex = 7;
+      this.toolstripDemoButton.Text = "Using the ColorGrid in a &ToolStrip control";
+      this.toolstripDemoButton.UseVisualStyleBackColor = true;
+      this.toolstripDemoButton.Click += new System.EventHandler(this.toolstripDemoButton_Click);
       // 
       // colorPickerFormDemoButton
       // 
@@ -147,7 +161,6 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.CancelButton = null;
       this.ClientSize = new System.Drawing.Size(615, 495);
       this.Controls.Add(this.groupBox1);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -172,6 +185,7 @@
     private System.Windows.Forms.Button colorEditorDemoButton;
     private System.Windows.Forms.Button colorSliderDemoButton;
     private System.Windows.Forms.Button colorPickerFormDemoButton;
+    private System.Windows.Forms.Button toolstripDemoButton;
 
 
 

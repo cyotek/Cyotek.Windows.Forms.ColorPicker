@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.5.0
+* Added a new demonstration which shows how to host a `ColorGrid` control in a `ToolStrip`. More details on this can be found on [cyotek.com](http://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip).
+* Added new `PreviewColorChanged` event to the `ColorPickerDialog`
+* Added new `PaintColor` protected methods to the `ColorWheel` control allowing additional hotspots to be painted
+* Added new constructor to the `ColorCollection` to copy the contents of another `ColorCollection`
+* The `ColorGrid` control now to defaults to creating 16 custom colours instead of 32
+* Fixed an issue where the `ColorGrid` control wasn't rendering the custom colours group correctly (regression from previous version). Thanks to [Michael Schwarz](https://github.com/xwcg) for pointing out the offending line of code
+* Fixed an issue where the `ColorPickerDialog` displayed non-opaque colours when the `ShowAlphaChannel` property was `false`
+* Fixed an issue where the `ColorEditor` control would allow you to enter an 8 character hex color and thus set an alpha channel even if the `ShowAlphaChannel` property was `false`
+
 ## 1.0.4.1
 ### Bug Fixes
 * Fixed an issue where `GimpPaletteSerializer.Deserialize` could get itself stuck in an infinite loop if a GPL file was formatted a certain way

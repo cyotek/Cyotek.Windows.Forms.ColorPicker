@@ -4,10 +4,10 @@ using System.Windows.Forms;
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -65,64 +65,58 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
+    private void ShowDemo<T>() where T : Form, new()
+    {
+      Cursor.Current = Cursors.WaitCursor;
+
+      using (Form form = new T())
+      {
+        form.ShowDialog(this);
+      }
+    }
+
     #region Event Handlers
 
     private void colorEditorDemoButton_Click(object sender, EventArgs e)
     {
-      using (Form dialog = new ColorEditorDemoForm())
-      {
-        dialog.ShowDialog(this);
-      }
+      this.ShowDemo<ColorEditorDemoForm>();
     }
 
     private void colorEditorManagerDemoButton_Click(object sender, EventArgs e)
     {
-      using (Form dialog = new ColorEditorManagerDemoForm())
-      {
-        dialog.ShowDialog(this);
-      }
+      this.ShowDemo<ColorEditorManagerDemoForm>();
     }
 
     private void colorGridDemoButton_Click(object sender, EventArgs e)
     {
-      using (Form dialog = new ColorGridDemoForm())
-      {
-        dialog.ShowDialog(this);
-      }
+      this.ShowDemo<ColorGridDemoForm>();
     }
 
     private void colorPickerFormDemoButton_Click(object sender, EventArgs e)
     {
-      using (Form dialog = new ColorPickerDialogDemoForm())
-      {
-        dialog.ShowDialog(this);
-      }
+      this.ShowDemo<ColorPickerDialogDemoForm>();
     }
 
     private void colorSliderDemoButton_Click(object sender, EventArgs e)
     {
-      using (Form dialog = new ColorSliderDemonstrationForm())
-      {
-        dialog.ShowDialog(this);
-      }
+      this.ShowDemo<ColorSliderDemonstrationForm>();
     }
 
     private void colorWheelDemoButton_Click(object sender, EventArgs e)
     {
-      using (Form dialog = new ColorWheelDemoForm())
-      {
-        dialog.ShowDialog(this);
-      }
+      this.ShowDemo<ColorWheelDemoForm>();
     }
 
     private void screenColorPickerDemoButton_Click(object sender, EventArgs e)
     {
-      using (Form dialog = new ScreenColorPickerDemoForm())
-      {
-        dialog.ShowDialog(this);
-      }
+      this.ShowDemo<ScreenColorPickerDemoForm>();
     }
 
     #endregion
+
+    private void toolstripDemoButton_Click(object sender, EventArgs e)
+    {
+      this.ShowDemo<ToolStripHostDemoForm>();
+    }
   }
 }

@@ -3,10 +3,10 @@ using FluentAssertions;
 using NUnit.Framework;
 
 // Cyotek Color Picker controls library
-// Copyright © 2013-2014 Cyotek.
+// Copyright © 2013-2015 Cyotek Ltd.
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See colorpicker-license.txt for the full text.
+// Licensed under the MIT License. See license.txt for the full text.
 
 // If you use this code in your applications, donations or attribution are welcome
 
@@ -53,6 +53,31 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     }
 
     [Test]
+    public void DeserializeTest()
+    {
+      // arrange
+      IPaletteSerializer target;
+      string fileName;
+      ColorCollection expected;
+      ColorCollection actual;
+
+      fileName = Path.Combine(this.DataPath, "db32.gpl");
+
+      target = new GimpPaletteSerializer();
+
+      expected = this.CreateDawnBringer32Palette(false);
+
+      // act
+      using (Stream stream = File.OpenRead(fileName))
+      {
+        actual = target.Deserialize(stream);
+      }
+
+      // assert
+      CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [Test]
     [Timeout(1000)]
     public void DeserializeWithCommentsTest()
     {
@@ -67,33 +92,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       target = new GimpPaletteSerializer();
 
       expected = this.CreateDawnBringer16Palette(false);
-
-      // act
-      using (Stream stream = File.OpenRead(fileName))
-      {
-        actual = target.Deserialize(stream);
-      }
-
-      // assert
-      CollectionAssert.AreEqual(expected, actual);
-    }
-
-    
-
-    [Test]
-    public void DeserializeTest()
-    {
-      // arrange
-      IPaletteSerializer target;
-      string fileName;
-      ColorCollection expected;
-      ColorCollection actual;
-
-      fileName = Path.Combine(this.DataPath, "db32.gpl");
-
-      target = new GimpPaletteSerializer();
-
-      expected = this.CreateDawnBringer32Palette(false);
 
       // act
       using (Stream stream = File.OpenRead(fileName))

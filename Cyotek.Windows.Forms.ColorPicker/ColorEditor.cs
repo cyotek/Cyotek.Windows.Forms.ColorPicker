@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
 
@@ -14,10 +13,10 @@ using Cyotek.Drawing;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -147,6 +146,16 @@ namespace Cyotek.Windows.Forms
       get { return _color; }
       set
       {
+        /*
+         * If the color isn't solid, and ShowAlphaChannel is false
+         * remove the alpha channel. Not sure if this is the best
+         * place to do it, but it is a blanket fix for now
+         */
+        if (value.A != 255 && !this.ShowAlphaChannel)
+        {
+          value = Color.FromArgb(255, value);
+        }
+
         if (_color != value)
         {
           _color = value;
@@ -422,9 +431,9 @@ namespace Cyotek.Windows.Forms
         aColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
         aNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
       }
-      // ReSharper disable EmptyGeneralCatchClause
+        // ReSharper disable EmptyGeneralCatchClause
       catch
-      // ReSharper restore EmptyGeneralCatchClause
+        // ReSharper restore EmptyGeneralCatchClause
       {
         // ignore errors
       }
@@ -638,7 +647,7 @@ namespace Cyotek.Windows.Forms
 
               useRgb = true;
             }
-            // ReSharper disable EmptyGeneralCatchClause
+              // ReSharper disable EmptyGeneralCatchClause
             catch
             { }
             // ReSharper restore EmptyGeneralCatchClause

@@ -9,19 +9,6 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     private System.ComponentModel.IContainer components = null;
 
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
-    {
-      if (disposing && (components != null))
-      {
-        components.Dispose();
-      }
-      base.Dispose(disposing);
-    }
-
     #region Windows Form Designer generated code
 
     /// <summary>
@@ -74,6 +61,7 @@ namespace Cyotek.Windows.Forms
       this.previewPanel.Name = "previewPanel";
       this.previewPanel.Size = new System.Drawing.Size(75, 47);
       this.previewPanel.TabIndex = 3;
+      this.previewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.previewPanel_Paint);
       // 
       // loadPaletteButton
       // 
@@ -143,7 +131,7 @@ namespace Cyotek.Windows.Forms
       this.colorGrid.Size = new System.Drawing.Size(192, 72);
       this.colorGrid.Spacing = new System.Drawing.Size(0, 0);
       this.colorGrid.TabIndex = 7;
-      this.colorGrid.EditingColor += new EventHandler<EditColorCancelEventArgs>(this.colorGrid_EditingColor);
+      this.colorGrid.EditingColor += new System.EventHandler<Cyotek.Windows.Forms.EditColorCancelEventArgs>(this.colorGrid_EditingColor);
       // 
       // colorEditorManager
       // 

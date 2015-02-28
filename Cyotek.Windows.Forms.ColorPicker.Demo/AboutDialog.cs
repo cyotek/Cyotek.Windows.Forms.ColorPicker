@@ -4,16 +4,16 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using HtmlRenderer;
-using MarkdownSharp;
+using CommonMark;
+using TheArtOfDev.HtmlRenderer.WinForms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -28,7 +28,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Internal Class Members
+    #region Class Members
 
     internal static void ShowAboutDialog()
     {
@@ -52,19 +52,31 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         Assembly assembly;
         string title;
 
-        assembly = typeof(ColorPickerDialog).Assembly;
+        assembly = typeof(ColorGrid).Assembly;
         info = FileVersionInfo.GetVersionInfo(assembly.Location);
         title = info.ProductName;
 
         this.Text = string.Format("About {0}", title);
-        this.nameLabel.Text = title;
-        this.versionLabel.Text = string.Format("Version {0}", info.FileVersion);
-        this.copyrightLabel.Text = info.LegalCopyright;
+        nameLabel.Text = title;
+        versionLabel.Text = string.Format("Version {0}", info.FileVersion);
+        copyrightLabel.Text = info.LegalCopyright;
 
         this.AddReadme("changelog.md");
         this.AddReadme("readme.md");
         this.AddReadme("acknowledgements.md");
-        this.AddReadme("colorpicker-license.txt");
+        this.AddReadme("license.txt");
+
+        this.LoadDocumentForTab(docsTabControl.SelectedTab);
+      }
+    }
+
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+
+      if (docsTabControl != null)
+      {
+        docsTabControl.SetBounds(docsTabControl.Left, docsTabControl.Top, this.ClientSize.Width - (docsTabControl.Left * 2), this.ClientSize.Height - (docsTabControl.Top + footerGroupBox.Height + docsTabControl.Left));
       }
     }
 
@@ -74,7 +86,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     protected TabControl TabControl
     {
-      get { return this.docsTabControl; }
+      get { return docsTabControl; }
     }
 
     #endregion
@@ -84,13 +96,13 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void AddReadme(string fileName)
     {
       this.docsTabControl.TabPages.Add(new TabPage
-                                       {
-                                         UseVisualStyleBackColor = true,
-                                         Padding = new Padding(9),
-                                         ToolTipText = this.GetFullReadmePath(fileName),
-                                         Text = fileName,
-                                         Tag = fileName
-                                       });
+      {
+        UseVisualStyleBackColor = true,
+        Padding = new Padding(9),
+        ToolTipText = this.GetFullReadmePath(fileName),
+        Text = fileName,
+        Tag = fileName
+      });
     }
 
     private string GetFullReadmePath(string fileName)
@@ -109,11 +121,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void docsTabControl_Selecting(object sender, TabControlCancelEventArgs e)
     {
-      TabPage page;
+      this.LoadDocumentForTab(e.TabPage);
+    }
 
-      page = e.TabPage;
-
-      if (page.Controls.Count == 0 && page.Tag != null)
+    private void LoadDocumentForTab(TabPage page)
+    {
+      if (page != null && page.Controls.Count == 0 && page.Tag != null)
       {
         Control documentView;
         string fullPath;
@@ -134,26 +147,23 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         switch (Path.GetExtension(fullPath))
         {
           case ".md":
-            Markdown parser;
-
-            parser = new Markdown();
-
             documentView = new HtmlPanel
-                           {
-                             Dock = DockStyle.Fill,
-                             Text = parser.Transform(text)
-                           };
+            {
+              Dock = DockStyle.Fill,
+              BaseStylesheet = Properties.Resources.CSS,
+              Text = string.Concat("<html><body>", CommonMarkConverter.Convert(text), "</body></html>") // HACK: HTML panel screws up rendering if a <body> tag isn't present
+            };
             break;
           default:
             documentView = new TextBox
-                           {
-                             ReadOnly = true,
-                             Multiline = true,
-                             WordWrap = true,
-                             ScrollBars = ScrollBars.Vertical,
-                             Dock = DockStyle.Fill,
-                             Text = text
-                           };
+            {
+              ReadOnly = true,
+              Multiline = true,
+              WordWrap = true,
+              ScrollBars = ScrollBars.Vertical,
+              Dock = DockStyle.Fill,
+              Text = text
+            };
             break;
         }
 
@@ -165,8 +175,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void footerGroupBox_Paint(object sender, PaintEventArgs e)
     {
-      e.Graphics.DrawLine(SystemPens.ControlDark, 0, 0, this.footerGroupBox.Width, 0);
-      e.Graphics.DrawLine(SystemPens.ControlLightLight, 0, 1, this.footerGroupBox.Width, 1);
+      e.Graphics.DrawLine(SystemPens.ControlDark, 0, 0, footerGroupBox.Width, 0);
+      e.Graphics.DrawLine(SystemPens.ControlLightLight, 0, 1, footerGroupBox.Width, 1);
     }
 
     private void webLinkLabel_Click(object sender, EventArgs e)

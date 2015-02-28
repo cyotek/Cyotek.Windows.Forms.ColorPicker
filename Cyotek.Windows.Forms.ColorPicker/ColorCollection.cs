@@ -8,10 +8,10 @@ using System.Linq;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -52,6 +52,22 @@ namespace Cyotek.Windows.Forms
       : this()
     {
       this.AddRange(collection);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorCollection"/> class that contains elements copied from the specified collection.
+    /// </summary>
+    /// <param name="collection">The collection whose elements are copied to the new collection.</param>
+    public ColorCollection(ColorCollection collection)
+      : this()
+    {
+      for (int i = 0; i < collection.Count; i++)
+      {
+        this.Add(collection[i]);
+#if USENAMEHACK
+        this.SetName(i, collection.GetName(i));
+#endif
+      }
     }
 
     /// <summary>
@@ -399,30 +415,38 @@ namespace Cyotek.Windows.Forms
     /// <exception cref="System.ArgumentException">Thrown when an invalid sort order is specified</exception>
     public void Sort(ColorCollectionSortOrder sortOrder)
     {
-      Comparison<Color> sortDelegate;
-      List<Color> orderedItems;
-
-      // HACK: This is a bit nasty
-
-      switch (sortOrder)
+      if (this.Count > 0)
       {
-        case ColorCollectionSortOrder.Brightness:
-          sortDelegate = ColorComparer.Brightness;
-          break;
-        case ColorCollectionSortOrder.Hue:
-          sortDelegate = ColorComparer.Hue;
-          break;
-        case ColorCollectionSortOrder.Value:
-          sortDelegate = ColorComparer.Value;
-          break;
-        default:
-          throw new ArgumentException("Invalid sort order", "sortOrder");
-      }
+        Comparison<Color> sortDelegate;
+
+        // HACK: This is a bit nasty
+
+        switch (sortOrder)
+        {
+          case ColorCollectionSortOrder.Brightness:
+            sortDelegate = ColorComparer.Brightness;
+            break;
+          case ColorCollectionSortOrder.Hue:
+            sortDelegate = ColorComparer.Hue;
+            break;
+          case ColorCollectionSortOrder.Value:
+            sortDelegate = ColorComparer.Value;
+            break;
+          default:
+            throw new ArgumentException("Invalid sort order", "sortOrder");
+        }
+
+#if USENAMEHACK
+        this.SortWithNames(sortDelegate);
+#else
+      List<Color> orderedItems;
 
       orderedItems = new List<Color>(this);
       orderedItems.Sort(sortDelegate);
       this.ClearItems();
       this.AddRange(orderedItems);
+#endif
+      }
     }
 
     #endregion
@@ -570,6 +594,78 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private void SortWithNames(Comparison<Color> comparer)
+    {
+      int count;
+      Color[] colors;
+      string[] names;
+
+      count = this.Count;
+      colors = new Color[count];
+      names = new string[count];
+
+      this.CopyTo(colors, 0);
+      this.SwatchNames.CopyTo(names, 0);
+
+      this.Quicksort(colors, names, 0, count - 1, comparer);
+
+      this.ClearItems();
+
+      for (int i = 0; i < count; i++)
+      {
+        this.Add(colors[i]);
+        this.SetName(i, names[i]);
+      }
+    }
+
+    private void Quicksort(Color[] colors, string[] names, int left, int right, Comparison<Color> comparer)
+    {
+      int i = left, j = right;
+      Color pivot = colors[(left + right) / 2];
+
+      // derived from http://snipd.net/quicksort-in-c
+
+      while (i <= j)
+      {
+        while (comparer(colors[i], pivot) < 0)
+        {
+          i++;
+        }
+
+        while (comparer(colors[j], pivot) > 0)
+        {
+          j--;
+        }
+
+        if (i <= j)
+        {
+          // Swap
+          Color tmp = colors[i];
+          colors[i] = colors[j];
+          colors[j] = tmp;
+
+          string z;
+
+          z = names[i];
+          names[i] = names[j];
+          names[j] = z;
+
+          i++;
+          j--;
+        }
+      }
+
+      // Recursive calls
+      if (left < j)
+      {
+        Quicksort(colors, names, left, j, comparer);
+      }
+
+      if (i < right)
+      {
+        Quicksort(colors, names, i, right, comparer);
+      }
+    }
 #endif
 
     /// <summary>

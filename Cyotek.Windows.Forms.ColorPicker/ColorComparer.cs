@@ -4,32 +4,32 @@ using System.Drawing;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
   /// <summary>
-  /// Provides access to color comparision operations.
+  /// Provides access to color comparison operations.
   /// </summary>
   public static class ColorComparer
   {
     #region Constants
 
-    private const double _redLuminance = 0.212655;
+    private const double RedLuminance = 0.212655;
 
-    private const double _greenLuminance = 0.715158;
+    private const double GreenLuminance = 0.715158;
 
-    private const double _blueLuminance = 0.072187;
+    private const double BlueLuminance = 0.072187;
 
     #endregion
 
     #region Public Class Members
 
     /// <summary>
-    /// Ccompares two colors by brightness and returns an indication of their relative sort order.
+    /// Compares two colors by brightness and returns an indication of their relative sort order.
     /// </summary>
     /// <param name="x">A color to compare to y.</param>
     /// <param name="y">A color to compare to x.</param>
@@ -59,7 +59,7 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
-    /// Ccompares two colors by hue and returns an indication of their relative sort order.
+    /// Compares two colors by hue and returns an indication of their relative sort order.
     /// </summary>
     /// <param name="x">A color to compare to y.</param>
     /// <param name="y">A color to compare to x.</param>
@@ -89,7 +89,7 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
-    /// Ccompares two colors by value and returns an indication of their relative sort order.
+    /// Compares two colors by value and returns an indication of their relative sort order.
     /// </summary>
     /// <param name="x">A color to compare to y.</param>
     /// <param name="y">A color to compare to x.</param>
@@ -128,7 +128,7 @@ namespace Cyotek.Windows.Forms
 
       // GRAY VALUE ("brightness")
 
-      return GetGamma(_redLuminance * GetInverseGamma(color.R) + _greenLuminance * GetInverseGamma(color.G) + _blueLuminance * GetInverseGamma(color.B));
+      return GetGamma(RedLuminance * GetInverseGamma(color.R) + GreenLuminance * GetInverseGamma(color.G) + BlueLuminance * GetInverseGamma(color.B));
     }
 
     private static int GetGamma(double v)

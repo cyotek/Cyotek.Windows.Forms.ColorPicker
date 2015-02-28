@@ -10,7 +10,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
 
@@ -19,10 +18,10 @@ using Cyotek.Drawing;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -88,11 +87,11 @@ namespace Cyotek.Windows.Forms
     { }
 
     public ColorGrid(ColorCollection colors)
-      : this(colors, new ColorCollection(Enumerable.Repeat(Color.White, 32)))
+      : this(colors, new ColorCollection(Enumerable.Repeat(Color.White, 16)))
     { }
 
     public ColorGrid(ColorPalette palette)
-      : this(null, new ColorCollection(Enumerable.Repeat(Color.White, 32)), palette)
+      : this(null, new ColorCollection(Enumerable.Repeat(Color.White, 16)), palette)
     { }
 
     public ColorGrid(ColorCollection colors, ColorCollection customColors)
@@ -516,7 +515,7 @@ namespace Cyotek.Windows.Forms
         int colorCount;
 
         colorCount = this.Colors.Count;
-        
+
         Debug.Print(e.ClipRectangle.Size == this.ClientSize ? "Performing full paint!" : "Performing partial paint!");
 
         base.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc as the PaintBackground event is no longer being called
@@ -555,7 +554,7 @@ namespace Cyotek.Windows.Forms
           {
             Rectangle bounds;
 
-            if (this.ColorRegions.TryGetValue(colorCount + 1, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
+            if (this.ColorRegions.TryGetValue(colorCount + i, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
             {
               this.PaintCell(e, i, colorCount + i, this.CustomColors[i], bounds);
             }

@@ -6,10 +6,10 @@ using System.Text;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -126,7 +126,6 @@ namespace Cyotek.Windows.Forms
             else if (!readingPalette)
             {
               // custom attribute
-
             }
             else if (readingPalette)
             {
@@ -139,9 +138,9 @@ namespace Cyotek.Windows.Forms
               // TODO: Optimize this a touch. Microoptimization? Maybe.
 
               parts = !string.IsNullOrEmpty(data) ? data.Split(new[]
-                                                           {
-                                                             ' ', '\t'
-                                                           }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
+                                                               {
+                                                                 ' ', '\t'
+                                                               }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
               name = parts.Length > 3 ? string.Join(" ", parts, 3, parts.Length - 3) : null;
 
               if (!int.TryParse(parts[0], out r) || !int.TryParse(parts[1], out g) || !int.TryParse(parts[2], out b))

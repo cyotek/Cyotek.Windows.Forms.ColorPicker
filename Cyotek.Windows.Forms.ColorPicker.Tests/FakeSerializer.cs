@@ -1,6 +1,14 @@
 ﻿using System;
 using System.IO;
 
+// Cyotek Color Picker controls library
+// Copyright © 2013-2015 Cyotek Ltd.
+// http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See license.txt for the full text.
+
+// If you use this code in your applications, donations or attribution are welcome
+
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
   internal class FakeSerializer : PaletteSerializer

@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
 
@@ -14,10 +13,10 @@ using Cyotek.Drawing;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -350,7 +349,10 @@ namespace Cyotek.Windows.Forms
           e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
         }
 
-        this.PaintCurrentColor(e);
+        if (!this.Color.IsEmpty)
+        {
+          this.PaintCurrentColor(e);
+        }
       }
     }
 
@@ -677,7 +679,6 @@ namespace Cyotek.Windows.Forms
       double radius;
 
       angle = color.H * Math.PI / 180;
-      ;
       radius = _radius * color.S;
 
       return this.GetColorLocation(angle, radius);
@@ -833,37 +834,44 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    protected virtual void PaintCurrentColor(PaintEventArgs e)
+    protected void PaintColor(PaintEventArgs e, HslColor color)
     {
-      if (!this.Color.IsEmpty)
+      this.PaintColor(e, color, false);
+    }
+
+    protected virtual void PaintColor(PaintEventArgs e, HslColor color, bool includeFocus)
+    {
+      PointF location;
+
+      location = this.GetColorLocation(color);
+
+      if (!float.IsNaN(location.X) && !float.IsNaN(location.Y))
       {
-        PointF location;
+        int x;
+        int y;
 
-        location = this.GetColorLocation(this.HslColor);
+        x = (int)location.X - (this.SelectionSize / 2);
+        y = (int)location.Y - (this.SelectionSize / 2);
 
-        if (!float.IsNaN(location.X) && !float.IsNaN(location.Y))
+        if (this.SelectionGlyph == null)
         {
-          int x;
-          int y;
+          e.Graphics.DrawRectangle(Pens.Black, x, y, this.SelectionSize, this.SelectionSize);
+        }
+        else
+        {
+          e.Graphics.DrawImage(this.SelectionGlyph, x, y);
+        }
 
-          x = (int)location.X - (this.SelectionSize / 2);
-          y = (int)location.Y - (this.SelectionSize / 2);
-
-          if (this.SelectionGlyph == null)
-          {
-            e.Graphics.DrawRectangle(Pens.Black, x, y, this.SelectionSize, this.SelectionSize);
-          }
-          else
-          {
-            e.Graphics.DrawImage(this.SelectionGlyph, x, y);
-          }
-
-          if (this.Focused)
-          {
-            ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 1, y - 1, this.SelectionSize + 2, this.SelectionSize + 2));
-          }
+        if (this.Focused && includeFocus)
+        {
+          ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 1, y - 1, this.SelectionSize + 2, this.SelectionSize + 2));
         }
       }
+    }
+
+    protected virtual void PaintCurrentColor(PaintEventArgs e)
+    {
+      this.PaintColor(e, this.HslColor, true);
     }
 
     protected virtual void SetColor(Point point)

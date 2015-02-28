@@ -5,10 +5,10 @@ using System.Windows.Forms;
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2014 Cyotek.
+  // Copyright © 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
-  // Licensed under the MIT License. See colorpicker-license.txt for the full text.
+  // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
 
@@ -16,7 +16,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
   {
     #region Instance Fields
 
-    private Color _color;
 
     #endregion
 
@@ -35,7 +34,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     {
       base.OnLoad(e);
 
-      _color = Color.SeaGreen;
+      colorPreviewPanel.Color = Color.SeaGreen;
     }
 
     #endregion
@@ -46,27 +45,28 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     {
       using (ColorPickerDialog dialog = new ColorPickerDialog())
       {
-        dialog.Color = _color;
+        dialog.Color = colorPreviewPanel.Color;
+        dialog.ShowAlphaChannel = showAlphaChannelCheckBox.Checked;
+
+        dialog.PreviewColorChanged += this.DialogColorChangedHandler;
 
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
-          _color = dialog.Color;
-          panel.Invalidate();
+          colorPreviewPanel.Color = dialog.Color;
         }
+
+        dialog.PreviewColorChanged -= this.DialogColorChangedHandler;
       }
+    }
+
+    private void DialogColorChangedHandler(object sender, EventArgs e)
+    {
+      dialogColorPreviewPanel.Color = ((ColorPickerDialog)sender).Color;
     }
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
-    }
-
-    private void panel_Paint(object sender, PaintEventArgs e)
-    {
-      using (Brush brush = new SolidBrush(_color))
-      {
-        e.Graphics.FillRectangle(brush, panel.ClientRectangle);
-      }
     }
 
     #endregion
