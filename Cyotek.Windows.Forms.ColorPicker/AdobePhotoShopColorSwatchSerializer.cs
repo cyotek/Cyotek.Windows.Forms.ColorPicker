@@ -61,7 +61,7 @@ namespace Cyotek.Windows.Forms
 
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       try
@@ -95,7 +95,7 @@ namespace Cyotek.Windows.Forms
 
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       // read the version, which occupies two bytes
@@ -153,12 +153,12 @@ namespace Cyotek.Windows.Forms
     {
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       if (palette == null)
       {
-        throw new ArgumentNullException("palette");
+        throw new ArgumentNullException(nameof(palette));
       }
 
       if (version == AdobePhotoshopColorSwatchFileVersion.Version2)

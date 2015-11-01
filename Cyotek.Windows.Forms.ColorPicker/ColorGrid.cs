@@ -719,6 +719,11 @@ namespace Cyotek.Windows.Forms
       get { return _colors; }
       set
       {
+        if (value == null)
+        {
+          throw new ArgumentNullException(nameof(value));
+        }
+
         if (this.Colors != value)
         {
           _colors = value;
@@ -737,7 +742,7 @@ namespace Cyotek.Windows.Forms
       {
         if (value < 0)
         {
-          throw new ArgumentOutOfRangeException("value", value, "Number of columns cannot be less than zero.");
+          throw new ArgumentOutOfRangeException(nameof(value), value, "Number of columns cannot be less than zero.");
         }
 
         if (this.Columns != value)
@@ -1955,7 +1960,7 @@ namespace Cyotek.Windows.Forms
       colorCount = this.Colors.Count;
       if (colorIndex < 0 || colorIndex > (colorCount + this.CustomColors.Count))
       {
-        throw new ArgumentOutOfRangeException("colorIndex");
+        throw new ArgumentOutOfRangeException(nameof(colorIndex));
       }
 
       if (colorIndex > colorCount - 1)

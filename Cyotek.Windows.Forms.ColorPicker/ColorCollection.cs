@@ -124,7 +124,7 @@ namespace Cyotek.Windows.Forms
 
       if (string.IsNullOrEmpty(fileName))
       {
-        throw new ArgumentNullException("fileName");
+        throw new ArgumentNullException(nameof(fileName));
       }
 
       if (!File.Exists(fileName))
@@ -135,7 +135,7 @@ namespace Cyotek.Windows.Forms
       serializer = PaletteSerializer.GetSerializer(fileName);
       if (serializer == null)
       {
-        throw new ArgumentException(string.Format("Cannot find a palette serializer for '{0}'", fileName), "fileName");
+        throw new ArgumentException(string.Format("Cannot find a palette serializer for '{0}'", fileName), nameof(fileName));
       }
 
       using (FileStream file = File.OpenRead(fileName))
@@ -244,37 +244,41 @@ namespace Cyotek.Windows.Forms
     /// <param name="item">The new value for the element at the specified index.</param>
     protected override void SetItem(int index, Color item)
     {
-      ColorCollectionEventArgs e;
       Color oldItem;
 
       oldItem = this[index];
 
-      if (_indexedLookup != null)
+      if (oldItem != item)
       {
-        int key;
-        int oldKey;
+        ColorCollectionEventArgs e;
 
-        key = item.ToArgb();
-        oldKey = oldItem.ToArgb();
-
-        lock (_lock)
+        if (_indexedLookup != null)
         {
-          if (_indexedLookup.ContainsKey(oldKey))
+          int key;
+          int oldKey;
+
+          key = item.ToArgb();
+          oldKey = oldItem.ToArgb();
+
+          lock (_lock)
           {
-            _indexedLookup.Remove(oldKey);
-          }
-          if (!_indexedLookup.ContainsKey(key))
-          {
-            _indexedLookup.Add(key, index);
+            if (_indexedLookup.ContainsKey(oldKey))
+            {
+              _indexedLookup.Remove(oldKey);
+            }
+            if (!_indexedLookup.ContainsKey(key))
+            {
+              _indexedLookup.Add(key, index);
+            }
           }
         }
+
+        base.SetItem(index, item);
+
+        e = new ColorCollectionEventArgs(index, item);
+        this.OnItemReplaced(e);
+        this.OnCollectionChanged(e);
       }
-
-      base.SetItem(index, item);
-
-      e = new ColorCollectionEventArgs(index, item);
-      this.OnItemReplaced(e);
-      this.OnCollectionChanged(e);
     }
 
     #endregion
@@ -397,7 +401,7 @@ namespace Cyotek.Windows.Forms
 
       if (string.IsNullOrEmpty(fileName))
       {
-        throw new ArgumentNullException("fileName");
+        throw new ArgumentNullException(nameof(fileName));
       }
 
       serializer = Activator.CreateInstance<T>();
@@ -433,7 +437,7 @@ namespace Cyotek.Windows.Forms
             sortDelegate = ColorComparer.Value;
             break;
           default:
-            throw new ArgumentException("Invalid sort order", "sortOrder");
+            throw new ArgumentException("Invalid sort order", nameof(sortOrder));
         }
 
 #if USENAMEHACK

@@ -1,5 +1,18 @@
 # Change Log
 
+[![Build status](https://ci.appveyor.com/api/projects/status/lk901pafq02l9rgl)](https://ci.appveyor.com/project/cyotek/cyotek-windows-forms-colorpicker)
+
+## 1.0.6.0
+### Added
+* Added `Minimum` and `Maximum` properties to `IPaletteSerializer` to provide hints to hosting applications about valid palettes
+* Added support for reading and writing **Adobe Color Table** files (`*.act`) via the new `AdobeColorTablePaletteSerializer` class
+
+### Changed
+* Code refactored using C# 6 syntax
+
+### Fixed
+* Attempting to set the `Colors` property of the `ColorGrid` to `null` now throws an exception
+
 ## 1.0.5.0
 * Added a new demonstration which shows how to host a `ColorGrid` control in a `ToolStrip`. More details on this can be found on [cyotek.com](http://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip).
 * Added new `PreviewColorChanged` event to the `ColorPickerDialog`
@@ -11,7 +24,7 @@
 * Fixed an issue where the `ColorEditor` control would allow you to enter an 8 character hex color and thus set an alpha channel even if the `ShowAlphaChannel` property was `false`
 
 ## 1.0.4.1
-### Bug Fixes
+### Fixed
 * Fixed an issue where `GimpPaletteSerializer.Deserialize` could get itself stuck in an infinite loop if a GPL file was formatted a certain way
 * `GimpPaletteSerializer.Serialize` now uses `ASCII` encoding instead of `UTF-8`, fixing a problem where palette files couldn't be opened in Inkscape.
 
@@ -33,7 +46,7 @@
 * Added more tests
 * Added new `Navigate` method to `ColorGrid` for easier moving within the cells of the grid
 
-### Bug Fixes
+### Fixed
 * The `ColorGrid` control now tries to be smarter with painting, and only paints cells that intersect with the clip rectangle. In addition, where possible only individual cells are invalidated rather than the entire control.
 * Corrected invalid error messages from the **Save Palette** button in the `ColorPickerDialog`.
 * **Load Palette** and **Save Palette** buttons in the `ColorPickerDialog` now check the `CanRead` and `CanWrite` properties of the serializer.
@@ -65,7 +78,7 @@
 * Reworked the `ColorEditorManager` component to also store separate copies of the RGB/HSL colours instead of loosing named colour information
 * Experimented with making the `hex/named colour` field in the `ColorEditor` control slightly wider than the other controls. Looks a touch odd now that all fields aren't a uniform width, but does make it much easier to read that the selected colour is `LightGoldenRodYellow`!
 
-### Bug Fixes
+### Fixed
 * Setting the `SelectionSize` property of the `ColorWheel` didn't resize the wheel as it was supposed to
 * When the orientation of a `ColorSlider` (or derived control) was `Vertical`, the colour bar was drawn in the reverse order of the scale.
 * Changing the `Value` of the `LightnessColorSlider` control now correctly updates the `Color` property of that control, in turn making the `ColorEditorManager` change the luminosity of linked controls. Also setting the `Color` of the `LightnessColorSlider` now correctly updates the `Value`. This now means you can bind a `ColorWheel` to a `LightnessColorSlider` for full control over the brightness of a colour, which is not possible to do with the wheel alone.
@@ -78,7 +91,7 @@
 * Added new `AutoFit` property to the `ColorGrid`. When set, the `CellSize` property is automatically calculated based on the size of the control, and its contents. You can't combine `AutoFit` with `AutoSize`.
 * `ColorCollection` is now clone-able
 
-### Bug Fixes
+### Fixed
 * Removed unnecessary `UpdateStyles` calls.
 * Fixed a problem if a window was opened by pressing `Enter`, and a `ColorGrid` was the first focusable control on the new window, the pop-up colour editing dialog would be activated, regardless of the `ColorGrid`'s editing settings 
 
@@ -90,7 +103,7 @@
 * Added system colours to the `ColorEditor` named colour drop down
 * Added a new `DoubleSoft` cell border style to the `ColorGrid`
 
-### Bug fixes
+### Fixed
 * Setting the `Spacing` or `CellSize` properties of the `ColorGrid` control didn't recalculate the layout
 * `ColorEditor` now uses `TextRenderer.DrawText` instead of `Graphics.DrawString` so all text is rendered consistently.
 
@@ -100,7 +113,7 @@
 * `ColorCollection` now implements `IClonable`
 * Added dotted outline to design time `ColorGrid` control
 
-### Bug fixes
+### Fixed
 * Fixed invalid default value for the `EditMode` property of a `ColorGrid`
 * Fixed `AutoSize` property of `ColorGrid` control not being persisted
 
@@ -118,7 +131,7 @@
 * Palette support has been reworked to allow the saving of palettes as well as loading. Unfortunately due to the initial names of these classes this is a breaking change.
 * Added a bit more documentation
 
-### Bug fixes
+### Fixed
 * Corrected some grammatical errors in existing documentation and headers
 
 ## 1.0.1.0

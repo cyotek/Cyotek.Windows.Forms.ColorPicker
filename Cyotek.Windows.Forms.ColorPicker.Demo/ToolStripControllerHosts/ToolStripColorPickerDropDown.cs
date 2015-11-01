@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 // If you use this code in your applications, donations or attribution are welcome
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo.ToolStripControllerHosts
+namespace Cyotek.Windows.Forms.ToolStripControllerHosts
 {
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]

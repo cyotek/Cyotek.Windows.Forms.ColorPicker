@@ -145,7 +145,7 @@ namespace Cyotek.Windows.Forms
           result = StandardPalette;
           break;
         default:
-          throw new ArgumentException("Invalid palette", "palette");
+          throw new ArgumentException("Invalid palette", nameof(palette));
       }
 
       return result;

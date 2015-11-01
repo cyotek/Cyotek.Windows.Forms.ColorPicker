@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdobeColorTablePaletteSerializer.cs" />
     <Compile Include="AdobePhotoshopColorSwatchColorSpace.cs" />
     <Compile Include="AdobePhotoshopColorSwatchFileVersion.cs" />
     <Compile Include="ColorCellBorderStyle.cs" />

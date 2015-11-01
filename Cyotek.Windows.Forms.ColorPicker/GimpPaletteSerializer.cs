@@ -53,7 +53,7 @@ namespace Cyotek.Windows.Forms
 
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       try
@@ -86,7 +86,7 @@ namespace Cyotek.Windows.Forms
 
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       results = new ColorCollection();
@@ -173,12 +173,12 @@ namespace Cyotek.Windows.Forms
 
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       if (palette == null)
       {
-        throw new ArgumentNullException("palette");
+        throw new ArgumentNullException(nameof(palette));
       }
 
       swatchIndex = 0;

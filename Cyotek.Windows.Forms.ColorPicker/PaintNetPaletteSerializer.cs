@@ -54,7 +54,7 @@ namespace Cyotek.Windows.Forms
 
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       try
@@ -87,7 +87,7 @@ namespace Cyotek.Windows.Forms
 
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       results = new ColorCollection();
@@ -128,12 +128,12 @@ namespace Cyotek.Windows.Forms
     {
       if (stream == null)
       {
-        throw new ArgumentNullException("stream");
+        throw new ArgumentNullException(nameof(stream));
       }
 
       if (palette == null)
       {
-        throw new ArgumentNullException("palette");
+        throw new ArgumentNullException(nameof(palette));
       }
 
       // TODO: Not writing 96 colors, but the entire contents of the palette, wether that's less than 96 or more
@@ -152,6 +152,17 @@ namespace Cyotek.Windows.Forms
           writer.WriteLine("{0:X2}{1:X2}{2:X2}{3:X2}", color.A, color.R, color.G, color.B);
         }
       }
+    }
+
+    /// <summary>
+    /// Gets the maximum number of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The maximum value number of colors supported by this format.
+    /// </value>
+    public override int Maximum
+    {
+      get { return 96; }
     }
 
     #endregion

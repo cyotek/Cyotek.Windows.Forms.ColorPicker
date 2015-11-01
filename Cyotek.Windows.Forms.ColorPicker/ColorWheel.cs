@@ -405,7 +405,7 @@ namespace Cyotek.Windows.Forms
       {
         if (value < 1 || value > 359)
         {
-          throw new ArgumentOutOfRangeException("value", value, "Value must be between 1 and 359");
+          throw new ArgumentOutOfRangeException(nameof(value), value, "Value must be between 1 and 359");
         }
 
         if (this.ColorStep != value)

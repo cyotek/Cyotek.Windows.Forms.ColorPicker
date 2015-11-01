@@ -24,7 +24,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       string expected;
       string actual;
 
-      expected = "All Supported Palettes (*.aco;*.gpl;*.bbm;*.lbm;*.pal;*.txt)|*.aco;*.gpl;*.bbm;*.lbm;*.pal;*.txt|Adobe Photoshop Color Swatch Files (*.aco)|*.aco|GIMP Palette Files (*.gpl)|*.gpl|Interleaved Bitmap Palette Files (*.bbm;*.lbm)|*.bbm;*.lbm|JASC Palette Files (*.pal)|*.pal|Paint.NET Palette Files (*.txt)|*.txt|Raw Palette Files (*.pal)|*.pal|All Files (*.*)|*.*";
+      expected = "All Supported Palettes (*.act;*.aco;*.gpl;*.bbm;*.lbm;*.pal;*.txt)|*.act;*.aco;*.gpl;*.bbm;*.lbm;*.pal;*.txt|Adobe Color Table Files (*.act)|*.act|Adobe Photoshop Color Swatch Files (*.aco)|*.aco|GIMP Palette Files (*.gpl)|*.gpl|Interleaved Bitmap Palette Files (*.bbm;*.lbm)|*.bbm;*.lbm|JASC Palette Files (*.pal)|*.pal|Paint.NET Palette Files (*.txt)|*.txt|Raw Palette Files (*.pal)|*.pal|All Files (*.*)|*.*";
 
       // act
       actual = PaletteSerializer.DefaultOpenFilter;
@@ -40,7 +40,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       string expected;
       string actual;
 
-      expected = "Adobe Photoshop Color Swatch Files (*.aco)|*.aco|GIMP Palette Files (*.gpl)|*.gpl|JASC Palette Files (*.pal)|*.pal|Paint.NET Palette Files (*.txt)|*.txt|Raw Palette Files (*.pal)|*.pal";
+      expected = "Adobe Color Table Files (*.act)|*.act|Adobe Photoshop Color Swatch Files (*.aco)|*.aco|GIMP Palette Files (*.gpl)|*.gpl|JASC Palette Files (*.pal)|*.pal|Paint.NET Palette Files (*.txt)|*.txt|Raw Palette Files (*.pal)|*.pal";
 
       // act
       actual = PaletteSerializer.DefaultSaveFilter;

@@ -67,5 +67,21 @@ namespace Cyotek.Windows.Forms
     void Serialize(Stream stream, ColorCollection palette);
 
     #endregion
+
+    /// <summary>
+    /// Gets the minimum numbers of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The minimum number of colors supported by this format.
+    /// </value>
+    int Minimum { get; }
+
+    /// <summary>
+    /// Gets the maximum number of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The maximum value number of colors supported by this format.
+    /// </value>
+    int Maximum { get; }
   }
 }

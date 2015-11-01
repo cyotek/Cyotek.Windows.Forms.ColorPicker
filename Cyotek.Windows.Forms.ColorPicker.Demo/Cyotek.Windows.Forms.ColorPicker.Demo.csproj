@@ -208,6 +208,9 @@
     <Content Include="palettes\PaintNet.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="palettes\16pal_v20.act">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\text.png" />
     <None Include="Resources\fill.png" />
     <Content Include="Resources\markdownpad-github.css" />

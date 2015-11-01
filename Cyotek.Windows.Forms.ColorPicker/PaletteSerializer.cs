@@ -100,7 +100,7 @@ namespace Cyotek.Windows.Forms
 
       if (string.IsNullOrEmpty(fileName))
       {
-        throw new ArgumentNullException("fileName");
+        throw new ArgumentNullException(nameof(fileName));
       }
 
       if (!File.Exists(fileName))
@@ -340,6 +340,28 @@ namespace Cyotek.Windows.Forms
     /// <param name="stream">The <see cref="Stream" /> used to write the palette.</param>
     /// <param name="palette">The <see cref="ColorCollection" /> to serialize.</param>
     public abstract void Serialize(Stream stream, ColorCollection palette);
+
+    /// <summary>
+    /// Gets the minimum numbers of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The minimum number of colors supported by this format.
+    /// </value>
+    public virtual int Minimum
+    {
+      get { return 1; }
+    }
+
+    /// <summary>
+    /// Gets the maximum number of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The maximum value number of colors supported by this format.
+    /// </value>
+    public virtual int Maximum
+    {
+      get { return int.MaxValue; }
+    }
 
     /// <summary>
     /// Serializes the specified <see cref="ColorCollection" /> and writes the palette to a file using the specified <see cref="Stream"/>.

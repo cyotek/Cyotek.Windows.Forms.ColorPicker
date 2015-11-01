@@ -47,6 +47,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbobeColorTableSerializeTests.cs" />
     <Compile Include="AdobePhotoshopColorSwatchSerializerTest.cs" />
     <Compile Include="ColorCollectionTests.cs" />
     <Compile Include="FakeSerializer.cs" />
@@ -84,6 +85,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="data\db16-comments.gpl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="data\db32.act">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="data\db16.gpl">
