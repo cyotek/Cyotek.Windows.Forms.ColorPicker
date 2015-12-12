@@ -7,6 +7,9 @@
 * Added `Minimum` and `Maximum` properties to `IPaletteSerializer` to provide hints to hosting applications about valid palettes
 * Added support for reading and writing **Adobe Color Table** files (`*.act`) via the new `AdobeColorTablePaletteSerializer` class
 
+### Fixed
+* Fixed rounding errors that could occur when using `HslColor.ToRgbColor`. Thanks to Ciao Jürgen for [this post](http://forums.cyotek.com/color-picker-controls/roundiing-difference/)
+
 ### Changed
 * Code refactored using C# 6 syntax
 

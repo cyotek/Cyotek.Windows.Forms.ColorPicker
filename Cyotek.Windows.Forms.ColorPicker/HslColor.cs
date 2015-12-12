@@ -42,9 +42,9 @@ namespace Cyotek.Windows.Forms
     static HslColor()
     {
       Empty = new HslColor
-              {
-                IsEmpty = true
-              };
+      {
+        IsEmpty = true
+      };
     }
 
     #endregion
@@ -252,7 +252,7 @@ namespace Cyotek.Windows.Forms
           colors[color] = p;
         }
 
-        colors[color] *= 255;
+        colors[color] = Math.Round(colors[color] * 255d);
       }
 
       return Color.FromArgb(alpha, (int)colors[0], (int)colors[1], (int)colors[2]);
