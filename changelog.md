@@ -7,13 +7,11 @@
 * Added `Minimum` and `Maximum` properties to `IPaletteSerializer` to provide hints to hosting applications about valid palettes
 * Added support for reading and writing **Adobe Color Table** files (`*.act`) via the new `AdobeColorTablePaletteSerializer` class
 
-### Fixed
-* Fixed rounding errors that could occur when using `HslColor.ToRgbColor`. Thanks to Ciao Jürgen for [this post](http://forums.cyotek.com/color-picker-controls/roundiing-difference/)
-
 ### Changed
 * Code refactored using C# 6 syntax
 
 ### Fixed
+* Fixed rounding errors that could occur when using `HslColor.ToRgbColor`. Thanks to Jürgen from Iconshow for [this post](http://forums.cyotek.com/color-picker-controls/roundiing-difference/)
 * Attempting to set the `Colors` property of the `ColorGrid` to `null` now throws an exception
 
 ## 1.0.5.0
