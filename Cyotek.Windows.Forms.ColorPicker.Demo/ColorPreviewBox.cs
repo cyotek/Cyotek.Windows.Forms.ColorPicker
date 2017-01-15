@@ -16,7 +16,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal class ColorPreviewBox : Control
   {
-    #region  Fields
+    #region Fields
 
     private Color _color;
 
@@ -31,7 +31,17 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Public Properties
+    #region Events
+
+    /// <summary>
+    /// Occurs when the Color property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged;
+
+    #endregion
+
+    #region Properties
 
     [Category("Appearance")]
     [DefaultValue(typeof(Color), "Empty")]
@@ -51,7 +61,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Protected Members
+    #region Methods
 
     /// <summary>
     /// Raises the <see cref="ColorChanged" /> event.
@@ -98,16 +108,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         e.Graphics.FillRectangle(brush, drawArea);
       }
     }
-
-    #endregion
-
-    #region Public Members
-
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged;
 
     #endregion
   }

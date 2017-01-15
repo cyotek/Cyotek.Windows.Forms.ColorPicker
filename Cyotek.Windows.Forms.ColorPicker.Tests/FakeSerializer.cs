@@ -13,7 +13,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
   internal class FakeSerializer : PaletteSerializer
   {
-    #region Overridden Properties
+    #region Properties
 
     public override string DefaultExtension
     {
@@ -27,7 +27,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     public override bool CanReadFrom(Stream stream)
     {
@@ -38,15 +38,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     {
       throw new NotImplementedException();
     }
-
-    public override void Serialize(Stream stream, ColorCollection palette)
-    {
-      throw new NotImplementedException();
-    }
-
-    #endregion
-
-    #region Public Members
 
     public new int ReadInt16(Stream stream)
     {
@@ -61,6 +52,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     public new string ReadString(Stream stream, int length)
     {
       return base.ReadString(stream, length);
+    }
+
+    public override void Serialize(Stream stream, ColorCollection palette)
+    {
+      throw new NotImplementedException();
     }
 
     public new void WriteInt16(Stream stream, short value)

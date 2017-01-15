@@ -16,7 +16,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal class EventsListBox : ListBox
   {
-    #region Public Members
+    #region Methods
 
     public void AddEvent(Control sender, string eventName)
     {
@@ -50,7 +50,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       eventData.Append(")");
 
       this.Items.Add(eventData.ToString());
-      this.TopIndex = this.Items.Count - (this.ClientSize.Height / this.ItemHeight);
+      this.TopIndex = this.Items.Count - this.ClientSize.Height / this.ItemHeight;
     }
 
     #endregion

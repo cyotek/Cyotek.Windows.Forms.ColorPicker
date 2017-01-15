@@ -36,6 +36,22 @@ namespace Cyotek.Windows.Forms
     string DefaultExtension { get; }
 
     /// <summary>
+    /// Gets the maximum number of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The maximum value number of colors supported by this format.
+    /// </value>
+    int Maximum { get; }
+
+    /// <summary>
+    /// Gets the minimum numbers of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The minimum number of colors supported by this format.
+    /// </value>
+    int Minimum { get; }
+
+    /// <summary>
     /// Gets a descriptive name of the palette format
     /// </summary>
     /// <value>The descriptive name of the palette format.</value>
@@ -67,21 +83,5 @@ namespace Cyotek.Windows.Forms
     void Serialize(Stream stream, ColorCollection palette);
 
     #endregion
-
-    /// <summary>
-    /// Gets the minimum numbers of colors supported by this format.
-    /// </summary>
-    /// <value>
-    /// The minimum number of colors supported by this format.
-    /// </value>
-    int Minimum { get; }
-
-    /// <summary>
-    /// Gets the maximum number of colors supported by this format.
-    /// </summary>
-    /// <value>
-    /// The maximum value number of colors supported by this format.
-    /// </value>
-    int Maximum { get; }
   }
 }

@@ -22,7 +22,23 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent("ColorChanged")]
   public class ScreenColorPicker : Control, IColorEditor
   {
-    #region Instance Fields
+    #region Constants
+
+    private static readonly object _eventColorChanged = new object();
+
+    private static readonly object _eventGridColorChanged = new object();
+
+    private static readonly object _eventImageChanged = new object();
+
+    private static readonly object _eventShowGridChanged = new object();
+
+    private static readonly object _eventShowTextWithSnapshotChanged = new object();
+
+    private static readonly object _eventZoomChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Color _color;
 
@@ -40,7 +56,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScreenColorPicker"/> class.
@@ -62,210 +78,44 @@ namespace Cyotek.Windows.Forms
 
     #region Events
 
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ColorChanged;
+    public event EventHandler GridColorChanged
+    {
+      add { this.Events.AddHandler(_eventGridColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventGridColorChanged, value); }
+    }
 
-    /// <summary>
-    /// Occurs when the GridColor property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler GridColorChanged;
+    public event EventHandler ImageChanged
+    {
+      add { this.Events.AddHandler(_eventImageChanged, value); }
+      remove { this.Events.RemoveHandler(_eventImageChanged, value); }
+    }
 
-    /// <summary>
-    /// Occurs when the Image property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ImageChanged;
+    public event EventHandler ShowGridChanged
+    {
+      add { this.Events.AddHandler(_eventShowGridChanged, value); }
+      remove { this.Events.RemoveHandler(_eventShowGridChanged, value); }
+    }
 
-    /// <summary>
-    /// Occurs when the ShowGrid property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ShowGridChanged;
+    public event EventHandler ShowTextWithSnapshotChanged
+    {
+      add { this.Events.AddHandler(_eventShowTextWithSnapshotChanged, value); }
+      remove { this.Events.RemoveHandler(_eventShowTextWithSnapshotChanged, value); }
+    }
 
-    /// <summary>
-    /// Occurs when the ShowTextWithSnapshot property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ShowTextWithSnapshotChanged;
-
-    /// <summary>
-    /// Occurs when the Zoom property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ZoomChanged;
-
-    #endregion
-
-    #region Overridden Methods
-
-    /// <summary>
-    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-    protected override void Dispose(bool disposing)
+    public event EventHandler ZoomChanged
     {
-      if (disposing)
-      {
-        if (_eyedropperCursor != null)
-        {
-          _eyedropperCursor.Dispose();
-        }
-
-        if (this.SnapshotImage != null)
-        {
-          this.SnapshotImage.Dispose();
-        }
-      }
-
-      base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnFontChanged(EventArgs e)
-    {
-      base.OnFontChanged(e);
-
-      this.Invalidate();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.ForeColorChanged" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnForeColorChanged(EventArgs e)
-    {
-      base.OnForeColorChanged(e);
-
-      this.Invalidate();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-    protected override void OnMouseDown(MouseEventArgs e)
-    {
-      base.OnMouseDown(e);
-
-      if (e.Button == MouseButtons.Left && !this.IsCapturing)
-      {
-        if (_eyedropperCursor == null)
-        {
-          // ReSharper disable AssignNullToNotNullAttribute
-          _eyedropperCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.eyedropper.cur")));
-        }
-        // ReSharper restore AssignNullToNotNullAttribute
-
-        this.Cursor = _eyedropperCursor;
-        this.IsCapturing = true;
-        this.Invalidate();
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-    protected override void OnMouseMove(MouseEventArgs e)
-    {
-      base.OnMouseMove(e);
-
-      if (this.IsCapturing)
-      {
-        this.UpdateSnapshot();
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseUp" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-    protected override void OnMouseUp(MouseEventArgs e)
-    {
-      base.OnMouseUp(e);
-
-      if (this.IsCapturing)
-      {
-        this.Cursor = Cursors.Default;
-        this.IsCapturing = false;
-        this.Invalidate();
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
-    protected override void OnPaint(PaintEventArgs e)
-    {
-      base.OnPaint(e);
-
-      base.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc
-
-      // draw the current snapshot, if present
-      if (this.SnapshotImage != null)
-      {
-        e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
-        e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-        e.Graphics.DrawImage(this.SnapshotImage, new Rectangle(0, 0, this.SnapshotImage.Width * this.Zoom, this.SnapshotImage.Height * this.Zoom), new Rectangle(Point.Empty, this.SnapshotImage.Size), GraphicsUnit.Pixel);
-      }
-
-      this.PaintAdornments(e);
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnResize(EventArgs e)
-    {
-      base.OnResize(e);
-
-      this.CreateSnapshotImage();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.TextChanged" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnTextChanged(EventArgs e)
-    {
-      base.OnTextChanged(e);
-
-      this.Invalidate();
+      add { this.Events.AddHandler(_eventZoomChanged, value); }
+      remove { this.Events.RemoveHandler(_eventZoomChanged, value); }
     }
 
     #endregion
 
-    #region Public Properties
-
-    /// <summary>
-    /// Gets or sets the component color.
-    /// </summary>
-    /// <value>The component color.</value>
-    [Category("Behavior")]
-    [DefaultValue(typeof(Color), "Empty")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (this.Color != value)
-        {
-          _color = value;
-
-          this.OnColorChanged(EventArgs.Empty);
-        }
-      }
-    }
+    #region Properties
 
     /// <summary>
     /// Gets or sets the color of the grid.
@@ -402,10 +252,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion
-
-    #region Protected Properties
-
     /// <summary>
     /// Gets or sets a value indicating snapshot capture is in progress.
     /// </summary>
@@ -426,7 +272,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Protected Members
+    #region Methods
 
     /// <summary>
     /// Creates the snapshot image.
@@ -450,6 +296,28 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+    protected override void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        if (_eyedropperCursor != null)
+        {
+          _eyedropperCursor.Dispose();
+        }
+
+        if (this.SnapshotImage != null)
+        {
+          this.SnapshotImage.Dispose();
+        }
+      }
+
+      base.Dispose(disposing);
+    }
+
+    /// <summary>
     /// Gets the center point based on the current zoom level.
     /// </summary>
     protected virtual Point GetCenterPoint()
@@ -457,8 +325,8 @@ namespace Cyotek.Windows.Forms
       int x;
       int y;
 
-      x = (this.ClientSize.Width / this.Zoom) / 2;
-      y = (this.ClientSize.Height / this.Zoom) / 2;
+      x = this.ClientSize.Width / this.Zoom / 2;
+      y = this.ClientSize.Height / this.Zoom / 2;
 
       return new Point(x, y);
     }
@@ -485,12 +353,31 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.ColorChanged;
+      handler = (EventHandler)this.Events[_eventColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnFontChanged(EventArgs e)
+    {
+      base.OnFontChanged(e);
+
+      this.Invalidate();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.ForeColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnForeColorChanged(EventArgs e)
+    {
+      base.OnForeColorChanged(e);
+
+      this.Invalidate();
     }
 
     /// <summary>
@@ -503,12 +390,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.GridColorChanged;
+      handler = (EventHandler)this.Events[_eventGridColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -521,12 +405,95 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.ImageChanged;
+      handler = (EventHandler)this.Events[_eventImageChanged];
 
-      if (handler != null)
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+      base.OnMouseDown(e);
+
+      if (e.Button == MouseButtons.Left && !this.IsCapturing)
       {
-        handler(this, e);
+        if (_eyedropperCursor == null)
+        {
+          // ReSharper disable AssignNullToNotNullAttribute
+          _eyedropperCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.eyedropper.cur")));
+        }
+        // ReSharper restore AssignNullToNotNullAttribute
+
+        this.Cursor = _eyedropperCursor;
+        this.IsCapturing = true;
+        this.Invalidate();
       }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+      base.OnMouseMove(e);
+
+      if (this.IsCapturing)
+      {
+        this.UpdateSnapshot();
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseUp" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+      base.OnMouseUp(e);
+
+      if (this.IsCapturing)
+      {
+        this.Cursor = Cursors.Default;
+        this.IsCapturing = false;
+        this.Invalidate();
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+    protected override void OnPaint(PaintEventArgs e)
+    {
+      base.OnPaint(e);
+
+      this.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc
+
+      // draw the current snapshot, if present
+      if (this.SnapshotImage != null)
+      {
+        e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+        e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+        e.Graphics.DrawImage(this.SnapshotImage, new Rectangle(0, 0, this.SnapshotImage.Width * this.Zoom, this.SnapshotImage.Height * this.Zoom), new Rectangle(Point.Empty, this.SnapshotImage.Size), GraphicsUnit.Pixel);
+      }
+
+      this.PaintAdornments(e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+
+      this.CreateSnapshotImage();
     }
 
     /// <summary>
@@ -539,12 +506,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.ShowGridChanged;
+      handler = (EventHandler)this.Events[_eventShowGridChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -557,12 +521,20 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.ShowTextWithSnapshotChanged;
+      handler = (EventHandler)this.Events[_eventShowTextWithSnapshotChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.TextChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnTextChanged(EventArgs e)
+    {
+      base.OnTextChanged(e);
+
+      this.Invalidate();
     }
 
     /// <summary>
@@ -575,12 +547,9 @@ namespace Cyotek.Windows.Forms
 
       this.CreateSnapshotImage();
 
-      handler = this.ZoomChanged;
+      handler = (EventHandler)this.Events[_eventZoomChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -689,6 +658,37 @@ namespace Cyotek.Windows.Forms
         // force a redraw
         this.HasSnapshot = true;
         this.Refresh(); // just calling Invalidate isn't enough as the display will lag
+      }
+    }
+
+    #endregion
+
+    #region IColorEditor Interface
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
+
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
+    [Category("Behavior")]
+    [DefaultValue(typeof(Color), "Empty")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (this.Color != value)
+        {
+          _color = value;
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
       }
     }
 

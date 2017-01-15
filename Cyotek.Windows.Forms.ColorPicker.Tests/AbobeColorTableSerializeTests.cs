@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.IO;
+﻿using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -19,7 +18,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   [TestFixture]
   public class AdobeColorTablePaletteSerializerTest : TestBase
   {
-    #region Tests
+    #region  Tests
 
     [Test]
     public void CanReadTest()
@@ -118,8 +117,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
         actual = new AdobeColorTablePaletteSerializer().Deserialize(read);
       }
 
-        // assert
-        CollectionAssert.AreEqual(expected, actual);
+      // assert
+      CollectionAssert.AreEqual(expected, actual);
     }
 
     #endregion

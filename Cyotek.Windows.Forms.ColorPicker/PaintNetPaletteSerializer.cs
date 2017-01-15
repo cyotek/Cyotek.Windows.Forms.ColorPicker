@@ -19,7 +19,7 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public class PaintNetPaletteSerializer : PaletteSerializer
   {
-    #region Overridden Properties
+    #region Properties
 
     /// <summary>
     /// Gets the default extension for files generated with this palette format.
@@ -28,6 +28,17 @@ namespace Cyotek.Windows.Forms
     public override string DefaultExtension
     {
       get { return "txt"; }
+    }
+
+    /// <summary>
+    /// Gets the maximum number of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The maximum value number of colors supported by this format.
+    /// </value>
+    public override int Maximum
+    {
+      get { return 96; }
     }
 
     /// <summary>
@@ -41,7 +52,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     /// <summary>
     /// Determines whether this instance can read palette from data the specified stream.
@@ -152,17 +163,6 @@ namespace Cyotek.Windows.Forms
           writer.WriteLine("{0:X2}{1:X2}{2:X2}{3:X2}", color.A, color.R, color.G, color.B);
         }
       }
-    }
-
-    /// <summary>
-    /// Gets the maximum number of colors supported by this format.
-    /// </summary>
-    /// <value>
-    /// The maximum value number of colors supported by this format.
-    /// </value>
-    public override int Maximum
-    {
-      get { return 96; }
     }
 
     #endregion

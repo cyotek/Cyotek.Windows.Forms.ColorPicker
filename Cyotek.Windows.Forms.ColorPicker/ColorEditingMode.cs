@@ -26,6 +26,6 @@
     /// <summary>
     /// Custom or standard colors can be edited.
     /// </summary>
-    Both,
+    Both
   }
 }

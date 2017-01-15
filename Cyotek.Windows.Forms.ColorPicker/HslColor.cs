@@ -23,7 +23,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Instance Fields
+    #region Fields
 
     private int _alpha;
 
@@ -42,14 +42,14 @@ namespace Cyotek.Windows.Forms
     static HslColor()
     {
       Empty = new HslColor
-      {
-        IsEmpty = true
-      };
+              {
+                IsEmpty = true
+              };
     }
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     public HslColor(double hue, double saturation, double lightness)
       : this(255, hue, saturation, lightness)
@@ -80,7 +80,7 @@ namespace Cyotek.Windows.Forms
     public static bool operator ==(HslColor a, HslColor b)
     {
       // ReSharper disable CompareOfFloatsByEqualityOperator
-      return (a.H == b.H && a.L == b.L && a.S == b.S && a.A == b.A);
+      return a.H == b.H && a.L == b.L && a.S == b.S && a.A == b.A;
       // ReSharper restore CompareOfFloatsByEqualityOperator
     }
 
@@ -101,53 +101,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Methods
-
-    public override bool Equals(object obj)
-    {
-      bool result;
-
-      if (obj is HslColor)
-      {
-        HslColor color;
-
-        color = (HslColor)obj;
-        result = (this == color);
-      }
-      else
-      {
-        result = false;
-      }
-
-      return result;
-    }
-
-    public override int GetHashCode()
-    {
-      return base.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-      StringBuilder builder;
-
-      builder = new StringBuilder();
-      builder.Append(this.GetType().Name);
-      builder.Append(" [");
-      builder.Append("H=");
-      builder.Append(this.H);
-      builder.Append(", S=");
-      builder.Append(this.S);
-      builder.Append(", L=");
-      builder.Append(this.L);
-      builder.Append("]");
-
-      return builder.ToString();
-    }
-
-    #endregion
-
-    #region Public Properties
+    #region Properties
 
     public int A
     {
@@ -193,7 +147,31 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Members
+    #region Methods
+
+    public override bool Equals(object obj)
+    {
+      bool result;
+
+      if (obj is HslColor)
+      {
+        HslColor color;
+
+        color = (HslColor)obj;
+        result = this == color;
+      }
+      else
+      {
+        result = false;
+      }
+
+      return result;
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
 
     public Color ToRgbColor()
     {
@@ -209,7 +187,7 @@ namespace Cyotek.Windows.Forms
       }
       else
       {
-        q = this.L + this.S - (this.L * this.S);
+        q = this.L + this.S - this.L * this.S;
       }
       double p = 2 * this.L - q;
       double hk = this.H / 360;
@@ -217,11 +195,15 @@ namespace Cyotek.Windows.Forms
       // r,g,b colors
       double[] tc = new[]
                     {
-                      hk + (1d / 3d), hk, hk - (1d / 3d)
+                      hk + 1d / 3d,
+                      hk,
+                      hk - 1d / 3d
                     };
       double[] colors = new[]
                         {
-                          0.0, 0.0, 0.0
+                          0.0,
+                          0.0,
+                          0.0
                         };
 
       for (int color = 0; color < colors.Length; color++)
@@ -235,27 +217,45 @@ namespace Cyotek.Windows.Forms
           tc[color] -= 1;
         }
 
-        if (tc[color] < (1d / 6d))
+        if (tc[color] < 1d / 6d)
         {
-          colors[color] = p + ((q - p) * 6 * tc[color]);
+          colors[color] = p + (q - p) * 6 * tc[color];
         }
-        else if (tc[color] >= (1d / 6d) && tc[color] < (1d / 2d))
+        else if (tc[color] >= 1d / 6d && tc[color] < 1d / 2d)
         {
           colors[color] = q;
         }
-        else if (tc[color] >= (1d / 2d) && tc[color] < (2d / 3d))
+        else if (tc[color] >= 1d / 2d && tc[color] < 2d / 3d)
         {
-          colors[color] = p + ((q - p) * 6 * (2d / 3d - tc[color]));
+          colors[color] = p + (q - p) * 6 * (2d / 3d - tc[color]);
         }
         else
         {
           colors[color] = p;
         }
 
-        colors[color] = Math.Round(colors[color] * 255d);
+        colors[color] *= 255;
       }
 
       return Color.FromArgb(alpha, (int)colors[0], (int)colors[1], (int)colors[2]);
+    }
+
+    public override string ToString()
+    {
+      StringBuilder builder;
+
+      builder = new StringBuilder();
+      builder.Append(this.GetType().Name);
+      builder.Append(" [");
+      builder.Append("H=");
+      builder.Append(this.H);
+      builder.Append(", S=");
+      builder.Append(this.S);
+      builder.Append(", L=");
+      builder.Append(this.L);
+      builder.Append("]");
+
+      return builder.ToString();
     }
 
     #endregion

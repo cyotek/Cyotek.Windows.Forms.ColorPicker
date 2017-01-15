@@ -18,7 +18,7 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public class GimpPaletteSerializer : PaletteSerializer
   {
-    #region Overridden Properties
+    #region Properties
 
     /// <summary>
     /// Gets the default extension for files generated with this palette format.
@@ -40,7 +40,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     /// <summary>
     /// Determines whether this instance can read palette from data the specified stream.
@@ -64,7 +64,7 @@ namespace Cyotek.Windows.Forms
 
           header = reader.ReadLine();
 
-          result = (header == "GIMP Palette");
+          result = header == "GIMP Palette";
         }
       }
       catch
@@ -139,7 +139,8 @@ namespace Cyotek.Windows.Forms
 
               parts = !string.IsNullOrEmpty(data) ? data.Split(new[]
                                                                {
-                                                                 ' ', '\t'
+                                                                 ' ',
+                                                                 '\t'
                                                                }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
               name = parts.Length > 3 ? string.Join(" ", parts, 3, parts.Length - 3) : null;
 

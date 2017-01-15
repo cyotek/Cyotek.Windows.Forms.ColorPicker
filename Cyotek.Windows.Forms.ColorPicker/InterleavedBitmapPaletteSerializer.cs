@@ -20,7 +20,7 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public class InterleavedBitmapPaletteSerializer : PaletteSerializer
   {
-    #region Overridden Properties
+    #region Properties
 
     /// <summary>
     /// Gets a value indicating whether this serializer can be used to write palettes.
@@ -51,7 +51,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     /// <summary>
     /// Determines whether this instance can read palette from data the specified stream.

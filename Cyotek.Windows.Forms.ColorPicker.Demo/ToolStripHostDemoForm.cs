@@ -21,7 +21,21 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Private Members
+    #region Methods
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data. </param>
+    protected override void OnLoad(EventArgs e)
+    {
+      base.OnLoad(e);
+
+      textToolStripColorPickerButton.Color = previewLabel.ForeColor;
+      backgroundToolStripColorPickerSplitButton.Color = previewLabel.BackColor;
+
+      propertyGrid.SelectedObject = textToolStripColorPickerButton.Host;
+    }
 
     private void backgroundToolStripColorPickerSplitButton_ColorChanged(object sender, EventArgs e)
     {
@@ -36,24 +50,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void textToolStripColorPickerButton_ColorChanged(object sender, EventArgs e)
     {
       previewLabel.ForeColor = textToolStripColorPickerButton.Color;
-    }
-
-    #endregion
-
-    #region Protected Members
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data. </param>
-    protected override void OnLoad(EventArgs e)
-    {
-      base.OnLoad(e);
-
-      textToolStripColorPickerButton.Color = previewLabel.ForeColor;
-      backgroundToolStripColorPickerSplitButton.Color = previewLabel.BackColor;
-
-      propertyGrid.SelectedObject = textToolStripColorPickerButton.Host;
     }
 
     #endregion

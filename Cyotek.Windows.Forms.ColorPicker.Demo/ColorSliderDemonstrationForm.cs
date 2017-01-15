@@ -14,16 +14,21 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal partial class ColorSliderDemonstrationForm : BaseForm
   {
-    #region Public Constructors
+    #region Constructors
 
     public ColorSliderDemonstrationForm()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
 
     #endregion
 
-    #region Event Handlers
+    #region Methods
+
+    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      this.Close();
+    }
 
     private void GotFocusHandler(object sender, EventArgs e)
     {
@@ -38,11 +43,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
                                                                   "Value", ((ColorSlider)sender).Value
                                                                 }
                                                               });
-    }
-
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      this.Close();
     }
 
     #endregion

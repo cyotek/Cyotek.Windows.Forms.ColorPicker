@@ -23,10 +23,6 @@ namespace Cyotek.Windows.Forms
   {
     #region Constants
 
-    private static string _defaultOpenFilter;
-
-    private static string _defaultSaveFileter;
-
     private static readonly List<IPaletteSerializer> _serializerCache;
 
     #endregion
@@ -43,7 +39,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Class Properties
+    #region Static Properties
 
     /// <summary>
     /// Gets all loaded serializers.
@@ -92,7 +88,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Class Members
+    #region Static Methods
 
     public static IPaletteSerializer GetSerializer(string fileName)
     {
@@ -129,10 +125,6 @@ namespace Cyotek.Windows.Forms
 
       return result;
     }
-
-    #endregion
-
-    #region Private Class Members
 
     /// <summary>
     /// Creates the Open and Save As filters.
@@ -247,7 +239,7 @@ namespace Cyotek.Windows.Forms
         {
           _serializerCache.Add((IPaletteSerializer)Activator.CreateInstance(type));
         }
-          // ReSharper disable EmptyGeneralCatchClause
+        // ReSharper disable EmptyGeneralCatchClause
         catch
           // ReSharper restore EmptyGeneralCatchClause
         {
@@ -257,12 +249,12 @@ namespace Cyotek.Windows.Forms
 
       // sort the cache by name, that way the open/save filters won't need independant sorting
       // and can easily map FileDialog.FilterIndex to an item in this collection
-      _serializerCache.Sort((a, b) => String.CompareOrdinal(a.Name, b.Name));
+      _serializerCache.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
     }
 
     #endregion
 
-    #region Public Properties
+    #region Properties
 
     /// <summary>
     /// Gets a value indicating whether this serializer can be used to read palettes.
@@ -300,7 +292,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Members
+    #region Methods
 
     /// <summary>
     /// Determines whether this instance can read palette from data the specified stream.
@@ -342,28 +334,6 @@ namespace Cyotek.Windows.Forms
     public abstract void Serialize(Stream stream, ColorCollection palette);
 
     /// <summary>
-    /// Gets the minimum numbers of colors supported by this format.
-    /// </summary>
-    /// <value>
-    /// The minimum number of colors supported by this format.
-    /// </value>
-    public virtual int Minimum
-    {
-      get { return 1; }
-    }
-
-    /// <summary>
-    /// Gets the maximum number of colors supported by this format.
-    /// </summary>
-    /// <value>
-    /// The maximum value number of colors supported by this format.
-    /// </value>
-    public virtual int Maximum
-    {
-      get { return int.MaxValue; }
-    }
-
-    /// <summary>
     /// Serializes the specified <see cref="ColorCollection" /> and writes the palette to a file using the specified <see cref="Stream"/>.
     /// </summary>
     /// <param name="fileName">The name of the file where the palette will be written to.</param>
@@ -375,10 +345,6 @@ namespace Cyotek.Windows.Forms
         this.Serialize(stream, palette);
       }
     }
-
-    #endregion
-
-    #region Protected Members
 
     /// <summary>
     /// Reads a 16bit unsigned integer in big-endian format.
@@ -450,16 +416,16 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region IPaletteSerializer Members
+    #region IPaletteSerializer Interface
 
     /// <summary>
-    /// Serializes the specified <see cref="ColorCollection" /> and writes the palette to a file using the specified Stream.
+    /// Determines whether this instance can read palette data from the specified stream.
     /// </summary>
-    /// <param name="stream">The <see cref="Stream" /> used to write the palette.</param>
-    /// <param name="palette">The <see cref="ColorCollection" /> to serialize.</param>
-    void IPaletteSerializer.Serialize(Stream stream, ColorCollection palette)
+    /// <param name="stream">The stream.</param>
+    /// <returns><c>true</c> if this instance can read palette data from the specified stream; otherwise, <c>false</c>.</returns>
+    bool IPaletteSerializer.CanReadFrom(Stream stream)
     {
-      this.Serialize(stream, palette);
+      return this.CanReadFrom(stream);
     }
 
     /// <summary>
@@ -473,21 +439,35 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
-    /// Gets a descriptive name of the palette format
+    /// Serializes the specified <see cref="ColorCollection" /> and writes the palette to a file using the specified Stream.
     /// </summary>
-    /// <value>The descriptive name of the palette format.</value>
-    string IPaletteSerializer.Name
+    /// <param name="stream">The <see cref="Stream" /> used to write the palette.</param>
+    /// <param name="palette">The <see cref="ColorCollection" /> to serialize.</param>
+    void IPaletteSerializer.Serialize(Stream stream, ColorCollection palette)
     {
-      get { return this.Name; }
+      this.Serialize(stream, palette);
     }
 
     /// <summary>
-    /// Gets the default extension for files generated with this palette format.
+    /// Gets the maximum number of colors supported by this format.
     /// </summary>
-    /// <value>The default extension for files generated with this palette format.</value>
-    string IPaletteSerializer.DefaultExtension
+    /// <value>
+    /// The maximum value number of colors supported by this format.
+    /// </value>
+    public virtual int Maximum
     {
-      get { return this.DefaultExtension; }
+      get { return int.MaxValue; }
+    }
+
+    /// <summary>
+    /// Gets the minimum numbers of colors supported by this format.
+    /// </summary>
+    /// <value>
+    /// The minimum number of colors supported by this format.
+    /// </value>
+    public virtual int Minimum
+    {
+      get { return 1; }
     }
 
     /// <summary>
@@ -509,14 +489,30 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
-    /// Determines whether this instance can read palette data from the specified stream.
+    /// Gets the default extension for files generated with this palette format.
     /// </summary>
-    /// <param name="stream">The stream.</param>
-    /// <returns><c>true</c> if this instance can read palette data from the specified stream; otherwise, <c>false</c>.</returns>
-    bool IPaletteSerializer.CanReadFrom(Stream stream)
+    /// <value>The default extension for files generated with this palette format.</value>
+    string IPaletteSerializer.DefaultExtension
     {
-      return this.CanReadFrom(stream);
+      get { return this.DefaultExtension; }
     }
+
+    /// <summary>
+    /// Gets a descriptive name of the palette format
+    /// </summary>
+    /// <value>The descriptive name of the palette format.</value>
+    string IPaletteSerializer.Name
+    {
+      get { return this.Name; }
+    }
+
+    #endregion
+
+    #region Other
+
+    private static string _defaultOpenFilter;
+
+    private static string _defaultSaveFileter;
 
     #endregion
   }

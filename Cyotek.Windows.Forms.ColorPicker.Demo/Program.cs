@@ -13,7 +13,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal static class Program
   {
-    #region Private Class Members
+    #region Static Methods
 
     /// <summary>
     /// The main entry point for the application.

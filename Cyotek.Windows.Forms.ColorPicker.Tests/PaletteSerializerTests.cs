@@ -15,7 +15,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   [TestFixture]
   internal class PaletteSerializerTests : TestBase
   {
-    #region Tests
+    #region  Tests
 
     [Test]
     public void DefaultOpenFilterTest()
@@ -60,7 +60,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       stream = new MemoryStream(new byte[]
                                 {
-                                  123, 41
+                                  123,
+                                  41
                                 });
       target = new FakeSerializer();
       expected = 31529;
@@ -83,7 +84,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       stream = new MemoryStream(new byte[]
                                 {
-                                  3, 181, 103, 132
+                                  3,
+                                  181,
+                                  103,
+                                  132
                                 });
       target = new FakeSerializer();
       expected = 62220164;
@@ -107,7 +111,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       value = 31529;
       expected = new[]
                  {
-                   (byte)123, (byte)41
+                   (byte)123,
+                   (byte)41
                  };
       target = new FakeSerializer();
 
@@ -134,7 +139,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       value = 62220164;
       expected = new[]
                  {
-                   (byte)3, (byte)181, (byte)103, (byte)132
+                   (byte)3,
+                   (byte)181,
+                   (byte)103,
+                   (byte)132
                  };
       target = new FakeSerializer();
 

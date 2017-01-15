@@ -19,6 +19,20 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
   [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
   public class ToolStripColorPickerSplitButton : ToolStripSplitButton
   {
+    #region Constants
+
+    private static readonly object _eventColorChanged = new object();
+
+    #endregion
+
+    #region Fields
+
+    private Color _color;
+
+    private ToolStripColorPickerDropDown _dropDown;
+
+    #endregion
+
     #region Constructors
 
     public ToolStripColorPickerSplitButton()
@@ -28,7 +42,18 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
 
     #endregion
 
-    #region Public Properties
+    #region Events
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
+
+    #endregion
+
+    #region Properties
 
     [Category("Data")]
     [DefaultValue(typeof(Color), "Black")]
@@ -68,27 +93,7 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
 
     #endregion
 
-    #region Private Members
-
-    private void DropDownColorChangedHandler(object sender, EventArgs e)
-    {
-      this.Color = _dropDown.Color;
-    }
-
-    private void EnsureDropDownIsCreated()
-    {
-      if (_dropDown == null)
-      {
-        _dropDown = new ToolStripColorPickerDropDown();
-        _dropDown.ColorChanged += this.DropDownColorChangedHandler;
-      }
-    }
-
-
-
-    #endregion
-
-    #region Protected Members
+    #region Methods
 
     protected override ToolStripDropDown CreateDefaultDropDown()
     {
@@ -151,12 +156,9 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
         _dropDown.Color = this.Color;
       }
 
-      handler = this.ColorChanged;
+      handler = (EventHandler)this.Events[_eventColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -184,6 +186,20 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
       }
     }
 
+    private void DropDownColorChangedHandler(object sender, EventArgs e)
+    {
+      this.Color = _dropDown.Color;
+    }
+
+    private void EnsureDropDownIsCreated()
+    {
+      if (_dropDown == null)
+      {
+        _dropDown = new ToolStripColorPickerDropDown();
+        _dropDown.ColorChanged += this.DropDownColorChangedHandler;
+      }
+    }
+
     private Rectangle GetUnderlineRectangle(Graphics g)
     {
       int x;
@@ -205,7 +221,7 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
 
         // got both an image and some text to deal with
         w = this.Image.Width;
-        y = this.ButtonBounds.Top + innerHeight + ((this.ButtonBounds.Height - this.Image.Height) / 2);
+        y = this.ButtonBounds.Top + innerHeight + (this.ButtonBounds.Height - this.Image.Height) / 2;
 
         switch (this.TextImageRelation)
         {
@@ -213,16 +229,16 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
             x = this.ButtonBounds.Right - (w + this.ButtonBounds.Left + 2);
             break;
           case TextImageRelation.ImageAboveText:
-            x = this.ButtonBounds.Left + ((this.ButtonBounds.Width - this.Image.Width) / 2);
+            x = this.ButtonBounds.Left + (this.ButtonBounds.Width - this.Image.Width) / 2;
             y = this.ButtonBounds.Top + innerHeight + 2;
             break;
           case TextImageRelation.TextAboveImage:
-            x = this.ButtonBounds.Left + ((this.ButtonBounds.Width - this.Image.Width) / 2);
+            x = this.ButtonBounds.Left + (this.ButtonBounds.Width - this.Image.Width) / 2;
             y = this.ContentRectangle.Bottom - h;
             break;
           case TextImageRelation.Overlay:
-            x = this.ButtonBounds.Left + ((this.ButtonBounds.Width - this.Image.Width) / 2);
-            y = this.ButtonBounds.Top + innerHeight + ((this.ButtonBounds.Height - this.Image.Height) / 2);
+            x = this.ButtonBounds.Left + (this.ButtonBounds.Width - this.Image.Width) / 2;
+            y = this.ButtonBounds.Top + innerHeight + (this.ButtonBounds.Height - this.Image.Height) / 2;
             break;
         }
       }
@@ -242,29 +258,11 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
         // TODO: ButtonBounds (and SplitterBounds for that matter) seem to return the wrong
         // values when painting first occurs, so the line is too narrow until after you 
         // hover the mouse over the button
-        w = this.ButtonBounds.Width - (this.ContentRectangle.Left * 2);
+        w = this.ButtonBounds.Width - this.ContentRectangle.Left * 2;
       }
 
       return new Rectangle(x, y, w, h);
     }
-
-    #endregion
-
-    #region Public Members
-
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged;
-
-    #endregion
-
-    #region  Fields
-
-    private Color _color;
-
-    private ToolStripColorPickerDropDown _dropDown;
 
     #endregion
   }

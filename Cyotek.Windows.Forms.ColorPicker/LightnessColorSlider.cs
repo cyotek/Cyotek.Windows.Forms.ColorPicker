@@ -1,10 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-#if USEEXTERNALCYOTEKLIBS
-using Cyotek.Drawing;
-
-#endif
 
 namespace Cyotek.Windows.Forms
 {
@@ -18,13 +14,19 @@ namespace Cyotek.Windows.Forms
 
   public class LightnessColorSlider : ColorSlider, IColorEditor
   {
-    #region Instance Fields
+    #region Constants
+
+    private static readonly object _eventColorChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Color _color;
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     public LightnessColorSlider()
     {
@@ -34,17 +36,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Events
-
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged;
-
-    #endregion
-
-    #region Overridden Properties
+    #region Properties
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -100,61 +92,6 @@ namespace Cyotek.Windows.Forms
       set { base.Value = (int)value; }
     }
 
-    #endregion
-
-    #region Overridden Methods
-
-    /// <summary>
-    /// Raises the <see cref="ColorSlider.ValueChanged" /> event.
-    /// </summary>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected override void OnValueChanged(EventArgs e)
-    {
-      if (!this.LockUpdates)
-      {
-        HslColor color;
-
-        this.LockUpdates = true;
-        color = new HslColor(this.Color);
-        color.L = this.Value / 100D;
-        _color = color.ToRgbColor();
-        this.OnColorChanged(e);
-        this.LockUpdates = false;
-      }
-
-      base.OnValueChanged(e);
-    }
-
-    #endregion
-
-    #region Public Properties
-
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "Black")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (this.Color != value)
-        {
-          _color = value;
-
-          if (!this.LockUpdates)
-          {
-            this.LockUpdates = true;
-            this.Value = (float)new HslColor(value).L * 100;
-            this.OnColorChanged(EventArgs.Empty);
-            this.LockUpdates = false;
-          }
-        }
-      }
-    }
-
-    #endregion
-
-    #region Protected Properties
-
     /// <summary>
     /// Gets or sets a value indicating whether input changes should be processed.
     /// </summary>
@@ -163,7 +100,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Protected Members
+    #region Methods
 
     protected virtual void CreateScale()
     {
@@ -189,11 +126,62 @@ namespace Cyotek.Windows.Forms
       this.CreateScale();
       this.Invalidate();
 
-      handler = this.ColorChanged;
+      handler = (EventHandler)this.Events[_eventColorChanged];
 
-      if (handler != null)
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ColorSlider.ValueChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected override void OnValueChanged(EventArgs e)
+    {
+      if (!this.LockUpdates)
       {
-        handler(this, e);
+        HslColor color;
+
+        this.LockUpdates = true;
+        color = new HslColor(this.Color);
+        color.L = this.Value / 100D;
+        _color = color.ToRgbColor();
+        this.OnColorChanged(e);
+        this.LockUpdates = false;
+      }
+
+      base.OnValueChanged(e);
+    }
+
+    #endregion
+
+    #region IColorEditor Interface
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (this.Color != value)
+        {
+          _color = value;
+
+          if (!this.LockUpdates)
+          {
+            this.LockUpdates = true;
+            this.Value = (float)new HslColor(value).L * 100;
+            this.OnColorChanged(EventArgs.Empty);
+            this.LockUpdates = false;
+          }
+        }
       }
     }
 

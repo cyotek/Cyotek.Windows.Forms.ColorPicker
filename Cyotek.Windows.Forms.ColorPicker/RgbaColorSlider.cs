@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
@@ -17,7 +16,15 @@ namespace Cyotek.Windows.Forms
 
   public class RgbaColorSlider : ColorSlider
   {
-    #region Instance Fields
+    #region Constants
+
+    private static readonly object _eventChannelChanged = new object();
+
+    private static readonly object _eventColorChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Brush _cellBackgroundBrush;
 
@@ -27,12 +34,12 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     public RgbaColorSlider()
     {
-      this.BarStyle = ColorBarStyle.Custom;
-      this.Maximum = 255;
+      base.BarStyle = ColorBarStyle.Custom;
+      base.Maximum = 255;
       this.Color = Color.Black;
       this.CreateScale();
     }
@@ -41,21 +48,23 @@ namespace Cyotek.Windows.Forms
 
     #region Events
 
-    /// <summary>
-    /// Occurs when the Channel property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ChannelChanged;
+    public event EventHandler ChannelChanged
+    {
+      add { this.Events.AddHandler(_eventChannelChanged, value); }
+      remove { this.Events.RemoveHandler(_eventChannelChanged, value); }
+    }
 
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ColorChanged;
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
 
     #endregion
 
-    #region Overridden Properties
+    #region Properties
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -63,6 +72,38 @@ namespace Cyotek.Windows.Forms
     {
       get { return base.BarStyle; }
       set { base.BarStyle = value; }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(RgbaChannel), "Red")]
+    public virtual RgbaChannel Channel
+    {
+      get { return _channel; }
+      set
+      {
+        if (this.Channel != value)
+        {
+          _channel = value;
+
+          this.OnChannelChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (this.Color != value)
+        {
+          _color = value;
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
+      }
     }
 
     [Browsable(false)]
@@ -113,7 +154,63 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
+
+    protected virtual void CreateScale()
+    {
+      ColorCollection custom;
+      Color color;
+      RgbaChannel channel;
+
+      custom = new ColorCollection();
+      color = this.Color;
+      channel = this.Channel;
+
+      for (int i = 0; i < 254; i++)
+      {
+        int a;
+        int r;
+        int g;
+        int b;
+
+        a = color.A;
+        r = color.R;
+        g = color.G;
+        b = color.B;
+
+        switch (channel)
+        {
+          case RgbaChannel.Red:
+            r = i;
+            break;
+          case RgbaChannel.Green:
+            g = i;
+            break;
+          case RgbaChannel.Blue:
+            b = i;
+            break;
+          case RgbaChannel.Alpha:
+            a = i;
+            break;
+        }
+
+        custom.Add(Color.FromArgb(a, r, g, b));
+      }
+
+      this.CustomColors = custom;
+    }
+
+    protected virtual Brush CreateTransparencyBrush()
+    {
+      Type type;
+
+      type = typeof(RgbaColorSlider);
+
+      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(type.Namespace, ".Resources.cellbackground.png"))))
+      {
+        return new TextureBrush(background, WrapMode.Tile);
+      }
+    }
 
     protected override void Dispose(bool disposing)
     {
@@ -126,6 +223,38 @@ namespace Cyotek.Windows.Forms
       }
 
       base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ChannelChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnChannelChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.CreateScale();
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventChannelChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnColorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.CreateScale();
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventColorChanged];
+
+      handler?.Invoke(this, e);
     }
 
     protected override void PaintBar(PaintEventArgs e)
@@ -141,100 +270,6 @@ namespace Cyotek.Windows.Forms
       }
 
       base.PaintBar(e);
-    }
-
-    #endregion
-
-    #region Public Properties
-
-    [Category("Appearance")]
-    [DefaultValue(typeof(RgbaChannel), "Red")]
-    public virtual RgbaChannel Channel
-    {
-      get { return _channel; }
-      set
-      {
-        if (this.Channel != value)
-        {
-          _channel = value;
-
-          this.OnChannelChanged(EventArgs.Empty);
-        }
-      }
-    }
-
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "Black")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (this.Color != value)
-        {
-          _color = value;
-
-          this.OnColorChanged(EventArgs.Empty);
-        }
-      }
-    }
-
-    #endregion
-
-    #region Protected Members
-
-    protected virtual void CreateScale()
-    {
-      this.CustomColors = new ColorCollection(Enumerable.Range(0, 254).Select(i => Color.FromArgb(this.Channel == RgbaChannel.Alpha ? i : this.Color.A, this.Channel == RgbaChannel.Red ? i : this.Color.R, this.Channel == RgbaChannel.Green ? i : this.Color.G, this.Channel == RgbaChannel.Blue ? i : this.Color.B)));
-    }
-
-    protected virtual Brush CreateTransparencyBrush()
-    {
-      Type type;
-
-      type = typeof(RgbaColorSlider);
-
-      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(type.Namespace, ".Resources.cellbackground.png"))))
-      {
-        return new TextureBrush(background, WrapMode.Tile);
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="ChannelChanged" /> event.
-    /// </summary>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected virtual void OnChannelChanged(EventArgs e)
-    {
-      EventHandler handler;
-
-      this.CreateScale();
-
-      handler = this.ChannelChanged;
-
-      if (handler != null)
-      {
-        handler(this, e);
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="ColorChanged" /> event.
-    /// </summary>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected virtual void OnColorChanged(EventArgs e)
-    {
-      EventHandler handler;
-
-      this.CreateScale();
-      this.Invalidate();
-
-      handler = this.ColorChanged;
-
-      if (handler != null)
-      {
-        handler(this, e);
-      }
     }
 
     #endregion

@@ -14,7 +14,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal partial class BaseForm : Form
   {
-    #region Public Constructors
+    #region Constructors
 
     public BaseForm()
     {
@@ -23,7 +23,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     protected override void OnLoad(EventArgs e)
     {
@@ -32,13 +32,13 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       base.OnLoad(e);
     }
 
-    #endregion
-
     protected override void OnShown(EventArgs e)
     {
       base.OnShown(e);
 
       Cursor.Current = Cursors.Default;
     }
+
+    #endregion
   }
 }

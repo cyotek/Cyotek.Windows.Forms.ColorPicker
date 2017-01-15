@@ -1,10 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-#if USEEXTERNALCYOTEKLIBS
-using Cyotek.Drawing;
-
-#endif
 
 namespace Cyotek.Windows.Forms
 {
@@ -21,13 +17,19 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public class SaturationColorSlider : ColorSlider
   {
-    #region Instance Fields
+    #region Constants
+
+    private static readonly object _eventColorChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Color _color;
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     public SaturationColorSlider()
     {
@@ -39,15 +41,16 @@ namespace Cyotek.Windows.Forms
 
     #region Events
 
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ColorChanged;
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
 
     #endregion
 
-    #region Overridden Properties
+    #region Properties
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -55,6 +58,22 @@ namespace Cyotek.Windows.Forms
     {
       get { return base.BarStyle; }
       set { base.BarStyle = value; }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (this.Color != value)
+        {
+          _color = value;
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
+      }
     }
 
     [Browsable(false)]
@@ -105,27 +124,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Properties
-
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "Black")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (this.Color != value)
-        {
-          _color = value;
-
-          this.OnColorChanged(EventArgs.Empty);
-        }
-      }
-    }
-
-    #endregion
-
-    #region Protected Members
+    #region Methods
 
     protected virtual void CreateScale()
     {
@@ -151,12 +150,9 @@ namespace Cyotek.Windows.Forms
       this.CreateScale();
       this.Invalidate();
 
-      handler = this.ColorChanged;
+      handler = (EventHandler)this.Events[_eventColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     #endregion

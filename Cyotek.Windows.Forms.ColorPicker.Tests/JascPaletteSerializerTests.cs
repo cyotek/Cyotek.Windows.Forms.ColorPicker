@@ -18,7 +18,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   [TestFixture]
   public class JascPaletteSerializerTests : TestBase
   {
-    #region Tests
+    #region  Tests
 
     [Test]
     public void CanReadTest()

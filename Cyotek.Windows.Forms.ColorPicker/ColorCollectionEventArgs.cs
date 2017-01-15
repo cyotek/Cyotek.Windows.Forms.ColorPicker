@@ -14,7 +14,7 @@ namespace Cyotek.Windows.Forms
   /// <summary>Provides data for the <see cref="ColorCollection.CollectionChanged"/> event of a <see cref="ColorCollection"/> instance.</summary>
   public class ColorCollectionEventArgs : EventArgs
   {
-    #region Public Constructors
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorCollectionEventArgs"/> class for the specified color.
@@ -27,10 +27,6 @@ namespace Cyotek.Windows.Forms
       this.Color = color;
     }
 
-    #endregion
-
-    #region Protected Constructors
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorCollectionEventArgs"/> class.
     /// </summary>
@@ -39,7 +35,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Properties
+    #region Properties
 
     /// <summary>
     /// Gets the color that raised the event.

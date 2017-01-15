@@ -1,10 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-#if USEEXTERNALCYOTEKLIBS
-using Cyotek.Drawing;
-
-#endif
 
 namespace Cyotek.Windows.Forms
 {
@@ -18,7 +14,7 @@ namespace Cyotek.Windows.Forms
 
   public class HueColorSlider : ColorSlider
   {
-    #region Public Constructors
+    #region Constructors
 
     public HueColorSlider()
     {
@@ -29,7 +25,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Properties
+    #region Properties
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

@@ -20,7 +20,13 @@ namespace Cyotek.Windows.Forms
   [DefaultProperty("Color")]
   public partial class ColorPickerDialog : Form
   {
-    #region  Fields
+    #region Constants
+
+    private static readonly object _eventPreviewColorChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Brush _textureBrush;
 
@@ -37,7 +43,18 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Properties
+    #region Events
+
+    [Category("Property Changed")]
+    public event EventHandler PreviewColorChanged
+    {
+      add { this.Events.AddHandler(_eventPreviewColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventPreviewColorChanged, value); }
+    }
+
+    #endregion
+
+    #region Properties
 
     public Color Color
     {
@@ -51,38 +68,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Private Members
-
-    private void previewPanel_Paint(object sender, PaintEventArgs e)
-    {
-      Rectangle region;
-
-      region = previewPanel.ClientRectangle;
-
-      if (this.Color.A != 255)
-      {
-        if (_textureBrush == null)
-        {
-          using (Bitmap background = new Bitmap(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.cellbackground.png"))))
-          {
-            _textureBrush = new TextureBrush(background, WrapMode.Tile);
-          }
-        }
-
-        e.Graphics.FillRectangle(_textureBrush, region);
-      }
-
-      using (Brush brush = new SolidBrush(this.Color))
-      {
-        e.Graphics.FillRectangle(brush, region);
-      }
-
-      e.Graphics.DrawRectangle(SystemPens.ControlText, region.Left, region.Top, region.Width - 1, region.Height - 1);
-    }
-
-    #endregion
-
-    #region Protected Members
+    #region Methods
 
     /// <summary>
     /// Clean up any resources being used.
@@ -106,8 +92,6 @@ namespace Cyotek.Windows.Forms
 
       base.Dispose(disposing);
     }
-
-    #region Overridden Methods
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
@@ -134,8 +118,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion
-
     /// <summary>
     /// Raises the <see cref="PreviewColorChanged" /> event.
     /// </summary>
@@ -144,23 +126,10 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.PreviewColorChanged;
+      handler = (EventHandler)this.Events[_eventPreviewColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
-
-    #endregion
-
-    #region Public Members
-
-    public event EventHandler PreviewColorChanged;
-
-    #endregion
-
-    #region Event Handlers
 
     private void cancelButton_Click(object sender, EventArgs e)
     {
@@ -256,6 +225,33 @@ namespace Cyotek.Windows.Forms
     {
       this.DialogResult = DialogResult.OK;
       this.Close();
+    }
+
+    private void previewPanel_Paint(object sender, PaintEventArgs e)
+    {
+      Rectangle region;
+
+      region = previewPanel.ClientRectangle;
+
+      if (this.Color.A != 255)
+      {
+        if (_textureBrush == null)
+        {
+          using (Bitmap background = new Bitmap(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.cellbackground.png"))))
+          {
+            _textureBrush = new TextureBrush(background, WrapMode.Tile);
+          }
+        }
+
+        e.Graphics.FillRectangle(_textureBrush, region);
+      }
+
+      using (Brush brush = new SolidBrush(this.Color))
+      {
+        e.Graphics.FillRectangle(brush, region);
+      }
+
+      e.Graphics.DrawRectangle(SystemPens.ControlText, region.Left, region.Top, region.Width - 1, region.Height - 1);
     }
 
     private void savePaletteButton_Click(object sender, EventArgs e)

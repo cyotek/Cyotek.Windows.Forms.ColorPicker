@@ -12,7 +12,7 @@ namespace Cyotek.Windows.Forms
 
   public class ColorHitTestInfo
   {
-    #region Public Properties
+    #region Properties
 
     public Color Color { get; set; }
 

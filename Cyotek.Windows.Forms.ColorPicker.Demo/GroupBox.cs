@@ -25,7 +25,7 @@ namespace Cyotek.Windows.Forms
   [Designer("System.Windows.Forms.Design.DocumentDesigner, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(IRootDesigner))]
   internal class GroupBox : System.Windows.Forms.GroupBox
   {
-    #region Instance Fields
+    #region Fields
 
     private Border3DSide _borders = Border3DSide.Top;
 
@@ -47,7 +47,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GroupBox"/> class.
@@ -67,7 +67,19 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Properties
+    #region Properties
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Border3DSide), "Top")]
+    public Border3DSide Borders
+    {
+      get { return _borders; }
+      set
+      {
+        _borders = value;
+        this.Invalidate();
+      }
+    }
 
     /// <summary>
     /// Gets a rectangle that represents the dimensions of the <see cref="T:System.Windows.Forms.GroupBox"/>.
@@ -84,7 +96,7 @@ namespace Cyotek.Windows.Forms
         int fontHeight;
         int imageSize;
 
-        clientSize = base.ClientSize;
+        clientSize = this.ClientSize;
         fontHeight = this.Font.Height;
 
         if (_image != null)
@@ -96,144 +108,7 @@ namespace Cyotek.Windows.Forms
           imageSize = 0;
         }
 
-        return new Rectangle(3 + imageSize, fontHeight + 3, Math.Max(clientSize.Width - (imageSize + 6), 0), Math.Max((clientSize.Height - fontHeight) - 6, 0));
-      }
-    }
-
-    /// <summary>
-    /// Returns or sets the text displayed in this control.
-    /// </summary>
-    /// <value></value>
-    /// <returns>
-    /// The text associated with this control.
-    /// </returns>
-    [Browsable(true)]
-    [DefaultValue("")]
-    public override string Text
-    {
-      get { return base.Text; }
-      set
-      {
-        base.Text = value;
-        this.Invalidate();
-      }
-    }
-
-    #endregion
-
-    #region Overridden Methods
-
-    /// <summary> 
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
-    {
-      if (disposing)
-      {
-        this.CleanUpResources();
-      }
-
-      base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Occurs when the control is to be painted.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
-    protected override void OnPaint(PaintEventArgs e)
-    {
-      SizeF size;
-      int y;
-      TextFormatFlags flags;
-      Rectangle textBounds;
-
-      flags = TextFormatFlags.WordEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.Left | TextFormatFlags.SingleLine;
-
-      size = TextRenderer.MeasureText(e.Graphics, this.Text, this.Font, this.ClientSize, flags);
-      y = (int)(size.Height + 3) / 2;
-      textBounds = new Rectangle(1, 1, (int)size.Width, (int)size.Height);
-
-      if (this.ShowBorders)
-      {
-        if ((_borders & Border3DSide.All) == Border3DSide.All)
-        {
-          e.Graphics.DrawRectangle(_bottomPen, 1, y + 1, this.Width - 2, this.Height - (y + 2));
-          e.Graphics.DrawRectangle(_topPen, 0, y, this.Width - 2, this.Height - (y + 2));
-        }
-        else
-        {
-          if ((_borders & Border3DSide.Top) == Border3DSide.Top)
-          {
-            e.Graphics.DrawLine(_topPen, size.Width + 3, y, this.Width - 5, y);
-            e.Graphics.DrawLine(_bottomPen, size.Width + 3, y + 1, this.Width - 5, y + 1);
-          }
-
-          if ((_borders & Border3DSide.Left) == Border3DSide.Left)
-          {
-            e.Graphics.DrawLine(_topPen, 0, y, 0, this.Height - 1);
-            e.Graphics.DrawLine(_bottomPen, 1, y, 1, this.Height - 1);
-          }
-
-          if ((_borders & Border3DSide.Right) == Border3DSide.Right)
-          {
-            e.Graphics.DrawLine(_bottomPen, this.Width - 1, y, this.Width - 1, this.Height - 1);
-            e.Graphics.DrawLine(_topPen, this.Width - 2, y, this.Width - 2, this.Height - 1);
-          }
-
-          if ((_borders & Border3DSide.Bottom) == Border3DSide.Bottom)
-          {
-            e.Graphics.DrawLine(_topPen, 0, this.Height - 2, this.Width, this.Height - 2);
-            e.Graphics.DrawLine(_bottomPen, 0, this.Height - 1, this.Width, this.Height - 1);
-          }
-        }
-      }
-
-      // header text
-      TextRenderer.DrawText(e.Graphics, this.Text, this.Font, textBounds, this.HeaderForeColor, flags);
-
-      // draw the image
-      if ((_image != null))
-      {
-        e.Graphics.DrawImage(_image, this.Padding.Left + _iconMargin.Width, this.Padding.Top + (int)size.Height + _iconMargin.Height, _image.Width, _image.Height);
-      }
-
-      //draw a designtime outline
-      if (this.DesignMode && (_borders & Border3DSide.All) != Border3DSide.All)
-      {
-        using (Pen pen = new Pen(SystemColors.ButtonShadow))
-        {
-          pen.DashStyle = DashStyle.Dot;
-          e.Graphics.DrawRectangle(pen, 0, 0, Width - 1, Height - 1);
-        }
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="System.Windows.Forms.Control.SystemColorsChanged"/> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
-    protected override void OnSystemColorsChanged(EventArgs e)
-    {
-      base.OnSystemColorsChanged(e);
-
-      this.CreateResources();
-      this.Invalidate();
-    }
-
-    #endregion
-
-    #region Public Properties
-
-    [Category("Appearance")]
-    [DefaultValue(typeof(Border3DSide), "Top")]
-    public Border3DSide Borders
-    {
-      get { return _borders; }
-      set
-      {
-        _borders = value;
-        this.Invalidate();
+        return new Rectangle(3 + imageSize, fontHeight + 3, Math.Max(clientSize.Width - (imageSize + 6), 0), Math.Max(clientSize.Height - fontHeight - 6, 0));
       }
     }
 
@@ -331,9 +206,126 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Returns or sets the text displayed in this control.
+    /// </summary>
+    /// <value></value>
+    /// <returns>
+    /// The text associated with this control.
+    /// </returns>
+    [Browsable(true)]
+    [DefaultValue("")]
+    public override string Text
+    {
+      get { return base.Text; }
+      set
+      {
+        base.Text = value;
+        this.Invalidate();
+      }
+    }
+
     #endregion
 
-    #region Private Members
+    #region Methods
+
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        this.CleanUpResources();
+      }
+
+      base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Occurs when the control is to be painted.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
+    protected override void OnPaint(PaintEventArgs e)
+    {
+      SizeF size;
+      int y;
+      TextFormatFlags flags;
+      Rectangle textBounds;
+
+      flags = TextFormatFlags.WordEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.Left | TextFormatFlags.SingleLine;
+
+      size = TextRenderer.MeasureText(e.Graphics, this.Text, this.Font, this.ClientSize, flags);
+      y = (int)(size.Height + 3) / 2;
+      textBounds = new Rectangle(1, 1, (int)size.Width, (int)size.Height);
+
+      if (this.ShowBorders)
+      {
+        if ((_borders & Border3DSide.All) == Border3DSide.All)
+        {
+          e.Graphics.DrawRectangle(_bottomPen, 1, y + 1, this.Width - 2, this.Height - (y + 2));
+          e.Graphics.DrawRectangle(_topPen, 0, y, this.Width - 2, this.Height - (y + 2));
+        }
+        else
+        {
+          if ((_borders & Border3DSide.Top) == Border3DSide.Top)
+          {
+            e.Graphics.DrawLine(_topPen, size.Width + 3, y, this.Width - 5, y);
+            e.Graphics.DrawLine(_bottomPen, size.Width + 3, y + 1, this.Width - 5, y + 1);
+          }
+
+          if ((_borders & Border3DSide.Left) == Border3DSide.Left)
+          {
+            e.Graphics.DrawLine(_topPen, 0, y, 0, this.Height - 1);
+            e.Graphics.DrawLine(_bottomPen, 1, y, 1, this.Height - 1);
+          }
+
+          if ((_borders & Border3DSide.Right) == Border3DSide.Right)
+          {
+            e.Graphics.DrawLine(_bottomPen, this.Width - 1, y, this.Width - 1, this.Height - 1);
+            e.Graphics.DrawLine(_topPen, this.Width - 2, y, this.Width - 2, this.Height - 1);
+          }
+
+          if ((_borders & Border3DSide.Bottom) == Border3DSide.Bottom)
+          {
+            e.Graphics.DrawLine(_topPen, 0, this.Height - 2, this.Width, this.Height - 2);
+            e.Graphics.DrawLine(_bottomPen, 0, this.Height - 1, this.Width, this.Height - 1);
+          }
+        }
+      }
+
+      // header text
+      TextRenderer.DrawText(e.Graphics, this.Text, this.Font, textBounds, this.HeaderForeColor, flags);
+
+      // draw the image
+      if (_image != null)
+      {
+        e.Graphics.DrawImage(_image, this.Padding.Left + _iconMargin.Width, this.Padding.Top + (int)size.Height + _iconMargin.Height, _image.Width, _image.Height);
+      }
+
+      //draw a designtime outline
+      if (this.DesignMode && (_borders & Border3DSide.All) != Border3DSide.All)
+      {
+        using (Pen pen = new Pen(SystemColors.ButtonShadow))
+        {
+          pen.DashStyle = DashStyle.Dot;
+          e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="System.Windows.Forms.Control.SystemColorsChanged"/> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+    protected override void OnSystemColorsChanged(EventArgs e)
+    {
+      base.OnSystemColorsChanged(e);
+
+      this.CreateResources();
+      this.Invalidate();
+    }
 
     /// <summary>
     /// Cleans up GDI resources.

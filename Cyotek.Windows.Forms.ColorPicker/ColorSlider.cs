@@ -5,13 +5,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-#if USEEXTERNALCYOTEKLIBS
-using Cyotek.Win32;
-
-#else
-using NativeConstants = Cyotek.Windows.Forms.NativeMethods;
-
-#endif
 
 namespace Cyotek.Windows.Forms
 {
@@ -31,7 +24,47 @@ namespace Cyotek.Windows.Forms
   [ToolboxItem(false)]
   public class ColorSlider : Control
   {
-    #region Instance Fields
+    #region Constants
+
+    private static readonly object _eventBarBoundsChanged = new object();
+
+    private static readonly object _eventBarPaddingChanged = new object();
+
+    private static readonly object _eventBarStyleChanged = new object();
+
+    private static readonly object _eventColor1Changed = new object();
+
+    private static readonly object _eventColor2Changed = new object();
+
+    private static readonly object _eventColor3Changed = new object();
+
+    private static readonly object _eventCustomColorsChanged = new object();
+
+    private static readonly object _eventDividerStyleChanged = new object();
+
+    private static readonly object _eventLargeChangeChanged = new object();
+
+    private static readonly object _eventMaximumChanged = new object();
+
+    private static readonly object _eventMinimumChanged = new object();
+
+    private static readonly object _eventNubColorChanged = new object();
+
+    private static readonly object _eventNubSizeChanged = new object();
+
+    private static readonly object _eventNubStyleChanged = new object();
+
+    private static readonly object _eventOrientationChanged = new object();
+
+    private static readonly object _eventShowValueDividerChanged = new object();
+
+    private static readonly object _eventSmallChangeChanged = new object();
+
+    private static readonly object _eventValueChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Rectangle _barBounds;
 
@@ -69,7 +102,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorSlider"/> class.
@@ -94,346 +127,135 @@ namespace Cyotek.Windows.Forms
 
     #region Events
 
-    /// <summary>
-    /// Occurs when the BarBounds property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler BarBoundsChanged;
-
-    /// <summary>
-    /// Occurs when the BarPadding property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler BarPaddingChanged;
-
-    /// <summary>
-    /// Occurs when the Style property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler BarStyleChanged;
-
-    /// <summary>
-    /// Occurs when the Color1 property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler Color1Changed;
-
-    /// <summary>
-    /// Occurs when the Color2 property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler Color2Changed;
-
-    /// <summary>
-    /// Occurs when the Color3 property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler Color3Changed;
-
-    /// <summary>
-    /// Occurs when the CustomColors property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler CustomColorsChanged;
-
-    /// <summary>
-    /// Occurs when the LargeChange property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler LargeChangeChanged;
-
-    /// <summary>
-    /// Occurs when the Maximum property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler MaximumChanged;
-
-    /// <summary>
-    /// Occurs when the Minimum property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler MinimumChanged;
-
-    /// <summary>
-    /// Occurs when the NubColor property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler NubColorChanged;
-
-    /// <summary>
-    /// Occurs when the NubSize property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler NubSizeChanged;
-
-    /// <summary>
-    /// Occurs when the NubStyle property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler NubStyleChanged;
-
-    /// <summary>
-    /// Occurs when the Orientation property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler OrientationChanged;
-
-    /// <summary>
-    /// Occurs when the ShowValueDivider property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ShowValueDividerChanged;
-
-    /// <summary>
-    /// Occurs when the SliderStyle property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler SliderStyleChanged;
-
-    /// <summary>
-    /// Occurs when the SmallChange property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler SmallChangeChanged;
-
-    /// <summary>
-    /// Occurs when the Percent property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ValueChanged;
-
-    #endregion
-
-    #region Overridden Properties
-
-    /// <summary>
-    /// Gets or sets the font of the text displayed by the control.
-    /// </summary>
-    /// <value>The font.</value>
-    /// <returns>The <see cref="T:System.Drawing.Font" /> to apply to the text displayed by the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultFont" /> property.</returns>
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override Font Font
+    public event EventHandler BarBoundsChanged
     {
-      get { return base.Font; }
-      set { base.Font = value; }
+      add { this.Events.AddHandler(_eventBarBoundsChanged, value); }
+      remove { this.Events.RemoveHandler(_eventBarBoundsChanged, value); }
     }
 
-    /// <summary>
-    /// Gets or sets the foreground color of the control.
-    /// </summary>
-    /// <value>The color of the fore.</value>
-    /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultForeColor" /> property.</returns>
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override Color ForeColor
+    [Category("Property Changed")]
+    public event EventHandler BarPaddingChanged
     {
-      get { return base.ForeColor; }
-      set { base.ForeColor = value; }
+      add { this.Events.AddHandler(_eventBarPaddingChanged, value); }
+      remove { this.Events.RemoveHandler(_eventBarPaddingChanged, value); }
     }
 
-    /// <summary>
-    /// Gets or sets the text associated with this control.
-    /// </summary>
-    /// <value>The text.</value>
-    /// <returns>The text associated with this control.</returns>
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string Text
+    [Category("Property Changed")]
+    public event EventHandler BarStyleChanged
     {
-      get { return base.Text; }
-      set { base.Text = value; }
+      add { this.Events.AddHandler(_eventBarStyleChanged, value); }
+      remove { this.Events.RemoveHandler(_eventBarStyleChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler Color1Changed
+    {
+      add { this.Events.AddHandler(_eventColor1Changed, value); }
+      remove { this.Events.RemoveHandler(_eventColor1Changed, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler Color2Changed
+    {
+      add { this.Events.AddHandler(_eventColor2Changed, value); }
+      remove { this.Events.RemoveHandler(_eventColor2Changed, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler Color3Changed
+    {
+      add { this.Events.AddHandler(_eventColor3Changed, value); }
+      remove { this.Events.RemoveHandler(_eventColor3Changed, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler CustomColorsChanged
+    {
+      add { this.Events.AddHandler(_eventCustomColorsChanged, value); }
+      remove { this.Events.RemoveHandler(_eventCustomColorsChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler DividerStyleChanged
+    {
+      add { this.Events.AddHandler(_eventDividerStyleChanged, value); }
+      remove { this.Events.RemoveHandler(_eventDividerStyleChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler LargeChangeChanged
+    {
+      add { this.Events.AddHandler(_eventLargeChangeChanged, value); }
+      remove { this.Events.RemoveHandler(_eventLargeChangeChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler MaximumChanged
+    {
+      add { this.Events.AddHandler(_eventMaximumChanged, value); }
+      remove { this.Events.RemoveHandler(_eventMaximumChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler MinimumChanged
+    {
+      add { this.Events.AddHandler(_eventMinimumChanged, value); }
+      remove { this.Events.RemoveHandler(_eventMinimumChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler NubColorChanged
+    {
+      add { this.Events.AddHandler(_eventNubColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventNubColorChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler NubSizeChanged
+    {
+      add { this.Events.AddHandler(_eventNubSizeChanged, value); }
+      remove { this.Events.RemoveHandler(_eventNubSizeChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler NubStyleChanged
+    {
+      add { this.Events.AddHandler(_eventNubStyleChanged, value); }
+      remove { this.Events.RemoveHandler(_eventNubStyleChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler OrientationChanged
+    {
+      add { this.Events.AddHandler(_eventOrientationChanged, value); }
+      remove { this.Events.RemoveHandler(_eventOrientationChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler ShowValueDividerChanged
+    {
+      add { this.Events.AddHandler(_eventShowValueDividerChanged, value); }
+      remove { this.Events.RemoveHandler(_eventShowValueDividerChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler SmallChangeChanged
+    {
+      add { this.Events.AddHandler(_eventSmallChangeChanged, value); }
+      remove { this.Events.RemoveHandler(_eventSmallChangeChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler ValueChanged
+    {
+      add { this.Events.AddHandler(_eventValueChanged, value); }
+      remove { this.Events.RemoveHandler(_eventValueChanged, value); }
     }
 
     #endregion
 
-    #region Overridden Methods
-
-    /// <summary>
-    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-    protected override void Dispose(bool disposing)
-    {
-      if (disposing && this.SelectionGlyph != null)
-      {
-        this.SelectionGlyph.Dispose();
-      }
-
-      base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Determines whether the specified key is a regular input key or a special key that requires preprocessing.
-    /// </summary>
-    /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values.</param>
-    /// <returns>true if the specified key is a regular input key; otherwise, false.</returns>
-    protected override bool IsInputKey(Keys keyData)
-    {
-      bool result;
-
-      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown || (keyData & Keys.Home) == Keys.Home || (keyData & Keys.End) == Keys.End)
-      {
-        result = true;
-      }
-      else
-      {
-        result = base.IsInputKey(keyData);
-      }
-
-      return result;
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.GotFocus" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnGotFocus(EventArgs e)
-    {
-      base.OnGotFocus(e);
-
-      this.Invalidate();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
-    protected override void OnKeyDown(KeyEventArgs e)
-    {
-      int step;
-      float value;
-
-      step = e.Shift ? this.LargeChange : this.SmallChange;
-      value = this.Value;
-
-      switch (e.KeyCode)
-      {
-        case Keys.Right:
-        case Keys.Down:
-          value += step;
-          break;
-        case Keys.Left:
-        case Keys.Up:
-          value -= step;
-          break;
-        case Keys.PageDown:
-          value += this.LargeChange;
-          break;
-        case Keys.PageUp:
-          value -= this.LargeChange;
-          break;
-        case Keys.Home:
-          value = this.Minimum;
-          break;
-        case Keys.End:
-          value = this.Maximum;
-          break;
-      }
-
-      if (value < this.Minimum)
-      {
-        value = this.Minimum;
-      }
-
-      if (value > this.Maximum)
-      {
-        value = this.Maximum;
-      }
-
-      // ReSharper disable CompareOfFloatsByEqualityOperator
-      if (value != this.Value)
-        // ReSharper restore CompareOfFloatsByEqualityOperator
-      {
-        this.Value = value;
-
-        e.Handled = true;
-      }
-
-      base.OnKeyDown(e);
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.LostFocus" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnLostFocus(EventArgs e)
-    {
-      base.OnLostFocus(e);
-
-      this.Invalidate();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-    protected override void OnMouseDown(MouseEventArgs e)
-    {
-      base.OnMouseDown(e);
-
-      if (!this.Focused && this.TabStop)
-      {
-        this.Focus();
-      }
-
-      if (e.Button == MouseButtons.Left)
-      {
-        PointToValue(e.Location);
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-    protected override void OnMouseMove(MouseEventArgs e)
-    {
-      base.OnMouseMove(e);
-
-      if (e.Button == MouseButtons.Left)
-      {
-        PointToValue(e.Location);
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnPaddingChanged(EventArgs e)
-    {
-      base.OnPaddingChanged(e);
-
-      this.DefineBar();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
-    protected override void OnPaint(PaintEventArgs e)
-    {
-      base.OnPaint(e);
-
-      this.PaintBar(e);
-      this.PaintAdornments(e);
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnResize(EventArgs e)
-    {
-      base.OnResize(e);
-
-      this.DefineBar();
-    }
-
-    #endregion
-
-    #region Public Properties
+    #region Properties
 
     /// <summary>
     /// Gets or sets the location and size of the color bar.
@@ -577,6 +399,32 @@ namespace Cyotek.Windows.Forms
           this.OnCustomColorsChanged(EventArgs.Empty);
         }
       }
+    }
+
+    /// <summary>
+    /// Gets or sets the font of the text displayed by the control.
+    /// </summary>
+    /// <value>The font.</value>
+    /// <returns>The <see cref="T:System.Drawing.Font" /> to apply to the text displayed by the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultFont" /> property.</returns>
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override Font Font
+    {
+      get { return base.Font; }
+      set { base.Font = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the foreground color of the control.
+    /// </summary>
+    /// <value>The color of the fore.</value>
+    /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultForeColor" /> property.</returns>
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override Color ForeColor
+    {
+      get { return base.ForeColor; }
+      set { base.ForeColor = value; }
     }
 
     /// <summary>
@@ -764,6 +612,19 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Gets or sets the text associated with this control.
+    /// </summary>
+    /// <value>The text.</value>
+    /// <returns>The text associated with this control.</returns>
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override string Text
+    {
+      get { return base.Text; }
+      set { base.Text = value; }
+    }
+
+    /// <summary>
     /// Gets or sets a numeric value that represents the current position of the selection numb on the color slider control.
     /// </summary>
     /// <value>A numeric value that is within the <see cref="Minimum"/> and <see cref="Maximum"/> range. The default value is 0.</value>
@@ -794,10 +655,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion
-
-    #region Protected Properties
-
     /// <summary>
     /// Gets or sets the selection glyph.
     /// </summary>
@@ -806,7 +663,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Protected Members
+    #region Methods
 
     /// <summary>
     /// Creates the selection nub glyph.
@@ -859,7 +716,9 @@ namespace Cyotek.Windows.Forms
         // draw the shape
         outer = new[]
                 {
-                  firstCorner, lastCorner, tipCorner
+                  firstCorner,
+                  lastCorner,
+                  tipCorner
                 };
 
         // TODO: Add 3D edging similar to the mousewheel's diamond
@@ -888,6 +747,20 @@ namespace Cyotek.Windows.Forms
       this.BarPadding = this.GetBarPadding();
       this.BarBounds = this.GetBarBounds();
       this.SelectionGlyph = this.NubStyle != ColorSliderNubStyle.None ? this.CreateNubGlyph() : null;
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+    protected override void Dispose(bool disposing)
+    {
+      if (disposing && this.SelectionGlyph != null)
+      {
+        this.SelectionGlyph.Dispose();
+      }
+
+      base.Dispose(disposing);
     }
 
     /// <summary>
@@ -927,13 +800,13 @@ namespace Cyotek.Windows.Forms
           if (this.Orientation == Orientation.Horizontal)
           {
             bottom = this.NubSize.Height + 1;
-            left = (this.NubSize.Width / 2) + 1;
+            left = this.NubSize.Width / 2 + 1;
             right = left;
           }
           else
           {
             right = this.NubSize.Width + 1;
-            top = (this.NubSize.Height / 2) + 1;
+            top = this.NubSize.Height / 2 + 1;
             bottom = top;
           }
           break;
@@ -941,19 +814,40 @@ namespace Cyotek.Windows.Forms
           if (this.Orientation == Orientation.Horizontal)
           {
             top = this.NubSize.Height + 1;
-            left = (this.NubSize.Width / 2) + 1;
+            left = this.NubSize.Width / 2 + 1;
             right = left;
           }
           else
           {
             left = this.NubSize.Width + 1;
-            top = (this.NubSize.Height / 2) + 1;
+            top = this.NubSize.Height / 2 + 1;
             bottom = top;
           }
           break;
       }
 
       return new Padding(left, top, right, bottom);
+    }
+
+    /// <summary>
+    /// Determines whether the specified key is a regular input key or a special key that requires preprocessing.
+    /// </summary>
+    /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values.</param>
+    /// <returns>true if the specified key is a regular input key; otherwise, false.</returns>
+    protected override bool IsInputKey(Keys keyData)
+    {
+      bool result;
+
+      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown || (keyData & Keys.Home) == Keys.Home || (keyData & Keys.End) == Keys.End)
+      {
+        result = true;
+      }
+      else
+      {
+        result = base.IsInputKey(keyData);
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -964,12 +858,9 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.BarBoundsChanged;
+      handler = (EventHandler)this.Events[_eventBarBoundsChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -982,12 +873,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.BarPaddingChanged;
+      handler = (EventHandler)this.Events[_eventBarPaddingChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1000,12 +888,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.BarStyleChanged;
+      handler = (EventHandler)this.Events[_eventBarStyleChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1018,12 +903,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.Color1Changed;
+      handler = (EventHandler)this.Events[_eventColor1Changed];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1036,12 +918,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.Color2Changed;
+      handler = (EventHandler)this.Events[_eventColor2Changed];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1054,12 +933,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.Color3Changed;
+      handler = (EventHandler)this.Events[_eventColor3Changed];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1072,12 +948,94 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.CustomColorsChanged;
+      handler = (EventHandler)this.Events[_eventCustomColorsChanged];
 
-      if (handler != null)
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="DividerStyleChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnDividerStyleChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.DefineBar();
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventDividerStyleChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.GotFocus" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnGotFocus(EventArgs e)
+    {
+      base.OnGotFocus(e);
+
+      this.Invalidate();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+      int step;
+      float value;
+
+      step = e.Shift ? this.LargeChange : this.SmallChange;
+      value = this.Value;
+
+      switch (e.KeyCode)
       {
-        handler(this, e);
+        case Keys.Right:
+        case Keys.Down:
+          value += step;
+          break;
+        case Keys.Left:
+        case Keys.Up:
+          value -= step;
+          break;
+        case Keys.PageDown:
+          value += this.LargeChange;
+          break;
+        case Keys.PageUp:
+          value -= this.LargeChange;
+          break;
+        case Keys.Home:
+          value = this.Minimum;
+          break;
+        case Keys.End:
+          value = this.Maximum;
+          break;
       }
+
+      if (value < this.Minimum)
+      {
+        value = this.Minimum;
+      }
+
+      if (value > this.Maximum)
+      {
+        value = this.Maximum;
+      }
+
+      // ReSharper disable CompareOfFloatsByEqualityOperator
+      if (value != this.Value)
+        // ReSharper restore CompareOfFloatsByEqualityOperator
+      {
+        this.Value = value;
+
+        e.Handled = true;
+      }
+
+      base.OnKeyDown(e);
     }
 
     /// <summary>
@@ -1088,12 +1046,20 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.LargeChangeChanged;
+      handler = (EventHandler)this.Events[_eventLargeChangeChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.LostFocus" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnLostFocus(EventArgs e)
+    {
+      base.OnLostFocus(e);
+
+      this.Invalidate();
     }
 
     /// <summary>
@@ -1104,12 +1070,11 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.MaximumChanged;
+      this.Invalidate();
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler = (EventHandler)this.Events[_eventMaximumChanged];
+
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1120,14 +1085,67 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      this.Invalidate();
+      handler = (EventHandler)this.Events[_eventMinimumChanged];
 
-      handler = this.MinimumChanged;
+      handler?.Invoke(this, e);
+    }
 
-      if (handler != null)
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+      base.OnMouseDown(e);
+
+      if (!this.Focused && this.TabStop)
       {
-        handler(this, e);
+        this.Focus();
       }
+
+      if (e.Button == MouseButtons.Left)
+      {
+        this.PointToValue(e.Location);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+      base.OnMouseMove(e);
+
+      if (e.Button == MouseButtons.Left)
+      {
+        this.PointToValue(e.Location);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseWheel"/> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs"/> that contains the event data. </param>
+    protected override void OnMouseWheel(MouseEventArgs e)
+    {
+      float value;
+
+      base.OnMouseWheel(e);
+
+      value = this.Value + -(e.Delta / SystemInformation.MouseWheelScrollDelta * SystemInformation.MouseWheelScrollLines);
+
+      if (value < this.Minimum)
+      {
+        value = this.Minimum;
+      }
+
+      if (value > this.Maximum)
+      {
+        value = this.Maximum;
+      }
+
+      this.Value = value;
     }
 
     /// <summary>
@@ -1140,12 +1158,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.NubColorChanged;
+      handler = (EventHandler)this.Events[_eventNubColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1159,12 +1174,9 @@ namespace Cyotek.Windows.Forms
       this.DefineBar();
       this.Invalidate();
 
-      handler = this.NubSizeChanged;
+      handler = (EventHandler)this.Events[_eventNubSizeChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1178,12 +1190,9 @@ namespace Cyotek.Windows.Forms
       this.DefineBar();
       this.Invalidate();
 
-      handler = this.NubStyleChanged;
+      handler = (EventHandler)this.Events[_eventNubStyleChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1197,12 +1206,43 @@ namespace Cyotek.Windows.Forms
       this.DefineBar();
       this.Invalidate();
 
-      handler = this.OrientationChanged;
+      handler = (EventHandler)this.Events[_eventOrientationChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnPaddingChanged(EventArgs e)
+    {
+      base.OnPaddingChanged(e);
+
+      this.DefineBar();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+    protected override void OnPaint(PaintEventArgs e)
+    {
+      base.OnPaint(e);
+
+      this.PaintBar(e);
+      this.PaintAdornments(e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+
+      this.DefineBar();
     }
 
     /// <summary>
@@ -1215,31 +1255,9 @@ namespace Cyotek.Windows.Forms
 
       this.Invalidate();
 
-      handler = this.ShowValueDividerChanged;
+      handler = (EventHandler)this.Events[_eventShowValueDividerChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="SliderStyleChanged" /> event.
-    /// </summary>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected virtual void OnSliderStyleChanged(EventArgs e)
-    {
-      EventHandler handler;
-
-      this.DefineBar();
-      this.Invalidate();
-
-      handler = this.SliderStyleChanged;
-
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1250,12 +1268,9 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.SmallChangeChanged;
+      handler = (EventHandler)this.Events[_eventSmallChangeChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1268,12 +1283,9 @@ namespace Cyotek.Windows.Forms
 
       this.Refresh();
 
-      handler = this.ValueChanged;
+      handler = (EventHandler)this.Events[_eventValueChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1306,7 +1318,7 @@ namespace Cyotek.Windows.Forms
 
         // draw a XOR'd line using Win32 API as this functionality isn't part of .NET
         hdc = e.Graphics.GetHdc();
-        NativeMethods.SetROP2(hdc, NativeConstants.R2_NOT);
+        NativeMethods.SetROP2(hdc, NativeMethods.R2_NOT);
         NativeMethods.MoveToEx(hdc, start.X, start.Y, IntPtr.Zero);
         NativeMethods.LineTo(hdc, end.X, end.Y);
         e.Graphics.ReleaseHdc(hdc);
@@ -1361,7 +1373,7 @@ namespace Cyotek.Windows.Forms
     {
       float angle;
 
-      angle = (this.Orientation == Orientation.Horizontal) ? 0 : 90;
+      angle = this.Orientation == Orientation.Horizontal ? 0 : 90;
 
       if (this.BarBounds.Height > 0 && this.BarBounds.Width > 0)
       {
@@ -1377,38 +1389,52 @@ namespace Cyotek.Windows.Forms
             case ColorBarStyle.TwoColor:
               blend.Colors = new[]
                              {
-                               this.Color1, this.Color2
+                               this.Color1,
+                               this.Color2
                              };
               blend.Positions = new[]
                                 {
-                                  0F, 1F
+                                  0F,
+                                  1F
                                 };
               break;
             case ColorBarStyle.ThreeColor:
               blend.Colors = new[]
                              {
-                               this.Color1, this.Color2, this.Color3
+                               this.Color1,
+                               this.Color2,
+                               this.Color3
                              };
               blend.Positions = new[]
                                 {
-                                  0, 0.5F, 1
+                                  0,
+                                  0.5F,
+                                  1
                                 };
               break;
             case ColorBarStyle.Custom:
-              if (this.CustomColors != null && this.CustomColors.Count > 0)
+              ColorCollection custom;
+              int count;
+
+              custom = this.CustomColors;
+              count = custom?.Count ?? 0;
+
+              if (custom != null && count > 0)
               {
-                blend.Colors = this.CustomColors.ToArray();
-                blend.Positions = Enumerable.Range(0, this.CustomColors.Count).Select(i => i == 0 ? 0 : i == this.CustomColors.Count - 1 ? 1 : (float)(1.0D / this.CustomColors.Count) * i).ToArray();
+                blend.Colors = custom.ToArray();
+                blend.Positions = Enumerable.Range(0, count).Select(i => i == 0 ? 0 : i == count - 1 ? 1 : (float)(1.0D / count) * i).ToArray();
               }
               else
               {
                 blend.Colors = new[]
                                {
-                                 this.Color1, this.Color2
+                                 this.Color1,
+                                 this.Color2
                                };
                 blend.Positions = new[]
                                   {
-                                    0F, 1F
+                                    0F,
+                                    1F
                                   };
               }
               break;
@@ -1434,10 +1460,10 @@ namespace Cyotek.Windows.Forms
       switch (this.Orientation)
       {
         case Orientation.Horizontal:
-          value = this.Minimum + (location.X / (float)this.BarBounds.Width * (this.Minimum + this.Maximum));
+          value = this.Minimum + location.X / (float)this.BarBounds.Width * (this.Minimum + this.Maximum);
           break;
         default:
-          value = this.Minimum + (location.Y / (float)this.BarBounds.Height * (this.Minimum + this.Maximum));
+          value = this.Minimum + location.Y / (float)this.BarBounds.Height * (this.Minimum + this.Maximum);
           break;
       }
 
@@ -1472,10 +1498,10 @@ namespace Cyotek.Windows.Forms
       switch (this.Orientation)
       {
         case Orientation.Horizontal:
-          x = (this.BarBounds.Width / this.Maximum) * value;
+          x = this.BarBounds.Width / this.Maximum * value;
           break;
         default:
-          y = (this.BarBounds.Height / this.Maximum) * value;
+          y = this.BarBounds.Height / this.Maximum * value;
           break;
       }
 

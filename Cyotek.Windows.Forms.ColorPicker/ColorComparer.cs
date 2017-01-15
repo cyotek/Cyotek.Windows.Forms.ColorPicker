@@ -18,15 +18,15 @@ namespace Cyotek.Windows.Forms
   {
     #region Constants
 
-    private const double RedLuminance = 0.212655;
+    private const double BlueLuminance = 0.072187;
 
     private const double GreenLuminance = 0.715158;
 
-    private const double BlueLuminance = 0.072187;
+    private const double RedLuminance = 0.212655;
 
     #endregion
 
-    #region Public Class Members
+    #region Static Methods
 
     /// <summary>
     /// Compares two colors by brightness and returns an indication of their relative sort order.
@@ -118,10 +118,6 @@ namespace Cyotek.Windows.Forms
       return result;
     }
 
-    #endregion
-
-    #region Private Class Members
-
     private static int GetBrightness(Color color)
     {
       //http://stackoverflow.com/a/13558570/148962
@@ -160,7 +156,7 @@ namespace Cyotek.Windows.Forms
       }
       else
       {
-        result = Math.Pow(((c + 0.055) / (1.055)), 2.4);
+        result = Math.Pow((c + 0.055) / 1.055, 2.4);
       }
 
       return result;

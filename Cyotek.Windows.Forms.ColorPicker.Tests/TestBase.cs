@@ -17,7 +17,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   /// </summary>
   public abstract class TestBase
   {
-    #region Protected Properties
+    #region Properties
 
     /// <summary>
     /// Gets the path where testing resources are located.
@@ -30,7 +30,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
     #endregion
 
-    #region Protected Members
+    #region Methods
 
     /// <summary>
     /// Creates the DB16 palette.

@@ -19,7 +19,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   [TestFixture]
   public class ColorCollectionTests : TestBase
   {
-    #region Tests
+    #region  Tests
 
     [Test]
     public void CloneFromInterfaceTest()

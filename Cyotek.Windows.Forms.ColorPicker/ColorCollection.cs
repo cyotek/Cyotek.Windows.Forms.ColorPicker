@@ -443,12 +443,12 @@ namespace Cyotek.Windows.Forms
 #if USENAMEHACK
         this.SortWithNames(sortDelegate);
 #else
-      List<Color> orderedItems;
+        List<Color> orderedItems;
 
-      orderedItems = new List<Color>(this);
-      orderedItems.Sort(sortDelegate);
-      this.ClearItems();
-      this.AddRange(orderedItems);
+        orderedItems = new List<Color>(this);
+        orderedItems.Sort(sortDelegate);
+        this.ClearItems();
+        this.AddRange(orderedItems);
 #endif
       }
     }
@@ -739,7 +739,7 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
-    /// Serves as a hash function for a particular type. 
+    /// Serves as a hash function for a particular type.
     /// </summary>
     /// <returns>
     /// A hash code for the current <see cref="T:System.Object"/>.

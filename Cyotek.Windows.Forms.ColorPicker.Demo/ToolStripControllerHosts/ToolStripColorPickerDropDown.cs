@@ -17,7 +17,13 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
   [DefaultEvent("ColorChanged")]
   internal class ToolStripColorPickerDropDown : ToolStripDropDown
   {
-    #region  Fields
+    #region Constants
+
+    private static readonly object _eventColorChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Color _color;
 
@@ -42,7 +48,18 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
 
     #endregion
 
-    #region Public Properties
+    #region Events
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
+
+    #endregion
+
+    #region Properties
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -66,39 +83,7 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
 
     #endregion
 
-    #region Private Members
-
-    private void HostKeyDownHandler(object sender, KeyEventArgs e)
-    {
-      switch (e.KeyCode)
-      {
-        case Keys.Enter:
-          this.Close(ToolStripDropDownCloseReason.Keyboard);
-          this.Color = this.Host.Color;
-          break;
-        case Keys.Escape:
-          this.Close(ToolStripDropDownCloseReason.Keyboard);
-          break;
-      }
-    }
-
-    private void HostMouseClickHandler(object sender, MouseEventArgs e)
-    {
-      ColorHitTestInfo info;
-
-      info = this.Host.HitTest(e.Location);
-
-      if (info.Index != ColorGrid.InvalidIndex)
-      {
-        this.Close(ToolStripDropDownCloseReason.ItemClicked);
-
-        this.Color = info.Color;
-      }
-    }
-
-    #endregion
-
-    #region Protected Members
+    #region Methods
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ToolStripDropDown"/> and optionally releases the managed resources. 
@@ -128,20 +113,17 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
 
       this.Host.Color = this.Color;
 
-      handler = this.ColorChanged;
+      handler = (EventHandler)this.Events[_eventColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
-protected override void OnOpened(EventArgs e)
-{
-  base.OnOpened(e);
+    protected override void OnOpened(EventArgs e)
+    {
+      base.OnOpened(e);
 
-  this.Host.Focus();
-}
+      this.Host.Focus();
+    }
 
     protected override void OnOpening(CancelEventArgs e)
     {
@@ -159,15 +141,33 @@ protected override void OnOpened(EventArgs e)
       this.Host.Color = this.Color;
     }
 
-    #endregion
+    private void HostKeyDownHandler(object sender, KeyEventArgs e)
+    {
+      switch (e.KeyCode)
+      {
+        case Keys.Enter:
+          this.Close(ToolStripDropDownCloseReason.Keyboard);
+          this.Color = this.Host.Color;
+          break;
+        case Keys.Escape:
+          this.Close(ToolStripDropDownCloseReason.Keyboard);
+          break;
+      }
+    }
 
-    #region Public Members
+    private void HostMouseClickHandler(object sender, MouseEventArgs e)
+    {
+      ColorHitTestInfo info;
 
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged;
+      info = this.Host.HitTest(e.Location);
+
+      if (info.Index != ColorGrid.InvalidIndex)
+      {
+        this.Close(ToolStripDropDownCloseReason.ItemClicked);
+
+        this.Color = info.Color;
+      }
+    }
 
     #endregion
   }

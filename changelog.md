@@ -1,6 +1,8 @@
 # Change Log
 
-[![Build status](https://ci.appveyor.com/api/projects/status/lk901pafq02l9rgl)](https://ci.appveyor.com/project/cyotek/cyotek-windows-forms-colorpicker)
+## 1.0.7.0
+### Added
+* Merged non-destructive changes from the version 2 branch, mainly around reworking events to require less overhead
 
 ## 1.0.6.0
 ### Added
@@ -61,7 +63,7 @@
 * The `ColorEditorManager` control's `ColorChanged` event has now been marked as the default event, so when you double click the component in the designer, a code window now correctly opens.
 * If the underlying entry in a `ColorCollection` bound to a `ColorGrid` control was modified, and this particular entry was the selected colour, the `ColorGrid` would not keep its `Color` property in sync and would clear the selected index.
 * Attempting to set the `Columns` property to less than zero now throws an `ArgumentOutOfRange` exception rather than setting it, then crashing later on
-* Double clicking a colour in the grid of the `ColorPickerDialog` no longer opens another copy of the `ColorPickerDialog` 
+* Double clicking a colour in the grid of the `ColorPickerDialog` no longer opens another copy of the `ColorPickerDialog`
 * Fixed problems in the `ColorGrid` with keyboard navigation and initial focus if no valid colour index was set.
 * The `ColorCollection.Find` method now correctly works when adding named colours (e.g. `Color.CornflowerBlue`) to the collection, but searching by ARGB value (e.g. `Color.FromArgb(100, 149, 237)`)
 * Fixed an issue where if the internal dictionary lookup in `ColorCollection` class had been created and the collection was then updated, in some cases the lookup wasn't correctly modified.
@@ -94,7 +96,7 @@
 
 ### Fixed
 * Removed unnecessary `UpdateStyles` calls.
-* Fixed a problem if a window was opened by pressing `Enter`, and a `ColorGrid` was the first focusable control on the new window, the pop-up colour editing dialog would be activated, regardless of the `ColorGrid`'s editing settings 
+* Fixed a problem if a window was opened by pressing `Enter`, and a `ColorGrid` was the first focusable control on the new window, the pop-up colour editing dialog would be activated, regardless of the `ColorGrid`'s editing settings
 
 ## 1.0.2.2
 ### Changes and new features

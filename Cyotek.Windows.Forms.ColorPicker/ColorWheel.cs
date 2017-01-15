@@ -5,10 +5,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-#if USEEXTERNALCYOTEKLIBS
-using Cyotek.Drawing;
-
-#endif
 
 namespace Cyotek.Windows.Forms
 {
@@ -24,7 +20,23 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent("ColorChanged")]
   public class ColorWheel : Control, IColorEditor
   {
-    #region Instance Fields
+    #region Constants
+
+    private static readonly object _eventColorChanged = new object();
+
+    private static readonly object _eventColorStepChanged = new object();
+
+    private static readonly object _eventHslColorChanged = new object();
+
+    private static readonly object _eventLargeChangeChanged = new object();
+
+    private static readonly object _eventSelectionSizeChanged = new object();
+
+    private static readonly object _eventSmallChangeChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Brush _brush;
 
@@ -50,7 +62,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorWheel"/> class.
@@ -70,326 +82,44 @@ namespace Cyotek.Windows.Forms
 
     #region Events
 
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ColorChanged;
-
-    /// <summary>
-    /// Occurs when the ColorStep property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ColorStepChanged;
-
-    /// <summary>
-    /// Occurs when the HslColor property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler HslColorChanged;
-
-    /// <summary>
-    /// Occurs when the LargeChange property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler LargeChangeChanged;
-
-    /// <summary>
-    /// Occurs when the SelectionSize property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler SelectionSizeChanged;
-
-    /// <summary>
-    /// Occurs when the SmallChange property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler SmallChangeChanged;
-
-    #endregion
-
-    #region Overridden Properties
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override Font Font
+    public event EventHandler ColorStepChanged
     {
-      get { return base.Font; }
-      set { base.Font = value; }
+      add { this.Events.AddHandler(_eventColorStepChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorStepChanged, value); }
     }
 
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override Color ForeColor
+    [Category("Property Changed")]
+    public event EventHandler HslColorChanged
     {
-      get { return base.ForeColor; }
-      set { base.ForeColor = value; }
+      add { this.Events.AddHandler(_eventHslColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventHslColorChanged, value); }
     }
 
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string Text
+    [Category("Property Changed")]
+    public event EventHandler LargeChangeChanged
     {
-      get { return base.Text; }
-      set { base.Text = value; }
+      add { this.Events.AddHandler(_eventLargeChangeChanged, value); }
+      remove { this.Events.RemoveHandler(_eventLargeChangeChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler SelectionSizeChanged
+    {
+      add { this.Events.AddHandler(_eventSelectionSizeChanged, value); }
+      remove { this.Events.RemoveHandler(_eventSelectionSizeChanged, value); }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler SmallChangeChanged
+    {
+      add { this.Events.AddHandler(_eventSmallChangeChanged, value); }
+      remove { this.Events.RemoveHandler(_eventSmallChangeChanged, value); }
     }
 
     #endregion
 
-    #region Overridden Methods
-
-    /// <summary>
-    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-    protected override void Dispose(bool disposing)
-    {
-      if (disposing)
-      {
-        if (_brush != null)
-        {
-          _brush.Dispose();
-        }
-
-        if (this.SelectionGlyph != null)
-        {
-          this.SelectionGlyph.Dispose();
-        }
-      }
-
-      base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Determines whether the specified key is a regular input key or a special key that requires preprocessing.
-    /// </summary>
-    /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values.</param>
-    /// <returns>true if the specified key is a regular input key; otherwise, false.</returns>
-    protected override bool IsInputKey(Keys keyData)
-    {
-      bool result;
-
-      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown)
-      {
-        result = true;
-      }
-      else
-      {
-        result = base.IsInputKey(keyData);
-      }
-
-      return result;
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.GotFocus" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnGotFocus(EventArgs e)
-    {
-      base.OnGotFocus(e);
-
-      this.Invalidate();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
-    protected override void OnKeyDown(KeyEventArgs e)
-    {
-      HslColor color;
-      double hue;
-      int step;
-
-      color = this.HslColor;
-      hue = color.H;
-
-      step = e.Shift ? this.LargeChange : this.SmallChange;
-
-      switch (e.KeyCode)
-      {
-        case Keys.Right:
-        case Keys.Up:
-          hue += step;
-          break;
-        case Keys.Left:
-        case Keys.Down:
-          hue -= step;
-          break;
-        case Keys.PageUp:
-          hue += this.LargeChange;
-          break;
-        case Keys.PageDown:
-          hue -= this.LargeChange;
-          break;
-      }
-
-      if (hue >= 360)
-      {
-        hue = 0;
-      }
-      if (hue < 0)
-      {
-        hue = 359;
-      }
-
-      if (hue != color.H)
-      {
-        color.H = hue;
-
-        // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
-        // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
-        this.LockUpdates = true;
-        this.Color = color.ToRgbColor();
-        this.HslColor = color;
-        this.LockUpdates = false;
-
-        e.Handled = true;
-      }
-
-      base.OnKeyDown(e);
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.LostFocus" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnLostFocus(EventArgs e)
-    {
-      base.OnLostFocus(e);
-
-      this.Invalidate();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-    protected override void OnMouseDown(MouseEventArgs e)
-    {
-      base.OnMouseDown(e);
-
-      if (!this.Focused && this.TabStop)
-      {
-        this.Focus();
-      }
-
-      if (e.Button == MouseButtons.Left && this.IsPointInWheel(e.Location))
-      {
-        _dragStartedWithinWheel = true;
-        this.SetColor(e.Location);
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-    protected override void OnMouseMove(MouseEventArgs e)
-    {
-      base.OnMouseMove(e);
-
-      if (e.Button == MouseButtons.Left && _dragStartedWithinWheel)
-      {
-        this.SetColor(e.Location);
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseUp"/> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs"/> that contains the event data. </param>
-    protected override void OnMouseUp(MouseEventArgs e)
-    {
-      base.OnMouseUp(e);
-
-      _dragStartedWithinWheel = false;
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnPaddingChanged(EventArgs e)
-    {
-      base.OnPaddingChanged(e);
-
-      this.RefreshWheel();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
-    protected override void OnPaint(PaintEventArgs e)
-    {
-      base.OnPaint(e);
-
-      if (this.AllowPainting)
-      {
-        base.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc
-
-        // if the parent is using a transparent color, it's likely to be something like a TabPage in a tab control
-        // so we'll draw the parent background instead, to avoid having an ugly solid color
-        if (this.BackgroundImage == null && this.Parent != null && (this.BackColor == this.Parent.BackColor || this.Parent.BackColor.A != 255))
-        {
-          ButtonRenderer.DrawParentBackground(e.Graphics, this.DisplayRectangle, this);
-        }
-
-        if (_brush != null)
-        {
-          e.Graphics.FillPie(_brush, this.ClientRectangle, 0, 360);
-        }
-        // HACK: smooth out the edge of the wheel.
-        // https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker/issues/1 - the linked source doesn't do this hack yet draws with a smoother edge
-        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        using (Pen pen = new Pen(this.BackColor, 2))
-        {
-          e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
-        }
-
-        if (!this.Color.IsEmpty)
-        {
-          this.PaintCurrentColor(e);
-        }
-      }
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnResize(EventArgs e)
-    {
-      base.OnResize(e);
-
-      this.RefreshWheel();
-    }
-
-    #endregion
-
-    #region Public Properties
-
-    /// <summary>
-    /// Gets or sets the component color.
-    /// </summary>
-    /// <value>The component color.</value>
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "Black")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (this.Color != value)
-        {
-          _color = value;
-
-          this.OnColorChanged(EventArgs.Empty);
-        }
-      }
-    }
+    #region Properties
 
     /// <summary>
     /// Gets or sets the increment for rendering the color wheel.
@@ -415,6 +145,22 @@ namespace Cyotek.Windows.Forms
           this.OnColorStepChanged(EventArgs.Empty);
         }
       }
+    }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override Font Font
+    {
+      get { return base.Font; }
+      set { base.Font = value; }
+    }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override Color ForeColor
+    {
+      get { return base.ForeColor; }
+      set { base.ForeColor = value; }
     }
 
     /// <summary>
@@ -499,9 +245,13 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion
-
-    #region Protected Properties
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override string Text
+    {
+      get { return base.Text; }
+      set { base.Text = value; }
+    }
 
     /// <summary>
     ///   Gets a value indicating whether painting of the control is allowed.
@@ -524,7 +274,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Members
+    #region Methods
 
     /// <summary>
     ///   Disables any redrawing of the image box
@@ -549,10 +299,6 @@ namespace Cyotek.Windows.Forms
         this.Invalidate();
       }
     }
-
-    #endregion
-
-    #region Protected Members
 
     /// <summary>
     /// Calculates wheel attributes.
@@ -635,7 +381,10 @@ namespace Cyotek.Windows.Forms
 
         diamondOuter = new[]
                        {
-                         new Point(halfSize, 0), new Point(this.SelectionSize, halfSize), new Point(halfSize, this.SelectionSize), new Point(0, halfSize)
+                         new Point(halfSize, 0),
+                         new Point(this.SelectionSize, halfSize),
+                         new Point(halfSize, this.SelectionSize),
+                         new Point(0, halfSize)
                        };
 
         g.FillPolygon(SystemBrushes.Control, diamondOuter);
@@ -658,6 +407,28 @@ namespace Cyotek.Windows.Forms
       }
 
       return image;
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+    protected override void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        if (_brush != null)
+        {
+          _brush.Dispose();
+        }
+
+        if (this.SelectionGlyph != null)
+        {
+          this.SelectionGlyph.Dispose();
+        }
+      }
+
+      base.Dispose(disposing);
     }
 
     /// <summary>
@@ -697,7 +468,28 @@ namespace Cyotek.Windows.Forms
 
     protected float GetRadius(PointF centerPoint)
     {
-      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(this.Padding.Horizontal, this.Padding.Vertical) + (this.SelectionSize / 2));
+      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(this.Padding.Horizontal, this.Padding.Vertical) + this.SelectionSize / 2);
+    }
+
+    /// <summary>
+    /// Determines whether the specified key is a regular input key or a special key that requires preprocessing.
+    /// </summary>
+    /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values.</param>
+    /// <returns>true if the specified key is a regular input key; otherwise, false.</returns>
+    protected override bool IsInputKey(Keys keyData)
+    {
+      bool result;
+
+      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown)
+      {
+        result = true;
+      }
+      else
+      {
+        result = base.IsInputKey(keyData);
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -713,7 +505,7 @@ namespace Cyotek.Windows.Forms
 
       normalized = new PointF(point.X - _centerPoint.X, point.Y - _centerPoint.Y);
 
-      return (normalized.X * normalized.X + normalized.Y * normalized.Y) <= (_radius * _radius);
+      return normalized.X * normalized.X + normalized.Y * normalized.Y <= _radius * _radius;
     }
 
     /// <summary>
@@ -730,12 +522,9 @@ namespace Cyotek.Windows.Forms
       }
       this.Refresh();
 
-      handler = this.ColorChanged;
+      handler = (EventHandler)this.Events[_eventColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -748,12 +537,20 @@ namespace Cyotek.Windows.Forms
 
       this.RefreshWheel();
 
-      handler = this.ColorStepChanged;
+      handler = (EventHandler)this.Events[_eventColorStepChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.GotFocus" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnGotFocus(EventArgs e)
+    {
+      base.OnGotFocus(e);
+
+      this.Invalidate();
     }
 
     /// <summary>
@@ -770,12 +567,68 @@ namespace Cyotek.Windows.Forms
       }
       this.Invalidate();
 
-      handler = this.HslColorChanged;
+      handler = (EventHandler)this.Events[_eventHslColorChanged];
 
-      if (handler != null)
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+      HslColor color;
+      double hue;
+      int step;
+
+      color = this.HslColor;
+      hue = color.H;
+
+      step = e.Shift ? this.LargeChange : this.SmallChange;
+
+      switch (e.KeyCode)
       {
-        handler(this, e);
+        case Keys.Right:
+        case Keys.Up:
+          hue += step;
+          break;
+        case Keys.Left:
+        case Keys.Down:
+          hue -= step;
+          break;
+        case Keys.PageUp:
+          hue += this.LargeChange;
+          break;
+        case Keys.PageDown:
+          hue -= this.LargeChange;
+          break;
       }
+
+      if (hue >= 360)
+      {
+        hue = 0;
+      }
+      if (hue < 0)
+      {
+        hue = 359;
+      }
+
+      if (hue != color.H)
+      {
+        color.H = hue;
+
+        // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
+        // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
+        this.LockUpdates = true;
+        this.Color = color.ToRgbColor();
+        this.HslColor = color;
+        this.LockUpdates = false;
+
+        e.Handled = true;
+      }
+
+      base.OnKeyDown(e);
     }
 
     /// <summary>
@@ -786,12 +639,125 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.LargeChangeChanged;
+      handler = (EventHandler)this.Events[_eventLargeChangeChanged];
 
-      if (handler != null)
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.LostFocus" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnLostFocus(EventArgs e)
+    {
+      base.OnLostFocus(e);
+
+      this.Invalidate();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+      base.OnMouseDown(e);
+
+      if (!this.Focused && this.TabStop)
       {
-        handler(this, e);
+        this.Focus();
       }
+
+      if (e.Button == MouseButtons.Left && this.IsPointInWheel(e.Location))
+      {
+        _dragStartedWithinWheel = true;
+        this.SetColor(e.Location);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+    protected override void OnMouseMove(MouseEventArgs e)
+    {
+      base.OnMouseMove(e);
+
+      if (e.Button == MouseButtons.Left && _dragStartedWithinWheel)
+      {
+        this.SetColor(e.Location);
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.MouseUp"/> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs"/> that contains the event data. </param>
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+      base.OnMouseUp(e);
+
+      _dragStartedWithinWheel = false;
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnPaddingChanged(EventArgs e)
+    {
+      base.OnPaddingChanged(e);
+
+      this.RefreshWheel();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
+    /// </summary>
+    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+    protected override void OnPaint(PaintEventArgs e)
+    {
+      base.OnPaint(e);
+
+      if (this.AllowPainting)
+      {
+        this.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc
+
+        // if the parent is using a transparent color, it's likely to be something like a TabPage in a tab control
+        // so we'll draw the parent background instead, to avoid having an ugly solid color
+        if (this.BackgroundImage == null && this.Parent != null && (this.BackColor == this.Parent.BackColor || this.Parent.BackColor.A != 255))
+        {
+          ButtonRenderer.DrawParentBackground(e.Graphics, this.DisplayRectangle, this);
+        }
+
+        if (_brush != null)
+        {
+          e.Graphics.FillPie(_brush, this.ClientRectangle, 0, 360);
+        }
+        // HACK: smooth out the edge of the wheel.
+        // https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker/issues/1 - the linked source doesn't do this hack yet draws with a smoother edge
+        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        using (Pen pen = new Pen(this.BackColor, 2))
+        {
+          e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
+        }
+
+        if (!this.Color.IsEmpty)
+        {
+          this.PaintCurrentColor(e);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+
+      this.RefreshWheel();
     }
 
     /// <summary>
@@ -802,20 +768,14 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      if (this.SelectionGlyph != null)
-      {
-        this.SelectionGlyph.Dispose();
-      }
+      this.SelectionGlyph?.Dispose();
 
       this.SelectionGlyph = this.CreateSelectionGlyph();
       this.RefreshWheel();
 
-      handler = this.SelectionSizeChanged;
+      handler = (EventHandler)this.Events[_eventSelectionSizeChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -826,12 +786,9 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      handler = this.SmallChangeChanged;
+      handler = (EventHandler)this.Events[_eventSmallChangeChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     protected void PaintColor(PaintEventArgs e, HslColor color)
@@ -850,8 +807,8 @@ namespace Cyotek.Windows.Forms
         int x;
         int y;
 
-        x = (int)location.X - (this.SelectionSize / 2);
-        y = (int)location.Y - (this.SelectionSize / 2);
+        x = (int)location.X - this.SelectionSize / 2;
+        y = (int)location.Y - this.SelectionSize / 2;
 
         if (this.SelectionGlyph == null)
         {
@@ -885,7 +842,7 @@ namespace Cyotek.Windows.Forms
       dx = Math.Abs(point.X - _centerPoint.X - this.Padding.Left);
       dy = Math.Abs(point.Y - _centerPoint.Y - this.Padding.Top);
       angle = Math.Atan(dy / dx) / Math.PI * 180;
-      distance = Math.Pow((Math.Pow(dx, 2) + (Math.Pow(dy, 2))), 0.5);
+      distance = Math.Pow(Math.Pow(dx, 2) + Math.Pow(dy, 2), 0.5);
       saturation = distance / _radius;
 
       if (distance < 6)
@@ -908,10 +865,6 @@ namespace Cyotek.Windows.Forms
       this.LockUpdates = false;
     }
 
-    #endregion
-
-    #region Private Members
-
     /// <summary>
     /// Refreshes the wheel attributes and then repaints the control
     /// </summary>
@@ -925,6 +878,37 @@ namespace Cyotek.Windows.Forms
       this.CalculateWheel();
       _brush = this.CreateGradientBrush();
       this.Invalidate();
+    }
+
+    #endregion
+
+    #region IColorEditor Interface
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
+
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (this.Color != value)
+        {
+          _color = value;
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
+      }
     }
 
     #endregion

@@ -12,16 +12,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal partial class ScreenColorPickerDemoForm : BaseForm
   {
-    #region Public Constructors
+    #region Constructors
 
     public ScreenColorPickerDemoForm()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
 
     #endregion
 
-    #region Event Handlers
+    #region Methods
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {

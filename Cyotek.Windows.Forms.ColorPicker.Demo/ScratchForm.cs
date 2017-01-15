@@ -14,16 +14,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   public partial class ScratchForm : Form
   {
-    #region Public Constructors
+    #region Constructors
 
     public ScratchForm()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
 
     #endregion
 
-    #region Event Handlers
+    #region Methods
 
     private void ScratchForm_Load(object sender, EventArgs e)
     {

@@ -5,10 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-#if USEEXTERNALCYOTEKLIBS
-using Cyotek.Drawing;
-
-#endif
 
 namespace Cyotek.Windows.Forms
 {
@@ -27,7 +23,17 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent("ColorChanged")]
   public partial class ColorEditor : UserControl, IColorEditor
   {
-    #region Instance Fields
+    #region Constants
+
+    private static readonly object _eventColorChanged = new object();
+
+    private static readonly object _eventOrientationChanged = new object();
+
+    private static readonly object _eventShowAlphaChannelChanged = new object();
+
+    #endregion
+
+    #region Fields
 
     private Color _color;
 
@@ -39,7 +45,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Public Constructors
+    #region Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorEditor"/> class.
@@ -58,122 +64,23 @@ namespace Cyotek.Windows.Forms
 
     #region Events
 
-    /// <summary>
-    /// Occurs when the Color property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ColorChanged;
+    public event EventHandler OrientationChanged
+    {
+      add { this.Events.AddHandler(_eventOrientationChanged, value); }
+      remove { this.Events.RemoveHandler(_eventOrientationChanged, value); }
+    }
 
-    /// <summary>
-    /// Occurs when the Orientation property value changes
-    /// </summary>
     [Category("Property Changed")]
-    public event EventHandler OrientationChanged;
-
-    /// <summary>
-    /// Occurs when the ShowAlphaChannel property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler ShowAlphaChannelChanged;
-
-    #endregion
-
-    #region Overridden Methods
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.DockChanged" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnDockChanged(EventArgs e)
+    public event EventHandler ShowAlphaChannelChanged
     {
-      base.OnDockChanged(e);
-
-      this.ResizeComponents();
-    }
-
-    protected override void OnFontChanged(EventArgs e)
-    {
-      base.OnFontChanged(e);
-
-      this.SetDropDownWidth();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnLoad(EventArgs e)
-    {
-      base.OnLoad(e);
-
-      this.ResizeComponents();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnPaddingChanged(EventArgs e)
-    {
-      base.OnPaddingChanged(e);
-
-      this.ResizeComponents();
-    }
-
-    /// <summary>
-    /// Raises the <see cref="E:Resize" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-    protected override void OnResize(EventArgs e)
-    {
-      base.OnResize(e);
-
-      this.ResizeComponents();
+      add { this.Events.AddHandler(_eventShowAlphaChannelChanged, value); }
+      remove { this.Events.RemoveHandler(_eventShowAlphaChannelChanged, value); }
     }
 
     #endregion
 
-    #region Public Properties
-
-    /// <summary>
-    /// Gets or sets the component color.
-    /// </summary>
-    /// <value>The component color.</value>
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "0, 0, 0")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        /*
-         * If the color isn't solid, and ShowAlphaChannel is false
-         * remove the alpha channel. Not sure if this is the best
-         * place to do it, but it is a blanket fix for now
-         */
-        if (value.A != 255 && !this.ShowAlphaChannel)
-        {
-          value = Color.FromArgb(255, value);
-        }
-
-        if (_color != value)
-        {
-          _color = value;
-
-          if (!this.LockUpdates)
-          {
-            this.LockUpdates = true;
-            this.HslColor = new HslColor(value);
-            this.LockUpdates = false;
-            this.UpdateFields(false);
-          }
-          else
-          {
-            this.OnColorChanged(EventArgs.Empty);
-          }
-        }
-      }
-    }
+    #region Properties
 
     /// <summary>
     /// Gets or sets the component color as a HSL structure.
@@ -241,10 +148,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion
-
-    #region Protected Properties
-
     /// <summary>
     /// Gets or sets a value indicating whether input changes should be processed.
     /// </summary>
@@ -253,7 +156,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Protected Members
+    #region Methods
 
     /// <summary>
     /// Raises the <see cref="ColorChanged" /> event.
@@ -265,12 +168,38 @@ namespace Cyotek.Windows.Forms
 
       this.UpdateFields(false);
 
-      handler = this.ColorChanged;
+      handler = (EventHandler)this.Events[_eventColorChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.DockChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnDockChanged(EventArgs e)
+    {
+      base.OnDockChanged(e);
+
+      this.ResizeComponents();
+    }
+
+    protected override void OnFontChanged(EventArgs e)
+    {
+      base.OnFontChanged(e);
+
+      this.SetDropDownWidth();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnLoad(EventArgs e)
+    {
+      base.OnLoad(e);
+
+      this.ResizeComponents();
     }
 
     /// <summary>
@@ -283,12 +212,31 @@ namespace Cyotek.Windows.Forms
 
       this.ResizeComponents();
 
-      handler = this.OrientationChanged;
+      handler = (EventHandler)this.Events[_eventOrientationChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnPaddingChanged(EventArgs e)
+    {
+      base.OnPaddingChanged(e);
+
+      this.ResizeComponents();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="E:Resize" /> event.
+    /// </summary>
+    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+
+      this.ResizeComponents();
     }
 
     /// <summary>
@@ -301,12 +249,9 @@ namespace Cyotek.Windows.Forms
 
       this.SetControlStates();
 
-      handler = this.ShowAlphaChannelChanged;
+      handler = (EventHandler)this.Events[_eventShowAlphaChannelChanged];
 
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -431,7 +376,7 @@ namespace Cyotek.Windows.Forms
         aColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
         aNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
       }
-        // ReSharper disable EmptyGeneralCatchClause
+      // ReSharper disable EmptyGeneralCatchClause
       catch
         // ReSharper restore EmptyGeneralCatchClause
       {
@@ -474,7 +419,7 @@ namespace Cyotek.Windows.Forms
           // HTML
           if (!(userAction && hexTextBox.Focused))
           {
-            hexTextBox.Text = this.Color.IsNamedColor ? this.Color.Name : string.Format("{0:X2}{1:X2}{2:X2}", this.Color.R, this.Color.G, this.Color.B);
+            hexTextBox.Text = this.Color.IsNamedColor ? this.Color.Name : $"{this.Color.R:X2}{this.Color.G:X2}{this.Color.B:X2}";
           }
 
           // HSL
@@ -510,10 +455,6 @@ namespace Cyotek.Windows.Forms
         }
       }
     }
-
-    #endregion
-
-    #region Private Members
 
     private void AddColorProperties<T>()
     {
@@ -575,135 +516,6 @@ namespace Cyotek.Windows.Forms
       this.AddColorProperties<SystemColors>();
       this.AddColorProperties<Color>();
       this.SetDropDownWidth();
-    }
-
-    private void SetControlStates()
-    {
-      aLabel.Visible = this.ShowAlphaChannel;
-      aColorBar.Visible = this.ShowAlphaChannel;
-      aNumericUpDown.Visible = this.ShowAlphaChannel;
-    }
-
-    private void SetDropDownWidth()
-    {
-      if (hexTextBox.Items.Count != 0)
-      {
-        hexTextBox.DropDownWidth = (hexTextBox.ItemHeight * 2) + hexTextBox.Items.Cast<string>().Max(s => TextRenderer.MeasureText(s, this.Font).Width);
-      }
-    }
-
-    #endregion
-
-    #region Event Handlers
-
-    /// <summary>
-    /// Change handler for editing components.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void ValueChangedHandler(object sender, EventArgs e)
-    {
-      if (!this.LockUpdates)
-      {
-        bool useHsl;
-        bool useRgb;
-        bool useNamed;
-
-        useHsl = false;
-        useRgb = false;
-        useNamed = false;
-
-        this.LockUpdates = true;
-
-        if (sender == hexTextBox)
-        {
-          string text;
-          int namedIndex;
-
-          text = hexTextBox.Text;
-          if (text.StartsWith("#"))
-          {
-            text = text.Substring(1);
-          }
-
-          if (hexTextBox.Items.Count == 0)
-          {
-            this.FillNamedColors();
-          }
-
-          namedIndex = hexTextBox.FindStringExact(text);
-
-          if (namedIndex != -1 || text.Length == 6 || text.Length == 8)
-          {
-            try
-            {
-              Color color;
-
-              color = namedIndex != -1 ? Color.FromName(text) : ColorTranslator.FromHtml("#" + text);
-              aNumericUpDown.Value = color.A;
-              rNumericUpDown.Value = color.R;
-              bNumericUpDown.Value = color.B;
-              gNumericUpDown.Value = color.G;
-
-              useRgb = true;
-            }
-              // ReSharper disable EmptyGeneralCatchClause
-            catch
-            { }
-            // ReSharper restore EmptyGeneralCatchClause
-          }
-          else
-          {
-            useNamed = true;
-          }
-        }
-        else if (sender == aColorBar || sender == rColorBar || sender == gColorBar || sender == bColorBar)
-        {
-          aNumericUpDown.Value = (int)aColorBar.Value;
-          rNumericUpDown.Value = (int)rColorBar.Value;
-          gNumericUpDown.Value = (int)gColorBar.Value;
-          bNumericUpDown.Value = (int)bColorBar.Value;
-
-          useRgb = true;
-        }
-        else if (sender == aNumericUpDown || sender == rNumericUpDown || sender == gNumericUpDown || sender == bNumericUpDown)
-        {
-          useRgb = true;
-        }
-        else if (sender == hColorBar || sender == lColorBar || sender == sColorBar)
-        {
-          hNumericUpDown.Value = (int)hColorBar.Value;
-          sNumericUpDown.Value = (int)sColorBar.Value;
-          lNumericUpDown.Value = (int)lColorBar.Value;
-
-          useHsl = true;
-        }
-        else if (sender == hNumericUpDown || sender == sNumericUpDown || sender == lNumericUpDown)
-        {
-          useHsl = true;
-        }
-
-        if (useRgb || useNamed)
-        {
-          Color color;
-
-          color = useNamed ? Color.FromName(hexTextBox.Text) : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
-
-          this.Color = color;
-          this.HslColor = new HslColor(color);
-        }
-        else if (useHsl)
-        {
-          HslColor color;
-
-          color = new HslColor((int)aNumericUpDown.Value, (double)hNumericUpDown.Value, (double)sNumericUpDown.Value / 100, (double)lNumericUpDown.Value / 100);
-          this.HslColor = color;
-          this.Color = color.ToRgbColor();
-        }
-
-        this.LockUpdates = false;
-        this.UpdateFields(true);
-      }
     }
 
     private void hexTextBox_DrawItem(object sender, DrawItemEventArgs e)
@@ -768,6 +580,182 @@ namespace Cyotek.Windows.Forms
         this.LockUpdates = true;
         this.Color = Color.FromName((string)hexTextBox.SelectedItem);
         this.LockUpdates = false;
+      }
+    }
+
+    private void SetControlStates()
+    {
+      aLabel.Visible = this.ShowAlphaChannel;
+      aColorBar.Visible = this.ShowAlphaChannel;
+      aNumericUpDown.Visible = this.ShowAlphaChannel;
+    }
+
+    private void SetDropDownWidth()
+    {
+      if (hexTextBox.Items.Count != 0)
+      {
+        hexTextBox.DropDownWidth = hexTextBox.ItemHeight * 2 + hexTextBox.Items.Cast<string>().Max(s => TextRenderer.MeasureText(s, this.Font).Width);
+      }
+    }
+
+    /// <summary>
+    /// Change handler for editing components.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void ValueChangedHandler(object sender, EventArgs e)
+    {
+      if (!this.LockUpdates)
+      {
+        bool useHsl;
+        bool useRgb;
+        bool useNamed;
+
+        useHsl = false;
+        useRgb = false;
+        useNamed = false;
+
+        this.LockUpdates = true;
+
+        if (sender == hexTextBox)
+        {
+          string text;
+          int namedIndex;
+
+          text = hexTextBox.Text;
+          if (text.StartsWith("#"))
+          {
+            text = text.Substring(1);
+          }
+
+          if (hexTextBox.Items.Count == 0)
+          {
+            this.FillNamedColors();
+          }
+
+          namedIndex = hexTextBox.FindStringExact(text);
+
+          if (namedIndex != -1 || text.Length == 6 || text.Length == 8)
+          {
+            try
+            {
+              Color color;
+
+              color = namedIndex != -1 ? Color.FromName(text) : ColorTranslator.FromHtml("#" + text);
+              aNumericUpDown.Value = color.A;
+              rNumericUpDown.Value = color.R;
+              bNumericUpDown.Value = color.B;
+              gNumericUpDown.Value = color.G;
+
+              useRgb = true;
+            }
+            // ReSharper disable EmptyGeneralCatchClause
+            catch
+            { }
+            // ReSharper restore EmptyGeneralCatchClause
+          }
+          else
+          {
+            useNamed = true;
+          }
+        }
+        else if (sender == aColorBar || sender == rColorBar || sender == gColorBar || sender == bColorBar)
+        {
+          aNumericUpDown.Value = (int)aColorBar.Value;
+          rNumericUpDown.Value = (int)rColorBar.Value;
+          gNumericUpDown.Value = (int)gColorBar.Value;
+          bNumericUpDown.Value = (int)bColorBar.Value;
+
+          useRgb = true;
+        }
+        else if (sender == aNumericUpDown || sender == rNumericUpDown || sender == gNumericUpDown || sender == bNumericUpDown)
+        {
+          useRgb = true;
+        }
+        else if (sender == hColorBar || sender == lColorBar || sender == sColorBar)
+        {
+          hNumericUpDown.Value = (int)hColorBar.Value;
+          sNumericUpDown.Value = (int)sColorBar.Value;
+          lNumericUpDown.Value = (int)lColorBar.Value;
+
+          useHsl = true;
+        }
+        else if (sender == hNumericUpDown || sender == sNumericUpDown || sender == lNumericUpDown)
+        {
+          useHsl = true;
+        }
+
+        if (useRgb || useNamed)
+        {
+          Color color;
+
+          color = useNamed ? Color.FromName(hexTextBox.Text) : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
+
+          this.Color = color;
+          this.HslColor = new HslColor(color);
+        }
+        else if (useHsl)
+        {
+          HslColor color;
+
+          color = new HslColor((int)aNumericUpDown.Value, (double)hNumericUpDown.Value, (double)sNumericUpDown.Value / 100, (double)lNumericUpDown.Value / 100);
+          this.HslColor = color;
+          this.Color = color.ToRgbColor();
+        }
+
+        this.LockUpdates = false;
+        this.UpdateFields(true);
+      }
+    }
+
+    #endregion
+
+    #region IColorEditor Interface
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
+
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "0, 0, 0")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        /*
+         * If the color isn't solid, and ShowAlphaChannel is false
+         * remove the alpha channel. Not sure if this is the best
+         * place to do it, but it is a blanket fix for now
+         */
+        if (value.A != 255 && !this.ShowAlphaChannel)
+        {
+          value = Color.FromArgb(255, value);
+        }
+
+        if (_color != value)
+        {
+          _color = value;
+
+          if (!this.LockUpdates)
+          {
+            this.LockUpdates = true;
+            this.HslColor = new HslColor(value);
+            this.LockUpdates = false;
+            this.UpdateFields(false);
+          }
+          else
+          {
+            this.OnColorChanged(EventArgs.Empty);
+          }
+        }
       }
     }
 

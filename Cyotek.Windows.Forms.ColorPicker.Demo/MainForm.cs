@@ -13,16 +13,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal partial class MainForm : AboutDialog
   {
-    #region Public Constructors
+    #region Constructors
 
     public MainForm()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     protected override void OnLoad(EventArgs e)
     {
@@ -46,10 +46,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.Text = "Cyotek ColorPicker Controls for Windows Forms";
     }
 
-    #endregion
-
-    #region Private Members
-
     private void aboutButton_Click(object sender, EventArgs e)
     {
       using (Form dialog = new AboutDialog())
@@ -57,25 +53,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         dialog.ShowDialog(this);
       }
     }
-
-    private void exitButton_Click(object sender, EventArgs e)
-    {
-      this.Close();
-    }
-
-    #endregion
-
-    private void ShowDemo<T>() where T : Form, new()
-    {
-      Cursor.Current = Cursors.WaitCursor;
-
-      using (Form form = new T())
-      {
-        form.ShowDialog(this);
-      }
-    }
-
-    #region Event Handlers
 
     private void colorEditorDemoButton_Click(object sender, EventArgs e)
     {
@@ -107,16 +84,31 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.ShowDemo<ColorWheelDemoForm>();
     }
 
+    private void exitButton_Click(object sender, EventArgs e)
+    {
+      this.Close();
+    }
+
     private void screenColorPickerDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ScreenColorPickerDemoForm>();
     }
 
-    #endregion
+    private void ShowDemo<T>() where T : Form, new()
+    {
+      Cursor.Current = Cursors.WaitCursor;
+
+      using (Form form = new T())
+      {
+        form.ShowDialog(this);
+      }
+    }
 
     private void toolstripDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ToolStripHostDemoForm>();
     }
+
+    #endregion
   }
 }

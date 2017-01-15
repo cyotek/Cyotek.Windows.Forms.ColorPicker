@@ -16,16 +16,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal partial class ColorGridDemoForm : BaseForm
   {
-    #region Public Constructors
+    #region Constructors
 
     public ColorGridDemoForm()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
 
     #endregion
 
-    #region Private Class Properties
+    #region Properties
 
     private string PalettePath
     {
@@ -34,7 +34,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     protected override void OnLoad(EventArgs e)
     {
@@ -52,10 +52,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
       palettesListBox.EndUpdate();
     }
-
-    #endregion
-
-    #region Event Handlers
 
     private void addCustomColorsButton_Click(object sender, EventArgs e)
     {
@@ -119,7 +115,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     {
       if (palettesListBox.SelectedIndex != -1)
       {
-        colorGrid.Colors = ColorCollection.LoadPalette(Path.Combine(PalettePath, palettesListBox.SelectedItem.ToString()));
+        colorGrid.Colors = ColorCollection.LoadPalette(Path.Combine(this.PalettePath, palettesListBox.SelectedItem.ToString()));
       }
     }
 

@@ -13,16 +13,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   internal partial class ColorEditorManagerDemoForm : BaseForm
   {
-    #region Public Constructors
+    #region Constructors
 
     public ColorEditorManagerDemoForm()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     protected override void OnLoad(EventArgs e)
     {
@@ -30,10 +30,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
       colorEditorManager.Color = Color.SeaGreen;
     }
-
-    #endregion
-
-    #region Event Handlers
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {

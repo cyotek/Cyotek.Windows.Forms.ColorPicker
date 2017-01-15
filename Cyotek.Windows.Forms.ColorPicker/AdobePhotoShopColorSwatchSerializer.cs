@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+
 #if USEEXTERNALCYOTEKLIBS
 using Cyotek.Drawing;
 
@@ -26,7 +27,7 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public class AdobePhotoshopColorSwatchSerializer : PaletteSerializer
   {
-    #region Overridden Properties
+    #region Properties
 
     /// <summary>
     /// Gets the default extension for files generated with this palette format.
@@ -48,7 +49,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     /// <summary>
     /// Determines whether this instance can read palette from data the specified stream.
@@ -73,7 +74,7 @@ namespace Cyotek.Windows.Forms
         //version = this.ReadShort(stream);
         version = stream.ReadByte() + stream.ReadByte();
 
-        result = (version == 1 || version == 2);
+        result = version == 1 || version == 2;
       }
       catch
       {
@@ -107,7 +108,7 @@ namespace Cyotek.Windows.Forms
       }
 
       // the specification states that a version2 palette follows a version1
-      // the only difference between version1 and version2 is the inclusion 
+      // the only difference between version1 and version2 is the inclusion
       // of a name property. Perhaps there's addtional color spaces as well
       // but we can't support them all anyway
       // I noticed some files no longer include a version 1 palette
@@ -134,10 +135,6 @@ namespace Cyotek.Windows.Forms
     {
       this.Serialize(stream, palette, AdobePhotoshopColorSwatchColorSpace.Rgb);
     }
-
-    #endregion
-
-    #region Public Members
 
     public void Serialize(Stream stream, ColorCollection palette, AdobePhotoshopColorSwatchColorSpace colorSpace)
     {
@@ -168,10 +165,6 @@ namespace Cyotek.Windows.Forms
       this.WritePalette(stream, palette, version, colorSpace);
     }
 
-    #endregion
-
-    #region Protected Members
-
     protected virtual ColorCollection ReadPalette(Stream stream, AdobePhotoshopColorSwatchFileVersion version)
     {
       int colorCount;
@@ -191,7 +184,7 @@ namespace Cyotek.Windows.Forms
         string name;
 
         // again, two bytes for the color space
-        colorSpace = (AdobePhotoshopColorSwatchColorSpace)(this.ReadInt16(stream));
+        colorSpace = (AdobePhotoshopColorSwatchColorSpace)this.ReadInt16(stream);
 
         value1 = this.ReadInt16(stream);
         value2 = this.ReadInt16(stream);
@@ -203,7 +196,7 @@ namespace Cyotek.Windows.Forms
           int length;
 
           // need to read the name even though currently our colour collection doesn't support names
-          length = ReadInt32(stream);
+          length = this.ReadInt32(stream);
           name = this.ReadString(stream, length);
         }
         else
@@ -235,7 +228,7 @@ namespace Cyotek.Windows.Forms
             double brightness;
 
             // HSB.
-            // The first three values in the color data are hue , saturation , and brightness . They are full 
+            // The first three values in the color data are hue , saturation , and brightness . They are full
             // unsigned 16-bit values as in Apple's HSVColor data structure. Pure red = 0,65535, 65535.
 
             hue = value1 / 182.04;
@@ -309,7 +302,7 @@ namespace Cyotek.Windows.Forms
             else
             {
               // color is not grayscale, convert
-              value1 = (short)(((color.R + color.G + color.B) / 3.0) * 39.0625);
+              value1 = (short)((color.R + color.G + color.B) / 3.0 * 39.0625);
             }
             value2 = 0;
             value3 = 0;

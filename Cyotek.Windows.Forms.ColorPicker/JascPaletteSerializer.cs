@@ -18,7 +18,7 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   public class JascPaletteSerializer : PaletteSerializer
   {
-    #region Overridden Properties
+    #region Properties
 
     /// <summary>
     /// Gets the default extension for files generated with this palette format.
@@ -40,7 +40,7 @@ namespace Cyotek.Windows.Forms
 
     #endregion
 
-    #region Overridden Methods
+    #region Methods
 
     /// <summary>
     /// Determines whether this instance can read palette from data the specified stream.
@@ -67,7 +67,7 @@ namespace Cyotek.Windows.Forms
           header = reader.ReadLine();
           version = reader.ReadLine();
 
-          result = (header == "JASC-PAL" && version == "0100");
+          result = header == "JASC-PAL" && version == "0100";
         }
       }
       catch
@@ -121,7 +121,8 @@ namespace Cyotek.Windows.Forms
           data = reader.ReadLine();
           parts = !string.IsNullOrEmpty(data) ? data.Split(new[]
                                                            {
-                                                             ' ', '\t'
+                                                             ' ',
+                                                             '\t'
                                                            }, StringSplitOptions.RemoveEmptyEntries) : new string[0];
 
           if (!int.TryParse(parts[0], out r) || !int.TryParse(parts[1], out g) || !int.TryParse(parts[2], out b))
