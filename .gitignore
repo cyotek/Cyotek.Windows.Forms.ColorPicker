@@ -3,6 +3,7 @@ packages/
 .vs/
 bin/
 obj/
+_NCrunch_Cyotek.Windows.Forms.ColorPicker/
 
 *.ncrunchsolution
 *.ncrunchproject
