@@ -126,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cyopublic.snk" />
+    <None Include="Cyotek.Windows.Forms.ColorPicker.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
