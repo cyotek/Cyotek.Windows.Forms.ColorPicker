@@ -146,9 +146,9 @@
     <EmbeddedResource Include="Resources\eyedropper.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\eyedropper.png" />
-    <Content Include="Resources\palette-load.png" />
-    <Content Include="Resources\palette-save.png" />
+    <None Include="Resources\eyedropper.png" />
+    <None Include="Resources\palette-load.png" />
+    <None Include="Resources\palette-save.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
