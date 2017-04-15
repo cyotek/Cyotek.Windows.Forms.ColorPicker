@@ -23,7 +23,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-      Application.Run(new ScratchForm());
+      Application.Run(new MainForm());
     }
 
     #endregion
