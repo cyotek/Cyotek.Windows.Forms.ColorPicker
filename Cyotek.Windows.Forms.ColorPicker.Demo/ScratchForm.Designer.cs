@@ -28,11 +28,16 @@
     /// </summary>
     private void InitializeComponent()
     {
+      this.components = new System.ComponentModel.Container();
       this.colorEditor3 = new Cyotek.Windows.Forms.ColorEditor();
       this.colorEditor2 = new Cyotek.Windows.Forms.ColorEditor();
       this.colorEditor1 = new Cyotek.Windows.Forms.ColorEditor();
       this.colorGrid2 = new Cyotek.Windows.Forms.ColorGrid();
       this.colorGrid1 = new Cyotek.Windows.Forms.ColorGrid();
+      this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.item1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.item2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.contextMenuStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
       // colorEditor3
@@ -70,6 +75,7 @@
       // colorGrid2
       // 
       this.colorGrid2.AutoAddColors = false;
+      this.colorGrid2.CellContextMenuStrip = this.contextMenuStrip1;
       this.colorGrid2.CellSize = new System.Drawing.Size(32, 32);
       this.colorGrid2.Columns = 0;
       this.colorGrid2.Location = new System.Drawing.Point(405, 81);
@@ -82,6 +88,7 @@
       // colorGrid1
       // 
       this.colorGrid1.AutoAddColors = false;
+      this.colorGrid1.CellContextMenuStrip = this.contextMenuStrip1;
       this.colorGrid1.CellSize = new System.Drawing.Size(32, 32);
       this.colorGrid1.Columns = 0;
       this.colorGrid1.Location = new System.Drawing.Point(105, 81);
@@ -90,6 +97,26 @@
       this.colorGrid1.ShowCustomColors = false;
       this.colorGrid1.Size = new System.Drawing.Size(294, 77);
       this.colorGrid1.TabIndex = 0;
+      // 
+      // contextMenuStrip1
+      // 
+      this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.item1ToolStripMenuItem,
+            this.item2ToolStripMenuItem});
+      this.contextMenuStrip1.Name = "contextMenuStrip1";
+      this.contextMenuStrip1.Size = new System.Drawing.Size(108, 48);
+      // 
+      // item1ToolStripMenuItem
+      // 
+      this.item1ToolStripMenuItem.Name = "item1ToolStripMenuItem";
+      this.item1ToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+      this.item1ToolStripMenuItem.Text = "Item 1";
+      // 
+      // item2ToolStripMenuItem
+      // 
+      this.item2ToolStripMenuItem.Name = "item2ToolStripMenuItem";
+      this.item2ToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+      this.item2ToolStripMenuItem.Text = "Item 2";
       // 
       // ScratchForm
       // 
@@ -104,6 +131,7 @@
       this.Name = "ScratchForm";
       this.Text = "ScratchForm";
       this.Load += new System.EventHandler(this.ScratchForm_Load);
+      this.contextMenuStrip1.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -116,5 +144,8 @@
     private ColorEditor colorEditor1;
     private ColorEditor colorEditor2;
     private ColorEditor colorEditor3;
+    private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+    private System.Windows.Forms.ToolStripMenuItem item1ToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem item2ToolStripMenuItem;
   }
 }

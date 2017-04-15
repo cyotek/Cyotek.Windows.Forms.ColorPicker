@@ -3,6 +3,8 @@
 ## 1.7.2
 ### Added
 * Added new `ShowColorSpaceLabels` property to the `ColorEditor` control. When `false`, the **RGB** and **HSL** labels will be hidden, allowing the control to take up less space. The default value is `true`
+* Added new `CellContextMenuStrip` property to the `ColorGrid` control, allowing `ContextMenuStrip` controls to be automatically displayed when context clicking (including keyboard hotkeys) color cells
+* Added new `GetCellBounds` method to the `ColorGrid` control, allowing consumers to get the `Rectangle` bounds of a color cell for purposes such as displaying context menus separately from the above support
 
 ### Changed
 * Reworked `ColorEditor` reszing handling so it doesn't look quite as awful if the control is small

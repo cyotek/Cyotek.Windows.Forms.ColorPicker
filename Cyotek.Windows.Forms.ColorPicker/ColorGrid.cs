@@ -28,6 +28,8 @@ namespace Cyotek.Windows.Forms
 
     public const int InvalidIndex = -1;
 
+    private readonly IDictionary<int, Rectangle> _colorRegions;
+
     private static readonly object _eventAutoAddColorsChanged = new object();
 
     private static readonly object _eventAutoFitChanged = new object();
@@ -35,6 +37,8 @@ namespace Cyotek.Windows.Forms
     private static readonly object _eventCellBorderColorChanged = new object();
 
     private static readonly object _eventCellBorderStyleChanged = new object();
+
+    private static readonly object _eventCellContextMenuStripChanged = new object();
 
     private static readonly object _eventCellSizeChanged = new object();
 
@@ -77,6 +81,8 @@ namespace Cyotek.Windows.Forms
     private Color _cellBorderColor;
 
     private ColorCellBorderStyle _cellBorderStyle;
+
+    private ContextMenuStrip _cellContextMenuStrip;
 
     private Size _cellSize;
 
@@ -123,7 +129,7 @@ namespace Cyotek.Windows.Forms
       _previousColorIndex = InvalidIndex;
       _hotIndex = InvalidIndex;
 
-      this.ColorRegions = new Dictionary<int, Rectangle>();
+      _colorRegions = new Dictionary<int, Rectangle>();
       _colors = ColorPalettes.NamedColors;
       _customColors = new ColorCollection(Enumerable.Repeat(Color.White, 16));
       _showCustomColors = true;
@@ -176,6 +182,16 @@ namespace Cyotek.Windows.Forms
     {
       add { this.Events.AddHandler(_eventCellBorderStyleChanged, value); }
       remove { this.Events.RemoveHandler(_eventCellBorderStyleChanged, value); }
+    }
+
+    /// <summary>
+    /// Occurs when the CellContextMenuStrip property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler CellContextMenuStripChanged
+    {
+      add { this.Events.AddHandler(_eventCellContextMenuStripChanged, value); }
+      remove { this.Events.RemoveHandler(_eventCellContextMenuStripChanged, value); }
     }
 
     [Category("Property Changed")]
@@ -350,6 +366,22 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    [Category("Behavior")]
+    [DefaultValue(typeof(ContextMenuStrip), null)]
+    public ContextMenuStrip CellContextMenuStrip
+    {
+      get { return _cellContextMenuStrip; }
+      set
+      {
+        if (_cellContextMenuStrip != value)
+        {
+          _cellContextMenuStrip = value;
+
+          this.OnCellContextMenuStripChanged(EventArgs.Empty);
+        }
+      }
+    }
+
     [Category("Appearance")]
     [DefaultValue(typeof(Size), "12, 12")]
     public virtual Size CellSize
@@ -375,7 +407,7 @@ namespace Cyotek.Windows.Forms
       {
         if (this.ColorIndex != value)
         {
-          _previousColorIndex = this.ColorIndex;
+          _previousColorIndex = _colorIndex;
           _colorIndex = value;
 
           if (value != InvalidIndex)
@@ -612,7 +644,10 @@ namespace Cyotek.Windows.Forms
       get { return _updateCount == 0; }
     }
 
-    protected IDictionary<int, Rectangle> ColorRegions { get; set; }
+    protected IDictionary<int, Rectangle> ColorRegions
+    {
+      get { return _colorRegions; }
+    }
 
     protected int CustomRows { get; set; }
 
@@ -681,6 +716,25 @@ namespace Cyotek.Windows.Forms
       {
         this.Invalidate();
       }
+    }
+
+    /// <summary>
+    /// Returns the <see cref="Rectangle"/> describing the bounds of a single color cell
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when one or more arguments are outside the
+    /// required range.</exception>
+    /// <param name="index">Zero-based index of the color cell to return.</param>
+    /// <returns>
+    /// The cell bounds.
+    /// </returns>
+    public Rectangle GetCellBounds(int index)
+    {
+      if (index < 0 || index > this.Colors.Count + this.CustomColors.Count - 1)
+      {
+        throw new ArgumentOutOfRangeException(nameof(index));
+      }
+
+      return _colorRegions[index];
     }
 
     public Color GetColor(int index)
@@ -757,7 +811,7 @@ namespace Cyotek.Windows.Forms
       result = new ColorHitTestInfo();
       colorIndex = InvalidIndex;
 
-      foreach (KeyValuePair<int, Rectangle> pair in this.ColorRegions.Where(pair => pair.Value.Contains(point)))
+      foreach (KeyValuePair<int, Rectangle> pair in _colorRegions.Where(pair => pair.Value.Contains(point)))
       {
         colorIndex = pair.Key;
         break;
@@ -783,7 +837,7 @@ namespace Cyotek.Windows.Forms
       {
         Rectangle bounds;
 
-        if (this.ColorRegions.TryGetValue(index, out bounds))
+        if (_colorRegions.TryGetValue(index, out bounds))
         {
           if (this.SelectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
           {
@@ -901,7 +955,7 @@ namespace Cyotek.Windows.Forms
           {
             if (index < colors.Count)
             {
-              this.ColorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + column * (this.CellSize.Width + this.Spacing.Width), offset + row * (this.CellSize.Height + this.Spacing.Height), this.CellSize.Width, this.CellSize.Height));
+              _colorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + column * (this.CellSize.Width + this.Spacing.Width), offset + row * (this.CellSize.Height + this.Spacing.Height), this.CellSize.Width, this.CellSize.Height));
             }
 
             index++;
@@ -1182,6 +1236,19 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="CellContextMenuStripChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnCellContextMenuStripChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventCellContextMenuStripChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
     /// Raises the <see cref="CellSizeChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -1379,16 +1446,34 @@ namespace Cyotek.Windows.Forms
 
     protected override void OnKeyUp(KeyEventArgs e)
     {
-      if (this.WasKeyPressed && e.KeyData == Keys.Enter && this.ColorIndex != InvalidIndex)
+      if (this.WasKeyPressed && this.ColorIndex != InvalidIndex)
       {
-        ColorSource source;
-
-        source = this.GetColorSource(this.ColorIndex);
-        if (source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || source == ColorSource.Standard && this.EditMode == ColorEditingMode.Both)
+        switch (e.KeyData)
         {
-          e.Handled = true;
+          case Keys.Enter:
+            ColorSource source;
 
-          this.StartColorEdit(this.ColorIndex);
+            source = this.GetColorSource(this.ColorIndex);
+
+            if (source == ColorSource.Custom && this.EditMode != ColorEditingMode.None || source == ColorSource.Standard && this.EditMode == ColorEditingMode.Both)
+            {
+              e.Handled = true;
+
+              this.StartColorEdit(this.ColorIndex);
+            }
+            break;
+          case Keys.Apps:
+          case Keys.F10 | Keys.Shift:
+            int x;
+            int y;
+            Point location;
+
+            location = _colorRegions[_colorIndex].Location;
+            x = location.X;
+            y = location.Y + _cellSize.Height;
+
+            this.ShowContextMenu(new Point(x, y));
+            break;
         }
       }
 
@@ -1449,6 +1534,26 @@ namespace Cyotek.Windows.Forms
       this.ProcessMouseClick(e);
     }
 
+    protected override void OnMouseUp(MouseEventArgs e)
+    {
+      base.OnMouseUp(e);
+
+      if (e.Button == MouseButtons.Right)
+      {
+        int index;
+
+        index = this.HitTest(e.Location).Index;
+
+        if (index != InvalidIndex)
+        {
+          this.Focus();
+          this.ColorIndex = index;
+
+          this.ShowContextMenu(e.Location);
+        }
+      }
+    }
+
     protected override void OnPaddingChanged(EventArgs e)
     {
       base.OnPaddingChanged(e);
@@ -1491,7 +1596,7 @@ namespace Cyotek.Windows.Forms
         {
           Rectangle bounds;
 
-          bounds = this.ColorRegions[i];
+          bounds = _colorRegions[i];
           if (e.ClipRectangle.IntersectsWith(bounds))
           {
             this.PaintCell(e, i, i, this.Colors[i], bounds);
@@ -1508,7 +1613,7 @@ namespace Cyotek.Windows.Forms
           {
             Rectangle bounds;
 
-            if (this.ColorRegions.TryGetValue(colorCount + i, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
+            if (_colorRegions.TryGetValue(colorCount + i, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
             {
               this.PaintCell(e, i, colorCount + i, this.CustomColors[i], bounds);
             }
@@ -1520,7 +1625,7 @@ namespace Cyotek.Windows.Forms
         {
           Rectangle bounds;
 
-          if (this.ColorRegions.TryGetValue(this.ColorIndex, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
+          if (_colorRegions.TryGetValue(this.ColorIndex, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
           {
             this.PaintSelectedCell(e, this.ColorIndex, this.Color, bounds);
           }
@@ -1799,7 +1904,7 @@ namespace Cyotek.Windows.Forms
           this.SizeToFit();
         }
 
-        this.ColorRegions.Clear();
+        _colorRegions.Clear();
 
         if (this.Colors != null)
         {
@@ -1826,6 +1931,7 @@ namespace Cyotek.Windows.Forms
       int colorCount;
 
       colorCount = this.Colors.Count;
+
       if (colorIndex < 0 || colorIndex > colorCount + this.CustomColors.Count)
       {
         throw new ArgumentOutOfRangeException(nameof(colorIndex));
@@ -1863,7 +1969,7 @@ namespace Cyotek.Windows.Forms
       int index;
 
       collection = (ColorCollection)sender;
-      index = this.ColorIndex;
+      index = _colorIndex;
       if (index != InvalidIndex && ReferenceEquals(collection, this.CustomColors))
       {
         index -= this.Colors.Count;
@@ -1909,11 +2015,6 @@ namespace Cyotek.Windows.Forms
       return new Point(column, row);
     }
 
-    private Rectangle GetClipRectangle(int cellIndex, bool expand)
-    {
-      return Rectangle.Empty;
-    }
-
     private void RemoveEventHandlers(ColorCollection value)
     {
       if (value != null)
@@ -1954,6 +2055,11 @@ namespace Cyotek.Windows.Forms
 #endif
         }
       }
+    }
+
+    private void ShowContextMenu(Point location)
+    {
+      _cellContextMenuStrip?.Show(this, location);
     }
 
     private void SizeToFit()
