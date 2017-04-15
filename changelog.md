@@ -1,14 +1,21 @@
 # Change Log
 
-## 1.0.7.1
+## 1.7.2
+### Added
+* Added new `ShowColorSpaceLabels` property to the `ColorEditor` control. When `false`, the **RGB** and **HSL** labels will be hidden, allowing the control to take up less space. The default value is `true`
+
+### Changed
+* Reworked `ColorEditor` reszing handling so it doesn't look quite as awful if the control is small
+
+## 1.7.1
 ### Fixed
 * `Palette` property of the `ColorGrid` control wasn't initialized correctly, making it pretty difficult to have a blank palette
 
-## 1.0.7.0
+## 1.7.0
 ### Added
 * Merged non-destructive changes from the version 2 branch, mainly around reworking events to require less overhead
 
-## 1.0.6.0
+## 1.6.0
 ### Added
 * Added `Minimum` and `Maximum` properties to `IPaletteSerializer` to provide hints to hosting applications about valid palettes
 * Added support for reading and writing **Adobe Color Table** files (`*.act`) via the new `AdobeColorTablePaletteSerializer` class
@@ -20,7 +27,7 @@
 * Fixed rounding errors that could occur when using `HslColor.ToRgbColor`. Thanks to Jürgen from Iconshow for [this post](http://forums.cyotek.com/color-picker-controls/roundiing-difference/)
 * Attempting to set the `Colors` property of the `ColorGrid` to `null` now throws an exception
 
-## 1.0.5.0
+## 1.5.0
 * Added a new demonstration which shows how to host a `ColorGrid` control in a `ToolStrip`. More details on this can be found on [cyotek.com](http://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip).
 * Added new `PreviewColorChanged` event to the `ColorPickerDialog`
 * Added new `PaintColor` protected methods to the `ColorWheel` control allowing additional hotspots to be painted
@@ -30,12 +37,12 @@
 * Fixed an issue where the `ColorPickerDialog` displayed non-opaque colours when the `ShowAlphaChannel` property was `false`
 * Fixed an issue where the `ColorEditor` control would allow you to enter an 8 character hex color and thus set an alpha channel even if the `ShowAlphaChannel` property was `false`
 
-## 1.0.4.1
+## 1.4.1
 ### Fixed
 * Fixed an issue where `GimpPaletteSerializer.Deserialize` could get itself stuck in an infinite loop if a GPL file was formatted a certain way
 * `GimpPaletteSerializer.Serialize` now uses `ASCII` encoding instead of `UTF-8`, fixing a problem where palette files couldn't be opened in Inkscape.
 
-## 1.0.4.0
+## 1.4.0
 ### Changes and new features
 * Added new `AdobePhotoShopColorSwatchSerializer` serializer for reading and writing Adobe PhotoShop colour swatches (both version 1 and version 2)
 * You can now set the `Columns` property of a `ColorGrid` control to `0`, which will then internally calculate columns based on the size of the control, the cell size, and the spacing. A new read-only `ActualColumns` property has been added which will allow you to get the real number of columns if required. The `AutoSize` behaviour has been changed so that only the vertical height of the control is adjusted when `Columns` is zero
@@ -72,7 +79,7 @@
 * The `ColorCollection.Find` method now correctly works when adding named colours (e.g. `Color.CornflowerBlue`) to the collection, but searching by ARGB value (e.g. `Color.FromArgb(100, 149, 237)`)
 * Fixed an issue where if the internal dictionary lookup in `ColorCollection` class had been created and the collection was then updated, in some cases the lookup wasn't correctly modified.
 
-## 1.0.3.0
+## 1.3.0
 ### Changes and new features
 * Added `Find` method to `ColorCollection`
 * Replaced `ColorComparer.Brightness` with version derived from [here](http://stackoverflow.com/a/13558570/148962)
@@ -90,7 +97,7 @@
 * When the orientation of a `ColorSlider` (or derived control) was `Vertical`, the colour bar was drawn in the reverse order of the scale.
 * Changing the `Value` of the `LightnessColorSlider` control now correctly updates the `Color` property of that control, in turn making the `ColorEditorManager` change the luminosity of linked controls. Also setting the `Color` of the `LightnessColorSlider` now correctly updates the `Value`. This now means you can bind a `ColorWheel` to a `LightnessColorSlider` for full control over the brightness of a colour, which is not possible to do with the wheel alone.
 
-## 1.0.2.3
+## 1.2.3
 ### Changes and new features
 * Added static `LoadPalette` and instance `Load` methods to `ColorCollection`
 * Added `Save` method to `ColorCollection`
@@ -102,7 +109,7 @@
 * Removed unnecessary `UpdateStyles` calls.
 * Fixed a problem if a window was opened by pressing `Enter`, and a `ColorGrid` was the first focusable control on the new window, the pop-up colour editing dialog would be activated, regardless of the `ColorGrid`'s editing settings
 
-## 1.0.2.2
+## 1.2.2
 ### Changes and new features
 * Added `Name` and `DefaultExtension` properties to `IPaletteSerializer`
 * Added new static properties `DefaultOpenFilter` and `DefaultSaveFilter`, and static method `GetSerializer` to `PaletteSerializer`. These allow the use of reflection for easily providing palette load and save functionality automatically based on loaded assemblies.
@@ -114,7 +121,7 @@
 * Setting the `Spacing` or `CellSize` properties of the `ColorGrid` control didn't recalculate the layout
 * `ColorEditor` now uses `TextRenderer.DrawText` instead of `Graphics.DrawString` so all text is rendered consistently.
 
-## 1.0.2.1
+## 1.2.1
 ### Changes and new features
 * Added new constructor to the `ColorCollection` class that accepts an `IEnumerable<int>`
 * `ColorCollection` now implements `IClonable`
@@ -124,7 +131,7 @@
 * Fixed invalid default value for the `EditMode` property of a `ColorGrid`
 * Fixed `AutoSize` property of `ColorGrid` control not being persisted
 
-## 1.0.2.0
+## 1.2.0
 > *Note: Several of the updates in this version are breaking changes due to renaming of classes and enum values. Some more changes to your code will be required to use the new Color Picker API.*
 
 ### Changes and new features
@@ -141,7 +148,7 @@
 ### Fixed
 * Corrected some grammatical errors in existing documentation and headers
 
-## 1.0.1.0
+## 1.1.0
 > *Note: Several of the updates in this version are breaking changes due to renaming of classes and enum values. Some more changes to your code will be required to use the new Color Picker API.*
 
 ### Changes and new features
@@ -151,5 +158,5 @@
 * Reworked Jasc palette import to match how Gimp is doing it
 * Added a testing project. Currently this just tests the different palette readers are importing data correctly.
 
-## 1.0.0.0
+## 1.0.0
 * Initial Release

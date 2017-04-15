@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2015 Cyotek Ltd.
+  // Copyright © 2013-2017 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
   // Licensed under the MIT License. See license.txt for the full text.
@@ -31,6 +31,10 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventShowAlphaChannelChanged = new object();
 
+    private static readonly object _eventShowColorSpaceLabelsChanged = new object();
+
+    private const int _minimumBarWidth = 30;
+
     #endregion
 
     #region Fields
@@ -43,6 +47,8 @@ namespace Cyotek.Windows.Forms
 
     private bool _showAlphaChannel;
 
+    private bool _showColorSpaceLabels;
+
     #endregion
 
     #region Constructors
@@ -54,10 +60,11 @@ namespace Cyotek.Windows.Forms
     {
       this.InitializeComponent();
 
-      this.Color = Color.Black;
-      this.Orientation = Orientation.Vertical;
+      _color = Color.Black;
+      _orientation = Orientation.Vertical;
       this.Size = new Size(200, 260);
-      this.ShowAlphaChannel = true;
+      _showAlphaChannel = true;
+      _showColorSpaceLabels = true;
     }
 
     #endregion
@@ -76,6 +83,16 @@ namespace Cyotek.Windows.Forms
     {
       add { this.Events.AddHandler(_eventShowAlphaChannelChanged, value); }
       remove { this.Events.RemoveHandler(_eventShowAlphaChannelChanged, value); }
+    }
+
+    /// <summary>
+    /// Occurs when the ShowColorSpaceLabels property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowColorSpaceLabelsChanged
+    {
+      add { this.Events.AddHandler(_eventShowColorSpaceLabelsChanged, value); }
+      remove { this.Events.RemoveHandler(_eventShowColorSpaceLabelsChanged, value); }
     }
 
     #endregion
@@ -139,11 +156,27 @@ namespace Cyotek.Windows.Forms
       get { return _showAlphaChannel; }
       set
       {
-        if (this.ShowAlphaChannel != value)
+        if (_showAlphaChannel != value)
         {
           _showAlphaChannel = value;
 
           this.OnShowAlphaChannelChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(true)]
+    public bool ShowColorSpaceLabels
+    {
+      get { return _showColorSpaceLabels; }
+      set
+      {
+        if (_showColorSpaceLabels != value)
+        {
+          _showColorSpaceLabels = value;
+
+          this.OnShowColorSpaceLabelsChanged(EventArgs.Empty);
         }
       }
     }
@@ -248,8 +281,25 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       this.SetControlStates();
+      this.ResizeComponents();
 
       handler = (EventHandler)this.Events[_eventShowAlphaChannelChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowColorSpaceLabelsChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowColorSpaceLabelsChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.SetControlStates();
+      this.ResizeComponents();
+
+      handler = (EventHandler)this.Events[_eventShowColorSpaceLabelsChanged];
 
       handler?.Invoke(this, e);
     }
@@ -276,21 +326,21 @@ namespace Cyotek.Windows.Forms
         int labelOffset;
         int colorBarOffset;
         int editOffset;
-        int hexEditOffset;
+        int barHorizontalOffset;
 
         top = this.Padding.Top;
         innerMargin = 3;
-        editWidth = TextRenderer.MeasureText(new string('W', 6), this.Font).Width;
-        hexEditOffset = editWidth / 2;
+        editWidth = TextRenderer.MeasureText("0000W", this.Font).Width + 6; // magic 6 for interior spacing+borders
         rowHeight = Math.Max(Math.Max(rLabel.Height, rColorBar.Height), rNumericUpDown.Height);
-        labelOffset = (rowHeight - rLabel.Height) / 2;
-        colorBarOffset = (rowHeight - rColorBar.Height) / 2;
-        editOffset = (rowHeight - rNumericUpDown.Height) / 2;
+        labelOffset = (rowHeight - rLabel.Height) >> 1;
+        colorBarOffset = (rowHeight - rColorBar.Height) >> 1;
+        editOffset = (rowHeight - rNumericUpDown.Height) >> 1;
+        barHorizontalOffset = _showAlphaChannel ? aLabel.Width : hLabel.Width;
 
         switch (this.Orientation)
         {
           case Orientation.Horizontal:
-            columnWidth = (this.ClientSize.Width - (this.Padding.Horizontal + innerMargin)) / 2;
+            columnWidth = (this.ClientSize.Width - (this.Padding.Horizontal + innerMargin)) >> 1;
             break;
           default:
             columnWidth = this.ClientSize.Width - this.Padding.Horizontal;
@@ -299,13 +349,13 @@ namespace Cyotek.Windows.Forms
 
         group1HeaderLeft = this.Padding.Left;
         group1EditLeft = columnWidth - editWidth;
-        group1BarLeft = group1HeaderLeft + aLabel.Width + innerMargin;
+        group1BarLeft = group1HeaderLeft + barHorizontalOffset + innerMargin;
 
         if (this.Orientation == Orientation.Horizontal)
         {
           group2HeaderLeft = this.Padding.Left + columnWidth + innerMargin;
           group2EditLeft = this.ClientSize.Width - (this.Padding.Right + editWidth);
-          group2BarLeft = group2HeaderLeft + aLabel.Width + innerMargin;
+          group2BarLeft = group2HeaderLeft + barHorizontalOffset + innerMargin;
         }
         else
         {
@@ -316,9 +366,14 @@ namespace Cyotek.Windows.Forms
 
         barWidth = group1EditLeft - (group1BarLeft + innerMargin);
 
+        this.SetBarStates(barWidth >= _minimumBarWidth);
+
         // RGB header
-        rgbHeaderLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        top += rowHeight + innerMargin;
+        if (_showColorSpaceLabels)
+        {
+          rgbHeaderLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          top += rowHeight + innerMargin;
+        }
 
         // R row
         rLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
@@ -340,7 +395,7 @@ namespace Cyotek.Windows.Forms
 
         // Hex row
         hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        hexTextBox.SetBounds(group1EditLeft - hexEditOffset, top + colorBarOffset, hexEditOffset + editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+        hexTextBox.SetBounds(hexLabel.Right + innerMargin, top + colorBarOffset, barWidth + editOffset + editWidth - (hexLabel.Right - group1BarLeft), 0, BoundsSpecified.Location | BoundsSpecified.Width);
         top += rowHeight + innerMargin;
 
         // reset top
@@ -350,8 +405,11 @@ namespace Cyotek.Windows.Forms
         }
 
         // HSL header
-        hslLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        top += rowHeight + innerMargin;
+        if (_showColorSpaceLabels)
+        {
+          hslLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          top += rowHeight + innerMargin;
+        }
 
         // H row
         hLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
@@ -378,7 +436,7 @@ namespace Cyotek.Windows.Forms
       }
       // ReSharper disable EmptyGeneralCatchClause
       catch
-        // ReSharper restore EmptyGeneralCatchClause
+      // ReSharper restore EmptyGeneralCatchClause
       {
         // ignore errors
       }
@@ -583,11 +641,25 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private void SetBarStates(bool visible)
+    {
+      rColorBar.Visible = visible;
+      gColorBar.Visible = visible;
+      bColorBar.Visible = visible;
+      hColorBar.Visible = visible;
+      sColorBar.Visible = visible;
+      lColorBar.Visible = visible;
+      aColorBar.Visible = _showAlphaChannel && visible;
+    }
+
     private void SetControlStates()
     {
-      aLabel.Visible = this.ShowAlphaChannel;
-      aColorBar.Visible = this.ShowAlphaChannel;
-      aNumericUpDown.Visible = this.ShowAlphaChannel;
+      aLabel.Visible = _showAlphaChannel;
+      aColorBar.Visible = _showAlphaChannel;
+      aNumericUpDown.Visible = _showAlphaChannel;
+
+      rgbHeaderLabel.Visible = _showColorSpaceLabels;
+      hslLabel.Visible = _showColorSpaceLabels;
     }
 
     private void SetDropDownWidth()
@@ -735,7 +807,7 @@ namespace Cyotek.Windows.Forms
          * remove the alpha channel. Not sure if this is the best
          * place to do it, but it is a blanket fix for now
          */
-        if (value.A != 255 && !this.ShowAlphaChannel)
+        if (value.A != 255 && !_showAlphaChannel)
         {
           value = Color.FromArgb(255, value);
         }

@@ -28,21 +28,44 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.colorGrid1 = new Cyotek.Windows.Forms.ColorGrid();
+      this.colorEditor3 = new Cyotek.Windows.Forms.ColorEditor();
+      this.colorEditor2 = new Cyotek.Windows.Forms.ColorEditor();
+      this.colorEditor1 = new Cyotek.Windows.Forms.ColorEditor();
       this.colorGrid2 = new Cyotek.Windows.Forms.ColorGrid();
+      this.colorGrid1 = new Cyotek.Windows.Forms.ColorGrid();
       this.SuspendLayout();
       // 
-      // colorGrid1
+      // colorEditor3
       // 
-      this.colorGrid1.AutoAddColors = false;
-      this.colorGrid1.CellSize = new System.Drawing.Size(32, 32);
-      this.colorGrid1.Columns = 0;
-      this.colorGrid1.Location = new System.Drawing.Point(105, 81);
-      this.colorGrid1.Name = "colorGrid1";
-      this.colorGrid1.Palette = Cyotek.Windows.Forms.ColorPalette.Standard;
-      this.colorGrid1.ShowCustomColors = false;
-      this.colorGrid1.Size = new System.Drawing.Size(294, 77);
-      this.colorGrid1.TabIndex = 0;
+      this.colorEditor3.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.colorEditor3.Location = new System.Drawing.Point(718, 340);
+      this.colorEditor3.Name = "colorEditor3";
+      this.colorEditor3.Orientation = System.Windows.Forms.Orientation.Horizontal;
+      this.colorEditor3.ShowAlphaChannel = false;
+      this.colorEditor3.ShowColorSpaceLabels = false;
+      this.colorEditor3.Size = new System.Drawing.Size(219, 87);
+      this.colorEditor3.TabIndex = 4;
+      // 
+      // colorEditor2
+      // 
+      this.colorEditor2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.colorEditor2.Location = new System.Drawing.Point(480, 340);
+      this.colorEditor2.Name = "colorEditor2";
+      this.colorEditor2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+      this.colorEditor2.ShowAlphaChannel = false;
+      this.colorEditor2.ShowColorSpaceLabels = false;
+      this.colorEditor2.Size = new System.Drawing.Size(163, 111);
+      this.colorEditor2.TabIndex = 3;
+      // 
+      // colorEditor1
+      // 
+      this.colorEditor1.Location = new System.Drawing.Point(180, 207);
+      this.colorEditor1.Name = "colorEditor1";
+      this.colorEditor1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+      this.colorEditor1.ShowAlphaChannel = false;
+      this.colorEditor1.ShowColorSpaceLabels = false;
+      this.colorEditor1.Size = new System.Drawing.Size(396, 134);
+      this.colorEditor1.TabIndex = 2;
       // 
       // colorGrid2
       // 
@@ -56,11 +79,26 @@
       this.colorGrid2.Size = new System.Drawing.Size(294, 77);
       this.colorGrid2.TabIndex = 1;
       // 
+      // colorGrid1
+      // 
+      this.colorGrid1.AutoAddColors = false;
+      this.colorGrid1.CellSize = new System.Drawing.Size(32, 32);
+      this.colorGrid1.Columns = 0;
+      this.colorGrid1.Location = new System.Drawing.Point(105, 81);
+      this.colorGrid1.Name = "colorGrid1";
+      this.colorGrid1.Palette = Cyotek.Windows.Forms.ColorPalette.Standard;
+      this.colorGrid1.ShowCustomColors = false;
+      this.colorGrid1.Size = new System.Drawing.Size(294, 77);
+      this.colorGrid1.TabIndex = 0;
+      // 
       // ScratchForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(1106, 579);
+      this.Controls.Add(this.colorEditor3);
+      this.Controls.Add(this.colorEditor2);
+      this.Controls.Add(this.colorEditor1);
       this.Controls.Add(this.colorGrid2);
       this.Controls.Add(this.colorGrid1);
       this.Name = "ScratchForm";
@@ -75,8 +113,8 @@
 
     private ColorGrid colorGrid1;
     private ColorGrid colorGrid2;
-
-
-
+    private ColorEditor colorEditor1;
+    private ColorEditor colorEditor2;
+    private ColorEditor colorEditor3;
   }
 }
