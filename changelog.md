@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.7.1
+### Fixed
+* `Palette` property of the `ColorGrid` control wasn't initialized correctly, making it pretty difficult to have a blank palette
+
 ## 1.0.7.0
 ### Added
 * Merged non-destructive changes from the version 2 branch, mainly around reworking events to require less overhead

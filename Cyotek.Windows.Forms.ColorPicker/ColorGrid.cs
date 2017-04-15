@@ -141,6 +141,7 @@ namespace Cyotek.Windows.Forms
       _color = Color.Black;
       _cellBorderStyle = ColorCellBorderStyle.FixedSingle;
       _selectedCellStyle = ColorGridSelectedCellStyle.Zoomed;
+      _palette = ColorPalette.Named;
 
       this.RefreshColors();
     }
