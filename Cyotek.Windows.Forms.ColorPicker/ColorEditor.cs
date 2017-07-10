@@ -477,7 +477,7 @@ namespace Cyotek.Windows.Forms
           // HTML
           if (!(userAction && hexTextBox.Focused))
           {
-            hexTextBox.Text = this.Color.IsNamedColor ? this.Color.Name : $"{this.Color.R:X2}{this.Color.G:X2}{this.Color.B:X2}";
+            hexTextBox.Text = this.Color.IsNamedColor ? this.Color.Name : string.Format("{0:X2}{1:X2}{2:X2}", this.Color.R, this.Color.G, this.Color.B);
           }
 
           // HSL
