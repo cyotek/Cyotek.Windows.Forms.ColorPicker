@@ -7,7 +7,7 @@ The Cyotek.Windows.Forms.ColorPickers library contains a series of custom contro
 
 Color palettes can be loaded and saved in a number of different formats, including Adobe PhotoShop Color Swatch files, JASC Palettes, Gimp Palettes and more (see Color Palettes and External Palette Files below).
 
-For more information on these controls, see the [articles tagged with colorpicker](http://cyotek.com/blog/tag/colorpicker) at cyotek.com.
+For more information on these controls, see the [articles tagged with colorpicker](http://www.cyotek.com/blog/tag/colorpicker) at cyotek.com.
 
 Controls
 --------
@@ -16,37 +16,37 @@ There are three primary controls (`ColorGrid`, `ColorWheel` and `ColorEditor`), 
 
 ### ColorGrid Control
 
-![ColorGrid control demonstration](http://static.cyotek.com/files/articleimages/cp-colorgridcontrol.png)
+![ColorGrid control demonstration](res/cp-colorgridcontrol.png)
 
 This control displays a grid of colours, and supports both a primary palette, and a custom colour palette. Several properties are available for configuring the appearing of the control, and there are behaviour options too, such as built in editing of colours and support for automatically adding new colours not in the primary palette.
 
 ### ColorWheel Control
 
-![ColorWheel control demonstration](http://static.cyotek.com/files/articleimages/cp-colorwheelcontrol.png)
+![ColorWheel control demonstration](res/cp-colorwheelcontrol.png)
 
 This control displays a radial wheel of colours and allows selection from any point in the wheel. Not much in the way of customisation for this control!
 
 ### ColorSlider Controls
 
-![ColorSlider controls demonstration](http://static.cyotek.com/files/articleimages/cp-colorslidercontrols.png)
+![ColorSlider controls demonstration](res/cp-colorslidercontrols.png)
 
 A bunch of controls (inheriting from a single base) that allow selection of values via a colourful bar. Similar to the `TrackBar` control you have a few options for specifying the drag handle's position and bar orientation.
 
 ### ColorEditor Control
 
-![ColorEditor control demonstration](http://static.cyotek.com/files/articleimages/cp-coloreditorcontrol.png)
+![ColorEditor control demonstration](res/cp-coloreditorcontrol.png)
 
 This control allows the editing of a RGB or HSL colour via a standard interface.
 
 ### ScreenColorPicker Control
 
-![ScreenColorPicker control demonstration](http://static.cyotek.com/files/articleimages/cp-screencolorpickercontrol.png)
+![ScreenColorPicker control demonstration](res/cp-screencolorpickercontrol.png)
 
 This control allows the user to pick a colour from any pixel displayed on the screen. 
 
 ### ColorPickerDialog Form
 
-![ColorPickerDialog form demonstration](http://static.cyotek.com/files/articleimages/cp-colorpickerdialog.png)
+![ColorPickerDialog form demonstration](res/cp-colorpickerdialog.png)
 
 This form puts together the previous controls in a ready to use dialog.
 
