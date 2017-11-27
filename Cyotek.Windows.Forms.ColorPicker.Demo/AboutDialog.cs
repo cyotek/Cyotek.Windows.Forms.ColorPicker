@@ -11,7 +11,7 @@ using TheArtOfDev.HtmlRenderer.WinForms;
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2015 Cyotek Ltd.
+  // Copyright Â© 2013-2015 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
   // Licensed under the MIT License. See license.txt for the full text.
@@ -71,10 +71,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         versionLabel.Text = string.Format("Version {0}", info.FileVersion);
         copyrightLabel.Text = info.LegalCopyright;
 
-        this.AddReadme("changelog.md");
-        this.AddReadme("readme.md");
-        this.AddReadme("acknowledgements.md");
-        this.AddReadme("license.txt");
+        this.AddReadme("CHANGELOG.md");
+        this.AddReadme("README.md");
+        this.AddReadme("ACKNOWLEDGEMENTS.md");
+        this.AddReadme("LICENSE.txt");
 
         this.LoadDocumentForTab(docsTabControl.SelectedTab);
       }

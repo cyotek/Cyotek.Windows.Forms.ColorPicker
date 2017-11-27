@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorPicker.Demo", "Cyotek.Windows.Forms.ColorPicker.Demo\Cyotek.Windows.Forms.ColorPicker.Demo.csproj", "{638299BD-079A-4F2B-A1E6-EFA711C2EDB2}"
 EndProject
@@ -9,10 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{9563C21E-04F8-4FB7-AD31-2A0DDDE91142}"
 	ProjectSection(SolutionItems) = preProject
-		acknowledgements.md = acknowledgements.md
-		changelog.md = changelog.md
-		license.txt = license.txt
-		readme.md = readme.md
+		ACKNOWLEDGEMENTS.md = ACKNOWLEDGEMENTS.md
+		CHANGELOG.md = CHANGELOG.md
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorPicker.Tests", "Cyotek.Windows.Forms.ColorPicker.Tests\Cyotek.Windows.Forms.ColorPicker.Tests.csproj", "{AB4C1D00-F604-4516-913E-F21F795B9DA0}"
@@ -39,5 +39,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8312E6C3-0384-4B2F-9719-924A20F43A40}
 	EndGlobalSection
 EndGlobal
