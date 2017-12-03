@@ -52,6 +52,13 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #region Methods
 
+    protected override void OnFontChanged(EventArgs e)
+    {
+      base.OnFontChanged(e);
+
+      this.SetBoldFonts();
+    }
+
     protected override void OnLoad(EventArgs e)
     {
       base.OnLoad(e);
@@ -68,7 +75,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
         this.Text = string.Format("About {0}", title);
         nameLabel.Text = title;
-        versionLabel.Text = string.Format("Version {0}", info.FileVersion);
+        versionLabel.Text = string.Format("Version {0}", ((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute))).InformationalVersion);
         copyrightLabel.Text = info.LegalCopyright;
 
         this.AddReadme("CHANGELOG.md");
@@ -77,9 +84,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         this.AddReadme("LICENSE.txt");
 
         this.LoadDocumentForTab(docsTabControl.SelectedTab);
+
+        this.SetBoldFonts();
       }
     }
-    
+
     private void AddReadme(string fileName)
     {
       docsTabControl.TabPages.Add(new TabPage
@@ -160,6 +169,15 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
         Cursor.Current = Cursors.Default;
       }
+    }
+
+    private void SetBoldFonts()
+    {
+      Font boldFont;
+
+      boldFont = new Font(this.Font, FontStyle.Bold);
+      nameLabel.Font = boldFont;
+      versionLabel.Font = boldFont;
     }
 
     private void webLinkLabel_Click(object sender, EventArgs e)
