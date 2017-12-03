@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 // Cyotek Color Picker controls library
-// Copyright © 2013-2015 Cyotek Ltd.
+// Copyright © 2013-2017 Cyotek Ltd.
 // http://cyotek.com/blog/tag/colorpicker
 
 // Licensed under the MIT License. See license.txt for the full text.
@@ -86,7 +86,7 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
     #region Methods
 
     /// <summary>
-    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ToolStripDropDown"/> and optionally releases the managed resources. 
+    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ToolStripDropDown"/> and optionally releases the managed resources.
     /// </summary>
     /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources. </param>
     protected override void Dispose(bool disposing)

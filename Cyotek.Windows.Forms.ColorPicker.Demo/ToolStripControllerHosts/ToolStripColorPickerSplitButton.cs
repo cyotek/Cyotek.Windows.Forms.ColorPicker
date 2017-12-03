@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 // Cyotek Color Picker controls library
-// Copyright © 2013-2015 Cyotek Ltd.
+// Copyright © 2013-2017 Cyotek Ltd.
 // http://cyotek.com/blog/tag/colorpicker
 
 // Licensed under the MIT License. See license.txt for the full text.
@@ -103,7 +103,7 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
     }
 
     /// <summary>
-    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ToolStripDropDownItem"/> and optionally releases the managed resources. 
+    /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ToolStripDropDownItem"/> and optionally releases the managed resources.
     /// </summary>
     /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources. </param>
     protected override void Dispose(bool disposing)
@@ -256,7 +256,7 @@ namespace Cyotek.Windows.Forms.ToolStripControllerHosts
       {
         // who knows, use what we have
         // TODO: ButtonBounds (and SplitterBounds for that matter) seem to return the wrong
-        // values when painting first occurs, so the line is too narrow until after you 
+        // values when painting first occurs, so the line is too narrow until after you
         // hover the mouse over the button
         w = this.ButtonBounds.Width - this.ContentRectangle.Left * 2;
       }

@@ -10,7 +10,7 @@ using Cyotek.Drawing;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2015 Cyotek Ltd.
+  // Copyright © 2013-2017 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
   // Licensed under the MIT License. See license.txt for the full text.
