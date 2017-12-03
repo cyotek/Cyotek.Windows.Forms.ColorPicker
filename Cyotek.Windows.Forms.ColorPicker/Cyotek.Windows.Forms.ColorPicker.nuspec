@@ -15,7 +15,7 @@
         <releaseNotes />
         <copyright>$copyright$</copyright>
         <language>en-GB</language>
-        <tags>colorpicker palette cyotek</tags>
+        <tags>colorpicker winforms cyotek</tags>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System.Windows.Forms" targetFramework="" />
             <frameworkAssembly assemblyName="System.Drawing" targetFramework="" />
