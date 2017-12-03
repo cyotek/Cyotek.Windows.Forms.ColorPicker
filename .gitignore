@@ -9,3 +9,4 @@ _NCrunch_Cyotek.Windows.Forms.ColorPicker/
 *.ncrunchproject
 *.user
 *.suo
+push.cmd
