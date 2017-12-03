@@ -1,4 +1,4 @@
-﻿namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   internal partial class ColorEditorManagerDemoForm
   {
@@ -149,8 +149,8 @@
       // 
       // ColorEditorManagerDemoForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(909, 331);
       this.Controls.Add(this.demoLabel);
       this.Controls.Add(this.lightnessColorSlider);
@@ -160,7 +160,6 @@
       this.Controls.Add(this.colorGrid);
       this.Controls.Add(this.previewPanel);
       this.Controls.Add(this.menuStrip);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.MainMenuStrip = this.menuStrip;
       this.Name = "ColorEditorManagerDemoForm";
       this.Text = "ColorEditorManager Component Demonstration";

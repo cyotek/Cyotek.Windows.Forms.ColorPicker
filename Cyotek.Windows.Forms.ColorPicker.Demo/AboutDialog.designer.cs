@@ -2,24 +2,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   partial class AboutDialog
   {
-    /// <summary>
-    /// Required designer variable.
-    /// </summary>
-    private System.ComponentModel.IContainer components = null;
-
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
-    {
-      if (disposing && (this.components != null))
-      {
-        this.components.Dispose();
-      }
-      base.Dispose(disposing);
-    }
-
     #region Windows Form Designer generated code
 
     /// <summary>
@@ -57,7 +39,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.nameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.nameLabel.AutoSize = true;
-      this.nameLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.nameLabel.Location = new System.Drawing.Point(82, 12);
       this.nameLabel.Name = "nameLabel";
       this.nameLabel.Size = new System.Drawing.Size(38, 13);
@@ -69,7 +50,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.versionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.versionLabel.AutoSize = true;
-      this.versionLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.versionLabel.Location = new System.Drawing.Point(82, 25);
       this.versionLabel.Name = "versionLabel";
       this.versionLabel.Size = new System.Drawing.Size(45, 13);
@@ -135,8 +115,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // AboutDialog
       // 
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AcceptButton = this.closeButton;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.BackColor = System.Drawing.SystemColors.Window;
       this.CancelButton = this.closeButton;
       this.ClientSize = new System.Drawing.Size(615, 495);
@@ -146,7 +127,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.Controls.Add(this.copyrightLabel);
       this.Controls.Add(this.versionLabel);
       this.Controls.Add(this.nameLabel);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.Name = "AboutDialog";

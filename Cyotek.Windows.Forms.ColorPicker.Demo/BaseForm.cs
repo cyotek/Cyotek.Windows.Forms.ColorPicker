@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -18,20 +18,22 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     public BaseForm()
     {
-      this.InitializeComponent();
+      this.SuspendLayout();
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.ClientSize = new System.Drawing.Size(726, 323);
+      this.MinimizeBox = false;
+      this.Name = "BaseForm";
+      this.ShowIcon = false;
+      this.ShowInTaskbar = false;
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+      this.ResumeLayout(false);
     }
 
     #endregion
 
     #region Methods
-
-    protected override void OnLoad(EventArgs e)
-    {
-      this.Font = SystemFonts.MessageBoxFont;
-
-      base.OnLoad(e);
-    }
-
+    
     protected override void OnShown(EventArgs e)
     {
       base.OnShown(e);

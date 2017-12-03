@@ -1,4 +1,4 @@
-﻿namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   partial class ScreenColorPickerDemoForm
   {
@@ -142,13 +142,12 @@
       // 
       // ScreenColorPickerDemoForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(847, 373);
       this.Controls.Add(this.propertiesSplitContainer);
       this.Controls.Add(this.menuStrip);
       this.Controls.Add(this.statusStrip);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.Name = "ScreenColorPickerDemoForm";
       this.Text = "ScreenColorPicker Control Demonstration";
       this.propertiesSplitContainer.Panel1.ResumeLayout(false);

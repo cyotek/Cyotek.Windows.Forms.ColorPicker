@@ -1,4 +1,4 @@
-﻿namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   internal partial class ColorGridDemoForm
   {
@@ -362,13 +362,12 @@
       // 
       // ColorGridDemoForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(1006, 474);
       this.Controls.Add(this.propertiesSplitContainer);
       this.Controls.Add(this.menuStrip);
       this.Controls.Add(this.statusStrip1);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.Name = "ColorGridDemoForm";
       this.Text = "ColorGrid Control Demonstration";
       this.propertiesSplitContainer.Panel1.ResumeLayout(false);

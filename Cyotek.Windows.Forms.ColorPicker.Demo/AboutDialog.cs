@@ -79,17 +79,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         this.LoadDocumentForTab(docsTabControl.SelectedTab);
       }
     }
-
-    protected override void OnResize(EventArgs e)
-    {
-      base.OnResize(e);
-
-      if (docsTabControl != null)
-      {
-        docsTabControl.SetBounds(docsTabControl.Left, docsTabControl.Top, this.ClientSize.Width - docsTabControl.Left * 2, this.ClientSize.Height - (docsTabControl.Top + footerGroupBox.Height + docsTabControl.Left));
-      }
-    }
-
+    
     private void AddReadme(string fileName)
     {
       docsTabControl.TabPages.Add(new TabPage
