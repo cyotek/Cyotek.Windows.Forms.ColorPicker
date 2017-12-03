@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -149,6 +149,7 @@ namespace Cyotek.Windows.Forms
       _selectedCellStyle = ColorGridSelectedCellStyle.Zoomed;
       _palette = ColorPalette.Named;
 
+      this.SetScaledCellSize();
       this.RefreshColors();
     }
 
@@ -389,7 +390,7 @@ namespace Cyotek.Windows.Forms
       get { return _cellSize; }
       set
       {
-        if (this.CellSize != value)
+        if (_cellSize != value)
         {
           _cellSize = value;
 
@@ -909,7 +910,7 @@ namespace Cyotek.Windows.Forms
       int primaryRows;
       int customRows;
 
-      this.ActualColumns = this.Columns != 0 ? this.Columns : (this.ClientSize.Width + this.Spacing.Width - this.Padding.Vertical) / (this.CellSize.Width + this.Spacing.Width);
+      this.ActualColumns = this.Columns != 0 ? this.Columns : (this.ClientSize.Width + this.Spacing.Width - this.Padding.Vertical) / (_scaledCellSize.Width + this.Spacing.Width);
       if (this.ActualColumns < 1)
       {
         this.ActualColumns = 1;
@@ -955,7 +956,7 @@ namespace Cyotek.Windows.Forms
           {
             if (index < colors.Count)
             {
-              _colorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + column * (this.CellSize.Width + this.Spacing.Width), offset + row * (this.CellSize.Height + this.Spacing.Height), this.CellSize.Width, this.CellSize.Height));
+              _colorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + column * (_scaledCellSize.Width + this.Spacing.Width), offset + row * (_scaledCellSize.Height + this.Spacing.Height), _scaledCellSize.Width, _scaledCellSize.Height));
             }
 
             index++;
@@ -1002,14 +1003,14 @@ namespace Cyotek.Windows.Forms
       offset = this.CustomRows != 0 ? this.SeparatorHeight : 0;
       if (this.Columns != 0)
       {
-        width = (this.CellSize.Width + this.Spacing.Width) * this.ActualColumns + this.Padding.Horizontal - this.Spacing.Width;
+        width = (_scaledCellSize.Width + this.Spacing.Width) * this.ActualColumns + this.Padding.Horizontal - this.Spacing.Width;
       }
       else
       {
         width = this.ClientSize.Width;
       }
 
-      return new Size(width, (this.CellSize.Height + this.Spacing.Height) * (this.PrimaryRows + this.CustomRows) + offset + this.Padding.Vertical - this.Spacing.Height);
+      return new Size(width, (_scaledCellSize.Height + this.Spacing.Height) * (this.PrimaryRows + this.CustomRows) + offset + this.Padding.Vertical - this.Spacing.Height);
     }
 
     protected int GetCellIndex(Point point)
@@ -1256,6 +1257,8 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
+      this.SetScaledCellSize();
+
       if (this.AutoSize)
       {
         this.SizeToFit();
@@ -1270,6 +1273,28 @@ namespace Cyotek.Windows.Forms
       handler = (EventHandler)this.Events[_eventCellSizeChanged];
 
       handler?.Invoke(this, e);
+    }
+
+    private void SetScaledCellSize()
+    {
+      Point dpi;
+      float scaleX;
+      float scaleY;
+
+      dpi = NativeMethods.GetDesktopDpi();
+      scaleX = dpi.X / 96F;
+      scaleY = dpi.Y / 96F;
+
+      if (scaleX > 1 && scaleY > 1)
+      {
+        _scaledCellSize = new Size((int) (_cellSize.Width * scaleX), (int) (_cellSize.Height * scaleY));
+      }
+      else
+      {
+        _scaledCellSize = _cellSize;
+      }
+
+      Debug.WriteLine(_scaledCellSize);
     }
 
     /// <summary>
@@ -1481,6 +1506,8 @@ namespace Cyotek.Windows.Forms
 
       base.OnKeyUp(e);
     }
+
+    private Size _scaledCellSize;
 
     protected override void OnLostFocus(EventArgs e)
     {
@@ -1853,7 +1880,7 @@ namespace Cyotek.Windows.Forms
 
       x1 = this.Padding.Left;
       x2 = this.ClientSize.Width - this.Padding.Right;
-      y1 = this.SeparatorHeight / 2 + this.Padding.Top + this.PrimaryRows * (this.CellSize.Height + this.Spacing.Height) + 1 - this.Spacing.Height;
+      y1 = this.SeparatorHeight / 2 + this.Padding.Top + this.PrimaryRows * (_scaledCellSize.Height + this.Spacing.Height) + 1 - this.Spacing.Height;
       y2 = y1;
 
       using (Pen pen = new Pen(this.CellBorderColor))
@@ -1911,7 +1938,7 @@ namespace Cyotek.Windows.Forms
           this.DefineColorRegions(this.Colors, 0, this.Padding.Top);
           if (this.ShowCustomColors)
           {
-            this.DefineColorRegions(this.CustomColors, this.Colors.Count, this.Padding.Top + this.SeparatorHeight + (this.CellSize.Height + this.Spacing.Height) * this.PrimaryRows);
+            this.DefineColorRegions(this.CustomColors, this.Colors.Count, this.Padding.Top + this.SeparatorHeight + (_scaledCellSize.Height + this.Spacing.Height) * this.PrimaryRows);
           }
 
           this.ColorIndex = this.GetColorIndex(this.Color);

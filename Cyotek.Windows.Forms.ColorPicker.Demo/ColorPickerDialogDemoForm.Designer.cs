@@ -1,4 +1,4 @@
-﻿namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   internal partial class ColorPickerDialogDemoForm
   {
@@ -119,8 +119,8 @@
       // 
       // ColorPickerDialogDemoForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(554, 297);
       this.Controls.Add(this.showAlphaChannelCheckBox);
       this.Controls.Add(this.colorPreviewPanel);
@@ -128,7 +128,6 @@
       this.Controls.Add(this.demoLabel);
       this.Controls.Add(this.browseColorButton);
       this.Controls.Add(this.menuStrip);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.Name = "ColorPickerDialogDemoForm";

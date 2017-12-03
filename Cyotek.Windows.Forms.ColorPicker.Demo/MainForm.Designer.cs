@@ -1,4 +1,4 @@
-﻿namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   partial class MainForm
   {
@@ -159,8 +159,8 @@
       // 
       // MainForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(615, 495);
       this.Controls.Add(this.groupBox1);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

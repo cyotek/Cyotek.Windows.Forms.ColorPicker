@@ -1,4 +1,4 @@
-﻿namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   partial class ScratchForm
   {
@@ -120,8 +120,8 @@
       // 
       // ScratchForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(1106, 579);
       this.Controls.Add(this.colorEditor3);
       this.Controls.Add(this.colorEditor2);

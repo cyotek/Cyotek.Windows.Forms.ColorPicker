@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
@@ -46,14 +46,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.Text = "Cyotek ColorPicker Controls for Windows Forms";
     }
 
-    private void aboutButton_Click(object sender, EventArgs e)
-    {
-      using (Form dialog = new AboutDialog())
-      {
-        dialog.ShowDialog(this);
-      }
-    }
-
     private void colorEditorDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorEditorDemoForm>();
@@ -82,11 +74,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void colorWheelDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorWheelDemoForm>();
-    }
-
-    private void exitButton_Click(object sender, EventArgs e)
-    {
-      this.Close();
     }
 
     private void screenColorPickerDemoButton_Click(object sender, EventArgs e)

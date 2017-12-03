@@ -1,4 +1,4 @@
-﻿namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   partial class ColorWheelDemoForm
   {
@@ -141,13 +141,12 @@
       // 
       // ColorWheelDemoForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(940, 445);
       this.Controls.Add(this.propertiesSplitContainer);
       this.Controls.Add(this.menuStrip);
       this.Controls.Add(this.statusStrip);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.Name = "ColorWheelDemoForm";
       this.Text = "ColorWheel Control Demonstration";
       this.statusStrip.ResumeLayout(false);

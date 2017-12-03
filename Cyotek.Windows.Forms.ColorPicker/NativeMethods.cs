@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace Cyotek.Windows.Forms
@@ -24,7 +25,8 @@ namespace Cyotek.Windows.Forms
     #region Protected Constructors
 
     protected NativeMethods()
-    { }
+    {
+    }
 
     #endregion
 
@@ -46,6 +48,50 @@ namespace Cyotek.Windows.Forms
     public static extern int SetROP2(IntPtr hdc, int fnDrawMode);
 
     #endregion
+
+    [DllImport(_gdi32DllName)]
+    public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+    private const string _gdi32DllName = "gdi32.dll";
+
+    private const string _user32DllName = "user32.dll";
+
+    /// <summary>
+    ///   Logical pixels inch in X
+    /// </summary>
+    public const int LOGPIXELSX = 88;
+
+    /// <summary>
+    ///   Logical pixels inch in Y
+    /// </summary>
+    public const int LOGPIXELSY = 90;
+
+    public static Point GetDesktopDpi()
+    {
+      IntPtr hWnd;
+      IntPtr hDC;
+      int dpix;
+      int dpiy;
+
+      hWnd = GetDesktopWindow();
+      hDC = GetDC(hWnd);
+
+      try
+      {
+        dpix = GetDeviceCaps(hDC, LOGPIXELSX);
+        dpiy = GetDeviceCaps(hDC, LOGPIXELSY);
+      }
+      finally
+      {
+        ReleaseDC(hWnd, hDC);
+      }
+
+      return new Point(dpix, dpiy);
+    }
+
+    [DllImport(_user32DllName)]
+    public static extern IntPtr GetDesktopWindow();
+
 
     // ReSharper restore InconsistentNaming
   }
