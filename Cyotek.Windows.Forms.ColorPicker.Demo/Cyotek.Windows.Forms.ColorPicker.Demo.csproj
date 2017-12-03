@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cyotek.Windows.Forms.ColorPicker.Demo</RootNamespace>
     <AssemblyName>clrpkdmo</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -208,7 +208,6 @@
     <Content Include="palettes\PaintNet.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="palettes\16pal_v20.act">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
