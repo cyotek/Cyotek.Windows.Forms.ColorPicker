@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.0
+### Changed
+* The `ColorGrid` control now will now automatically scale color cells if the application is displayed with high DPI
+
 ## 1.7.2
 ### Added
 * Added new `ShowColorSpaceLabels` property to the `ColorEditor` control. When `false`, the **RGB** and **HSL** labels will be hidden, allowing the control to take up less space. The default value is `true`
