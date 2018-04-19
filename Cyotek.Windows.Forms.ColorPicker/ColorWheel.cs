@@ -9,12 +9,13 @@ using System.Windows.Forms;
 namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
+  // Copyright © 2013-2018 Cyotek Ltd.
   // http://cyotek.com/blog/tag/colorpicker
 
   // Licensed under the MIT License. See license.txt for the full text.
 
   // If you use this code in your applications, donations or attribution are welcome
+  // https://www.paypal.me/cyotek
 
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]
@@ -44,21 +45,29 @@ namespace Cyotek.Windows.Forms
 
     private Color _color;
 
+    private Color[] _colors;
+
     private int _colorStep;
 
-    private bool _dragStartedWithinWheel;
+    private bool _isDragging;
 
     private HslColor _hslColor;
 
     private int _largeChange;
 
+    private bool _lockUpdates;
+
     private float _radius;
+
+    private Image _selectionGlyph;
 
     private int _selectionSize;
 
     private int _smallChange;
 
     private int _updateCount;
+
+    private PointF[] _points;
 
     #endregion
 
@@ -70,12 +79,12 @@ namespace Cyotek.Windows.Forms
     public ColorWheel()
     {
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, true);
-      this.Color = Color.Black;
-      this.ColorStep = 4;
-      this.SelectionSize = 10;
-      this.SmallChange = 1;
-      this.LargeChange = 5;
-      this.SelectionGlyph = this.CreateSelectionGlyph();
+      _color = Color.Black;
+      _hslColor = new HslColor(_color);
+      _colorStep = 4;
+      _selectionSize = 10;
+      _smallChange = 1;
+      _largeChange = 5;
     }
 
     #endregion
@@ -138,7 +147,7 @@ namespace Cyotek.Windows.Forms
           throw new ArgumentOutOfRangeException(nameof(value), value, "Value must be between 1 and 359");
         }
 
-        if (this.ColorStep != value)
+        if (_colorStep != value)
         {
           _colorStep = value;
 
@@ -176,7 +185,7 @@ namespace Cyotek.Windows.Forms
       get { return _hslColor; }
       set
       {
-        if (this.HslColor != value)
+        if (_hslColor != value)
         {
           _hslColor = value;
 
@@ -196,7 +205,7 @@ namespace Cyotek.Windows.Forms
       get { return _largeChange; }
       set
       {
-        if (this.LargeChange != value)
+        if (_largeChange != value)
         {
           _largeChange = value;
 
@@ -216,7 +225,7 @@ namespace Cyotek.Windows.Forms
       get { return _selectionSize; }
       set
       {
-        if (this.SelectionSize != value)
+        if (_selectionSize != value)
         {
           _selectionSize = value;
 
@@ -236,7 +245,7 @@ namespace Cyotek.Windows.Forms
       get { return _smallChange; }
       set
       {
-        if (this.SmallChange != value)
+        if (_smallChange != value)
         {
           _smallChange = value;
 
@@ -264,13 +273,33 @@ namespace Cyotek.Windows.Forms
       get { return _updateCount == 0; }
     }
 
-    protected Color[] Colors { get; set; }
+    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    protected Color[] Colors
+    {
+      get { return _colors; }
+      set { _colors = value; }
+    }
 
-    protected bool LockUpdates { get; set; }
+    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    protected bool LockUpdates
+    {
+      get { return _lockUpdates; }
+      set { _lockUpdates = value; }
+    }
 
-    protected PointF[] Points { get; set; }
+    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    protected PointF[] Points
+    {
+      get { return _points; }
+      set { _points = value; }
+    }
 
-    protected Image SelectionGlyph { get; set; }
+    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    protected Image SelectionGlyph
+    {
+      get { return _selectionGlyph; }
+      set { _selectionGlyph = value; }
+    }
 
     #endregion
 
@@ -307,23 +336,25 @@ namespace Cyotek.Windows.Forms
     {
       List<PointF> points;
       List<Color> colors;
+      Size size;
 
       points = new List<PointF>();
       colors = new List<Color>();
+      size = this.ClientSize;
 
       // Only define the points if the control is above a minimum size, otherwise if it's too small, you get an "out of memory" exceptions (of all things) when creating the brush
-      if (this.ClientSize.Width > 16 && this.ClientSize.Height > 16)
+      if (size.Width > 16 && size.Height > 16)
       {
         int w;
         int h;
 
-        w = this.ClientSize.Width;
-        h = this.ClientSize.Height;
+        w = size.Width;
+        h = size.Height;
 
         _centerPoint = new PointF(w / 2.0F, h / 2.0F);
         _radius = this.GetRadius(_centerPoint);
 
-        for (double angle = 0; angle < 360; angle += this.ColorStep)
+        for (double angle = 0; angle < 360; angle += _colorStep)
         {
           double angleR;
           PointF location;
@@ -336,8 +367,8 @@ namespace Cyotek.Windows.Forms
         }
       }
 
-      this.Points = points.ToArray();
-      this.Colors = colors.ToArray();
+      _points = points.ToArray();
+      _colors = colors.ToArray();
     }
 
     /// <summary>
@@ -347,13 +378,13 @@ namespace Cyotek.Windows.Forms
     {
       Brush result;
 
-      if (this.Points.Length != 0 && this.Points.Length == this.Colors.Length)
+      if (_points.Length != 0 && _points.Length == _colors.Length)
       {
-        result = new PathGradientBrush(this.Points, WrapMode.Clamp)
+        result = new PathGradientBrush(_points, WrapMode.Clamp)
                  {
                    CenterPoint = _centerPoint,
                    CenterColor = Color.White,
-                   SurroundColors = this.Colors
+                   SurroundColors = _colors
                  };
       }
       else
@@ -372,8 +403,8 @@ namespace Cyotek.Windows.Forms
       Image image;
       int halfSize;
 
-      halfSize = this.SelectionSize / 2;
-      image = new Bitmap(this.SelectionSize + 1, this.SelectionSize + 1, PixelFormat.Format32bppArgb);
+      halfSize = _selectionSize / 2;
+      image = new Bitmap(_selectionSize + 1, _selectionSize + 1, PixelFormat.Format32bppArgb);
 
       using (Graphics g = Graphics.FromImage(image))
       {
@@ -382,8 +413,8 @@ namespace Cyotek.Windows.Forms
         diamondOuter = new[]
                        {
                          new Point(halfSize, 0),
-                         new Point(this.SelectionSize, halfSize),
-                         new Point(halfSize, this.SelectionSize),
+                         new Point(_selectionSize, halfSize),
+                         new Point(halfSize, _selectionSize),
                          new Point(0, halfSize)
                        };
 
@@ -392,15 +423,15 @@ namespace Cyotek.Windows.Forms
 
         using (Pen pen = new Pen(Color.FromArgb(128, SystemColors.ControlDark)))
         {
-          g.DrawLine(pen, halfSize, 1, this.SelectionSize - 1, halfSize);
-          g.DrawLine(pen, halfSize, 2, this.SelectionSize - 2, halfSize);
-          g.DrawLine(pen, halfSize, this.SelectionSize - 1, this.SelectionSize - 2, halfSize + 1);
-          g.DrawLine(pen, halfSize, this.SelectionSize - 2, this.SelectionSize - 3, halfSize + 1);
+          g.DrawLine(pen, halfSize, 1, _selectionSize - 1, halfSize);
+          g.DrawLine(pen, halfSize, 2, _selectionSize - 2, halfSize);
+          g.DrawLine(pen, halfSize, _selectionSize - 1, _selectionSize - 2, halfSize + 1);
+          g.DrawLine(pen, halfSize, _selectionSize - 2, _selectionSize - 3, halfSize + 1);
         }
 
         using (Pen pen = new Pen(Color.FromArgb(196, SystemColors.ControlLightLight)))
         {
-          g.DrawLine(pen, halfSize, this.SelectionSize - 1, 1, halfSize);
+          g.DrawLine(pen, halfSize, _selectionSize - 1, 1, halfSize);
         }
 
         g.DrawLine(SystemPens.ControlLightLight, 1, halfSize, halfSize, 1);
@@ -417,15 +448,8 @@ namespace Cyotek.Windows.Forms
     {
       if (disposing)
       {
-        if (_brush != null)
-        {
-          _brush.Dispose();
-        }
-
-        if (this.SelectionGlyph != null)
-        {
-          this.SelectionGlyph.Dispose();
-        }
+        this.DisposeOfWheelBrush();
+        this.DisposeOfSelectionGlyph();
       }
 
       base.Dispose(disposing);
@@ -457,18 +481,24 @@ namespace Cyotek.Windows.Forms
 
     protected PointF GetColorLocation(double angleR, double radius)
     {
+      Padding padding;
       double x;
       double y;
 
-      x = this.Padding.Left + _centerPoint.X + Math.Cos(angleR) * radius;
-      y = this.Padding.Top + _centerPoint.Y - Math.Sin(angleR) * radius;
+      padding = this.Padding;
+      x = padding.Left + _centerPoint.X + Math.Cos(angleR) * radius;
+      y = padding.Top + _centerPoint.Y - Math.Sin(angleR) * radius;
 
       return new PointF((float)x, (float)y);
     }
 
     protected float GetRadius(PointF centerPoint)
     {
-      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(this.Padding.Horizontal, this.Padding.Vertical) + this.SelectionSize / 2);
+      Padding padding;
+
+      padding = this.Padding;
+
+      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(padding.Horizontal, padding.Vertical) + _selectionSize / 2);
     }
 
     /// <summary>
@@ -516,10 +546,11 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      if (!this.LockUpdates)
+      if (!_lockUpdates)
       {
-        this.HslColor = new HslColor(this.Color);
+        this.HslColor = new HslColor(_color);
       }
+
       this.Refresh();
 
       handler = (EventHandler)this.Events[_eventColorChanged];
@@ -561,10 +592,11 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      if (!this.LockUpdates)
+      if (!_lockUpdates)
       {
-        this.Color = this.HslColor.ToRgbColor();
+        this.Color = _hslColor.ToRgbColor();
       }
+
       this.Invalidate();
 
       handler = (EventHandler)this.Events[_eventHslColorChanged];
@@ -582,10 +614,10 @@ namespace Cyotek.Windows.Forms
       double hue;
       int step;
 
-      color = this.HslColor;
+      color = _hslColor;
       hue = color.H;
 
-      step = e.Shift ? this.LargeChange : this.SmallChange;
+      step = e.Shift ? _largeChange : _smallChange;
 
       switch (e.KeyCode)
       {
@@ -598,10 +630,10 @@ namespace Cyotek.Windows.Forms
           hue -= step;
           break;
         case Keys.PageUp:
-          hue += this.LargeChange;
+          hue += _largeChange;
           break;
         case Keys.PageDown:
-          hue -= this.LargeChange;
+          hue -= _largeChange;
           break;
       }
 
@@ -609,21 +641,22 @@ namespace Cyotek.Windows.Forms
       {
         hue = 0;
       }
+
       if (hue < 0)
       {
         hue = 359;
       }
 
-      if (hue != color.H)
+      if (Math.Abs(hue - color.H) > double.Epsilon)
       {
         color.H = hue;
 
         // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
         // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
-        this.LockUpdates = true;
+        _lockUpdates = true;
         this.Color = color.ToRgbColor();
         this.HslColor = color;
-        this.LockUpdates = false;
+        _lockUpdates = false;
 
         e.Handled = true;
       }
@@ -670,7 +703,7 @@ namespace Cyotek.Windows.Forms
 
       if (e.Button == MouseButtons.Left && this.IsPointInWheel(e.Location))
       {
-        _dragStartedWithinWheel = true;
+        _isDragging = true;
         this.SetColor(e.Location);
       }
     }
@@ -683,7 +716,7 @@ namespace Cyotek.Windows.Forms
     {
       base.OnMouseMove(e);
 
-      if (e.Button == MouseButtons.Left && _dragStartedWithinWheel)
+      if (_isDragging)
       {
         this.SetColor(e.Location);
       }
@@ -697,7 +730,7 @@ namespace Cyotek.Windows.Forms
     {
       base.OnMouseUp(e);
 
-      _dragStartedWithinWheel = false;
+      _isDragging = false;
     }
 
     /// <summary>
@@ -721,11 +754,14 @@ namespace Cyotek.Windows.Forms
 
       if (this.AllowPainting)
       {
+        Control parent;
+
         this.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc
 
         // if the parent is using a transparent color, it's likely to be something like a TabPage in a tab control
         // so we'll draw the parent background instead, to avoid having an ugly solid color
-        if (this.BackgroundImage == null && this.Parent != null && (this.BackColor == this.Parent.BackColor || this.Parent.BackColor.A != 255))
+        parent = this.Parent;
+        if (this.BackgroundImage == null && parent != null && (this.BackColor == parent.BackColor || parent.BackColor.A != 255))
         {
           ButtonRenderer.DrawParentBackground(e.Graphics, this.DisplayRectangle, this);
         }
@@ -734,6 +770,7 @@ namespace Cyotek.Windows.Forms
         {
           e.Graphics.FillPie(_brush, this.ClientRectangle, 0, 360);
         }
+
         // HACK: smooth out the edge of the wheel.
         // https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker/issues/1 - the linked source doesn't do this hack yet draws with a smoother edge
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -742,7 +779,7 @@ namespace Cyotek.Windows.Forms
           e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
         }
 
-        if (!this.Color.IsEmpty)
+        if (!_color.IsEmpty)
         {
           this.PaintCurrentColor(e);
         }
@@ -768,9 +805,8 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      this.SelectionGlyph?.Dispose();
+      this.DisposeOfSelectionGlyph();
 
-      this.SelectionGlyph = this.CreateSelectionGlyph();
       this.RefreshWheel();
 
       handler = (EventHandler)this.Events[_eventSelectionSizeChanged];
@@ -807,28 +843,28 @@ namespace Cyotek.Windows.Forms
         int x;
         int y;
 
-        x = (int)location.X - this.SelectionSize / 2;
-        y = (int)location.Y - this.SelectionSize / 2;
+        x = (int)location.X - _selectionSize / 2;
+        y = (int)location.Y - _selectionSize / 2;
 
-        if (this.SelectionGlyph == null)
+        if (_selectionGlyph == null)
         {
-          e.Graphics.DrawRectangle(Pens.Black, x, y, this.SelectionSize, this.SelectionSize);
+          e.Graphics.DrawRectangle(Pens.Black, x, y, _selectionSize, _selectionSize);
         }
         else
         {
-          e.Graphics.DrawImage(this.SelectionGlyph, x, y);
+          e.Graphics.DrawImage(_selectionGlyph, x, y);
         }
 
         if (this.Focused && includeFocus)
         {
-          ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 1, y - 1, this.SelectionSize + 2, this.SelectionSize + 2));
+          ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 1, y - 1, _selectionSize + 2, _selectionSize + 2));
         }
       }
     }
 
     protected virtual void PaintCurrentColor(PaintEventArgs e)
     {
-      this.PaintColor(e, this.HslColor, true);
+      this.PaintColor(e, _hslColor, true);
     }
 
     protected virtual void SetColor(Point point)
@@ -838,31 +874,53 @@ namespace Cyotek.Windows.Forms
       double angle;
       double distance;
       double saturation;
+      Padding padding;
+      HslColor newColor;
 
-      dx = Math.Abs(point.X - _centerPoint.X - this.Padding.Left);
-      dy = Math.Abs(point.Y - _centerPoint.Y - this.Padding.Top);
+      padding = this.Padding;
+      dx = Math.Abs(point.X - _centerPoint.X - padding.Left);
+      dy = Math.Abs(point.Y - _centerPoint.Y - padding.Top);
       angle = Math.Atan(dy / dx) / Math.PI * 180;
       distance = Math.Pow(Math.Pow(dx, 2) + Math.Pow(dy, 2), 0.5);
       saturation = distance / _radius;
-
-      if (distance < 6)
-      {
-        saturation = 0; // snap to center
-      }
 
       if (point.X < _centerPoint.X)
       {
         angle = 180 - angle;
       }
+
       if (point.Y > _centerPoint.Y)
       {
         angle = 360 - angle;
       }
 
-      this.LockUpdates = true;
-      this.HslColor = new HslColor(angle, saturation, 0.5);
-      this.Color = this.HslColor.ToRgbColor();
-      this.LockUpdates = false;
+      newColor = new HslColor(angle, saturation, 0.5);
+
+      if (_hslColor != newColor)
+      {
+        _lockUpdates = true;
+        this.HslColor = newColor;
+        this.Color = _hslColor.ToRgbColor();
+        _lockUpdates = false;
+      }
+    }
+
+    private void DisposeOfSelectionGlyph()
+    {
+      if (_selectionGlyph != null)
+      {
+        _selectionGlyph.Dispose();
+        _selectionGlyph = null;
+      }
+    }
+
+    private void DisposeOfWheelBrush()
+    {
+      if (_brush != null)
+      {
+        _brush.Dispose();
+        _brush = null;
+      }
     }
 
     /// <summary>
@@ -870,13 +928,16 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     private void RefreshWheel()
     {
-      if (_brush != null)
+      this.CalculateWheel();
+
+      this.DisposeOfWheelBrush();
+      _brush = this.CreateGradientBrush();
+
+      if (_selectionGlyph == null)
       {
-        _brush.Dispose();
+        _selectionGlyph = this.CreateSelectionGlyph();
       }
 
-      this.CalculateWheel();
-      _brush = this.CreateGradientBrush();
       this.Invalidate();
     }
 
@@ -902,7 +963,7 @@ namespace Cyotek.Windows.Forms
       get { return _color; }
       set
       {
-        if (this.Color != value)
+        if (_color != value)
         {
           _color = value;
 

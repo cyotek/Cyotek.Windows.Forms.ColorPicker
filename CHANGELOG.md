@@ -4,6 +4,12 @@
 ### Changed
 * The `ColorGrid` control now will now automatically scale color cells if the application is displayed with high DPI
 
+### Deprecated
+* The protected `SelectionGlyph`, `Points`, `LockUpdates` and `Colors` properties of the `ColorWheel` control are deprecated and will be removed in a subsequent updated.
+
+### Fixed
+* The `ColorWheel` no longer automatically snaps to the center of the wheel when the mouse is approaching the center
+
 ## 1.7.2
 ### Added
 * Added new `ShowColorSpaceLabels` property to the `ColorEditor` control. When `false`, the **RGB** and **HSL** labels will be hidden, allowing the control to take up less space. The default value is `true`
