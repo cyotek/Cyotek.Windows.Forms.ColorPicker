@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 
 namespace Cyotek.Windows.Forms
 {
@@ -53,6 +54,8 @@ namespace Cyotek.Windows.Forms
     private bool _showTextWithSnapshot;
 
     private int _zoom;
+    
+    private IWindowsFormsEditorService edSvc;
 
     #endregion
 
@@ -72,6 +75,24 @@ namespace Cyotek.Windows.Forms
       this.TabIndex = 0;
       this.ShowGrid = true;
       this.GridColor = SystemColors.ControlDark;
+      this.edSvc = null;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScreenColorPicker"/> class.
+    /// </summary>
+    public ScreenColorPicker(IWindowsFormsEditorService edSvc)
+    {
+      this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
+      this.SetStyle(ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, false);
+      this.Zoom = 8;
+      this.Color = Color.Empty;
+      this.ShowTextWithSnapshot = false;
+      this.TabStop = false;
+      this.TabIndex = 0;
+      this.ShowGrid = true;
+      this.GridColor = SystemColors.ControlDark;
+      this.edSvc = edSvc;
     }
 
     #endregion
@@ -460,6 +481,10 @@ namespace Cyotek.Windows.Forms
         this.Cursor = Cursors.Default;
         this.IsCapturing = false;
         this.Invalidate();
+        if (this.edSvc != null)
+        {
+            edSvc.CloseDropDown();
+        }
       }
     }
 
