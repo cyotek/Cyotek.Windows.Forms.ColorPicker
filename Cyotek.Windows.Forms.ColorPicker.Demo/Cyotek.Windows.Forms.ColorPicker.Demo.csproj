@@ -2,12 +2,14 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>clrpkdmo</AssemblyName>
-    <TargetFramework>net47</TargetFramework>
+<!--    <TargetFramework>net47</TargetFramework> -->
+    <TargetFramework>net5.0-windows</TargetFramework>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <AssemblyTitle>Cyotek Color Picker Controls Demonstration</AssemblyTitle>
     <Product>Cyotek Color Picker Controls Library</Product>
     <Copyright>Copyright © 2013-2021 Cyotek Ltd.</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>

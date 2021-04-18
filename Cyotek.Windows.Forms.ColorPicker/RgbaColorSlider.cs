@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
@@ -202,11 +203,11 @@ namespace Cyotek.Windows.Forms
 
     protected virtual Brush CreateTransparencyBrush()
     {
-      Type type;
+      var type = typeof(ColorGrid);
 
-      type = typeof(RgbaColorSlider);
+      var nameSpace = Assembly.GetExecutingAssembly().GetName().Name;
 
-      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(type.Namespace, ".Resources.cellbackground.png"))))
+      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(nameSpace, ".Resources.cellbackground.png"))))
       {
         return new TextureBrush(background, WrapMode.Tile);
       }
