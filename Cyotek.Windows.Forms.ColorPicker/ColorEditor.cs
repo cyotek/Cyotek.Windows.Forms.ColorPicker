@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
@@ -514,6 +514,32 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #if NETCOREAPP
+    private void AddSystemColors()
+    {
+      Type type;
+      Type colorType;
+
+      type = typeof(SystemColors);
+      colorType = typeof(Color);
+
+      // ReSharper disable once LoopCanBePartlyConvertedToQuery
+      foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static))
+      {
+        if (property.PropertyType == colorType)
+        {
+          Color color;
+
+          color = (Color)property.GetValue(type, null);
+          if (!color.IsEmpty)
+          {
+            hexTextBox.Items.Add(color.Name);
+          }
+        }
+      }
+    }
+    #endif
+
     private void AddColorProperties<T>()
     {
       Type type;
@@ -571,7 +597,11 @@ namespace Cyotek.Windows.Forms
 
     private void FillNamedColors()
     {
+      #if NETCOREAPP
+      this.AddSystemColors();
+      #else
       this.AddColorProperties<SystemColors>();
+      #endif
       this.AddColorProperties<Color>();
       this.SetDropDownWidth();
     }
