@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>clrpkdmo</AssemblyName>
 <!--    <TargetFramework>net47</TargetFramework> -->
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFrameworks>net35;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48;netcoreapp3.1;net5.0-windows;net6.0-windows</TargetFrameworks>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <AssemblyTitle>Cyotek Color Picker Controls Demonstration</AssemblyTitle>
     <Product>Cyotek Color Picker Controls Library</Product>
