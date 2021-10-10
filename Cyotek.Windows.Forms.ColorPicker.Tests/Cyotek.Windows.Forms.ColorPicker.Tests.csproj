@@ -20,6 +20,11 @@
     <None Include="..\res\Cyotek.Windows.Forms.ColorPicker.snk" Link="Cyotek.Windows.Forms.ColorPicker.snk" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <!-- Temporary -->
+    <NoWarn>1701;1702;612;618</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />

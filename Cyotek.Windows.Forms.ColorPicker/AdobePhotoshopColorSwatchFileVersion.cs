@@ -1,4 +1,6 @@
-﻿namespace Cyotek.Windows.Forms
+using System;
+
+namespace Cyotek.Windows.Forms
 {
   // Cyotek Color Picker controls library
   // Copyright © 2013-2017 Cyotek Ltd.
@@ -11,6 +13,7 @@
   /// <summary>
   /// Specifies the version of a Abode Photoshop color swatch file
   /// </summary>
+  [Obsolete("This class will be removed in a future update to the library.")]
   public enum AdobePhotoshopColorSwatchFileVersion
   {
     /// <summary>

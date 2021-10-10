@@ -34,6 +34,15 @@
     <None Include="..\res\icon.png" Link="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Cyotek.Windows.Forms.ColorPicker.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Temporary -->
+    <NoWarn>1701;1702;612;618</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
@@ -59,9 +68,5 @@
     <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net35'">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>
     <!-- https://github.com/dotnet/msbuild/issues/5985#issuecomment-752735876 -->
     <AutomaticallyUseReferenceAssemblyPackages Condition=" '$(TargetFramework)' == 'net35' ">false</AutomaticallyUseReferenceAssemblyPackages>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Cyotek.Windows.Forms.ColorPicker.xml</DocumentationFile>
   </PropertyGroup>
 </Project>

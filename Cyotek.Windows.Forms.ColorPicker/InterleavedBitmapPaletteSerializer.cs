@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -18,6 +18,7 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Deserializes color palettes into and from the images and palettes using the  ILBM (IFF Interleaved Bitmap) format.
   /// </summary>
+  [Obsolete("This class will be removed in a future update to the library.")]
   public class InterleavedBitmapPaletteSerializer : PaletteSerializer
   {
     #region Properties

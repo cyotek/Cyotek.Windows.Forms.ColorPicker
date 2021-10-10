@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -16,6 +16,7 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Serializes and deserializes color palettes into and from the Gimp palette format.
   /// </summary>
+  [Obsolete("This class will be removed in a future update to the library.")]
   public class GimpPaletteSerializer : PaletteSerializer
   {
     #region Properties
