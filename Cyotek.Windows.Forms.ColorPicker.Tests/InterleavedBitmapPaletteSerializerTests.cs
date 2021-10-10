@@ -1,18 +1,18 @@
-﻿using System;
-using System.IO;
-using FluentAssertions;
-using NUnit.Framework;
-
 // Cyotek Color Picker controls library
-// Copyright © 2013-2017 Cyotek Ltd.
+// Copyright © 2013-2021 Cyotek Ltd.
 // http://cyotek.com/blog/tag/colorpicker
 
 // Licensed under the MIT License. See license.txt for the full text.
 
 // If you use this code in your applications, donations or attribution are welcome
 
-// The sample image and paletted used by this test class by by MindChamber works.
+// The sample image and palette used by this test class is by MindChamber works.
 // http://opengameart.org/content/background-art
+
+using System;
+using System.IO;
+using FluentAssertions;
+using NUnit.Framework;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
@@ -100,13 +100,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(NotSupportedException))]
     public void SerializeTest()
     {
       // arrange
       IPaletteSerializer target;
       ColorCollection expected;
-      ColorCollection actual;
       MemoryStream write;
 
       target = new InterleavedBitmapPaletteSerializer();
@@ -114,16 +112,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       expected = this.CreateDawnBringer32Palette(false);
       write = new MemoryStream();
 
-      // act
-      target.Serialize(write, expected);
-
-      using (MemoryStream read = new MemoryStream(write.ToArray()))
-      {
-        actual = new InterleavedBitmapPaletteSerializer().Deserialize(read);
-      }
-
-      // assert
-      CollectionAssert.AreEqual(expected, actual);
+      // act & assert
+      Assert.Throws<NotSupportedException>(() => target.Serialize(write, expected));
     }
 
     #endregion
