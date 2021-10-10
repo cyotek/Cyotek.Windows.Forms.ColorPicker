@@ -1,4 +1,12 @@
-﻿using System;
+// Cyotek Color Picker controls library
+// Copyright © 2013-2021 Cyotek Ltd.
+// http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See license.txt for the full text.
+
+// If you use this code in your applications, donations or attribution are welcome
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -6,14 +14,6 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   public class RgbaColorSlider : ColorSlider
   {
     #region Constants
@@ -202,14 +202,7 @@ namespace Cyotek.Windows.Forms
 
     protected virtual Brush CreateTransparencyBrush()
     {
-      Type type;
-
-      type = typeof(RgbaColorSlider);
-
-      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(type.Namespace, ".Resources.cellbackground.png"))))
-      {
-        return new TextureBrush(background, WrapMode.Tile);
-      }
+      return new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
     }
 
     protected override void Dispose(bool disposing)

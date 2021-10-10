@@ -1,3 +1,11 @@
+// Cyotek Color Picker controls library
+// Copyright © 2013-2021 Cyotek Ltd.
+// http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See license.txt for the full text.
+
+// If you use this code in your applications, donations or attribution are welcome
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,14 +17,6 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   /// <summary>
   /// Represents a grid control, which displays a collection of colors using different styles.
   /// </summary>
@@ -930,14 +930,7 @@ namespace Cyotek.Windows.Forms
 
     protected virtual Brush CreateTransparencyBrush()
     {
-      Type type;
-
-      type = typeof(ColorGrid);
-
-      using (Bitmap background = new Bitmap(type.Assembly.GetManifestResourceStream(string.Concat(type.Namespace, ".Resources.cellbackground.png"))))
-      {
-        return new TextureBrush(background, WrapMode.Tile);
-      }
+      return new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
     }
 
     protected void DefineColorRegions(ColorCollection colors, int rangeStart, int offset)
@@ -1287,7 +1280,7 @@ namespace Cyotek.Windows.Forms
 
       if (scaleX > 1 && scaleY > 1)
       {
-        _scaledCellSize = new Size((int) (_cellSize.Width * scaleX), (int) (_cellSize.Height * scaleY));
+        _scaledCellSize = new Size((int)(_cellSize.Width * scaleX), (int)(_cellSize.Height * scaleY));
       }
       else
       {
@@ -1610,9 +1603,9 @@ namespace Cyotek.Windows.Forms
         if (this.DesignMode)
         {
           using (Pen pen = new Pen(SystemColors.ButtonShadow)
-                           {
-                             DashStyle = DashStyle.Dot
-                           })
+          {
+            DashStyle = DashStyle.Dot
+          })
           {
             e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
           }
