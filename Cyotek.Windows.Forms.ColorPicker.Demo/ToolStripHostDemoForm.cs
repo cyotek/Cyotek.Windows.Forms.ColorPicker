@@ -1,12 +1,13 @@
-﻿using System;
-
 // Cyotek Color Picker controls library
-// Copyright © 2013-2017 Cyotek Ltd.
+// Copyright © 2013-2021 Cyotek Ltd.
 // http://cyotek.com/blog/tag/colorpicker
 
 // Licensed under the MIT License. See license.txt for the full text.
 
 // If you use this code in your applications, donations or attribution are welcome
+
+using System;
+using Cyotek.Windows.Forms.ToolStripControllerHosts;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
@@ -39,7 +40,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void backgroundToolStripColorPickerSplitButton_ColorChanged(object sender, EventArgs e)
     {
-      previewLabel.BackColor = backgroundToolStripColorPickerSplitButton.Color;
+      previewLabel.BackColor = ((ToolStripColorPickerSplitButton)sender).Color;
     }
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -49,9 +50,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void textToolStripColorPickerButton_ColorChanged(object sender, EventArgs e)
     {
-      previewLabel.ForeColor = textToolStripColorPickerButton.Color;
+      previewLabel.ForeColor = ((ToolStripColorPickerSplitButton)sender).Color;
     }
 
     #endregion
+
   }
 }

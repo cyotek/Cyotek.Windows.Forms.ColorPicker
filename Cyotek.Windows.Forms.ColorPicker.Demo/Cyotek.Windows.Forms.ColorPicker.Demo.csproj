@@ -1,258 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{638299BD-079A-4F2B-A1E6-EFA711C2EDB2}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>Cyotek.Windows.Forms.ColorPicker.Demo</RootNamespace>
-    <AssemblyName>clrpkdmo</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
+    <OutputType>WinExe</OutputType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <Company>Cyotek Ltd</Company>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="CommonMark">
-      <HintPath>..\packages\CommonMark.NET.0.8.3\lib\net35-client\CommonMark.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer, Version=1.5.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\HtmlRenderer.Core.1.5.0.5\lib\net35-client\HtmlRenderer.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer.WinForms">
-      <HintPath>..\packages\HtmlRenderer.WinForms.1.5.0.5\lib\net35-client\HtmlRenderer.WinForms.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="CommonMark.NET" Version="0.8.3" />
+    <PackageReference Include="HtmlRenderer.Core" Version="1.5.0.5" />
+    <PackageReference Include="HtmlRenderer.WinForms" Version="1.5.0.5" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AboutDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AboutDialog.designer.cs">
-      <DependentUpon>AboutDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BaseForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorEditorManagerDemoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorEditorManagerDemoForm.Designer.cs">
-      <DependentUpon>ColorEditorManagerDemoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ColorEditorDemoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorEditorDemoForm.Designer.cs">
-      <DependentUpon>ColorEditorDemoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ColorGridDemoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorGridDemoForm.Designer.cs">
-      <DependentUpon>ColorGridDemoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ColorPickerDialogDemoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorPickerDialogDemoForm.Designer.cs">
-      <DependentUpon>ColorPickerDialogDemoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ColorPreviewBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ColorSliderDemonstrationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorSliderDemonstrationForm.Designer.cs">
-      <DependentUpon>ColorSliderDemonstrationForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ColorWheelDemoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorWheelDemoForm.Designer.cs">
-      <DependentUpon>ColorWheelDemoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EventsListBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="GroupBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <Generator></Generator>
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ScratchForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ScratchForm.Designer.cs">
-      <DependentUpon>ScratchForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ScreenColorPickerDemoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ScreenColorPickerDemoForm.Designer.cs">
-      <DependentUpon>ScreenColorPickerDemoForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ToolStripControllerHosts\ToolStripColorPickerSplitButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ToolStripControllerHosts\ToolStripColorPickerDropDown.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ToolStripHostDemoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ToolStripHostDemoForm.Designer.cs">
-      <DependentUpon>ToolStripHostDemoForm.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="AboutDialog.resx">
-      <DependentUpon>AboutDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorEditorManagerDemoForm.resx">
-      <DependentUpon>ColorEditorManagerDemoForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorEditorDemoForm.resx">
-      <DependentUpon>ColorEditorDemoForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorGridDemoForm.resx">
-      <DependentUpon>ColorGridDemoForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorPickerDialogDemoForm.resx">
-      <DependentUpon>ColorPickerDialogDemoForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorSliderDemonstrationForm.resx">
-      <DependentUpon>ColorSliderDemonstrationForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorWheelDemoForm.resx">
-      <DependentUpon>ColorWheelDemoForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="ScratchForm.resx">
-      <DependentUpon>ScratchForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ScreenColorPickerDemoForm.resx">
-      <DependentUpon>ScreenColorPickerDemoForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ToolStripControllerHosts\ToolStripColorPickerDropDown.resx">
-      <DependentUpon>ToolStripColorPickerDropDown.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ToolStripHostDemoForm.resx">
-      <DependentUpon>ToolStripHostDemoForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj">
-      <Project>{FB2A5786-CD2E-42CE-BC5D-0FCE90034221}</Project>
-      <Name>Cyotek.Windows.Forms.ColorPicker</Name>
-    </ProjectReference>
+    <None Update="palettes\16pal_v20.act">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\arne-v20-16.aco">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\arnev-20-16.pal">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\atari-800xl-palette.pal">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\background.lbm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\background.pal">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\db16.gpl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\db32.gpl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\grayscale.pal">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\Hex256.pal">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="palettes\PaintNet.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="icon.ico" />
-    <Content Include="palettes\PaintNet.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="app.manifest" />
-    <None Include="palettes\16pal_v20.act">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\text.png" />
-    <None Include="Resources\fill.png" />
-    <Content Include="Resources\markdownpad-github.css" />
-    <None Include="packages.config" />
-    <None Include="palettes\arne-v20-16.aco">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="palettes\arnev-20-16.pal">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="palettes\atari-800xl-palette.pal">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="palettes\background.lbm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="palettes\background.pal">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="palettes\db16.gpl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="palettes\db32.gpl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="palettes\grayscale.pal">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\eyedropper.png" />
-    <None Include="palettes\Hex256.pal">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\cellbackground.png" />
-    <None Include="Resources\icon.png" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <PropertyGroup>
+    <!-- https://github.com/dotnet/msbuild/issues/1333#issuecomment-296346352 -->
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net35'">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>
+    <!-- https://github.com/dotnet/msbuild/issues/5985#issuecomment-752735876 -->
+    <AutomaticallyUseReferenceAssemblyPackages Condition=" '$(TargetFramework)' == 'net35' ">false</AutomaticallyUseReferenceAssemblyPackages>
+  </PropertyGroup>
+
 </Project>

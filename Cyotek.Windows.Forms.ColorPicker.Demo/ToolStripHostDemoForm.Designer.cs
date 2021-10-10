@@ -53,12 +53,15 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton6 = new Cyotek.Windows.Forms.ToolStripControllerHosts.ToolStripColorPickerSplitButton();
       this.toolStripColorPickerSplitButton7 = new Cyotek.Windows.Forms.ToolStripControllerHosts.ToolStripColorPickerSplitButton();
       this.toolStripColorPickerSplitButton5 = new Cyotek.Windows.Forms.ToolStripControllerHosts.ToolStripColorPickerSplitButton();
+      this.toolStripColorPickerSplitButton8 = new Cyotek.Windows.Forms.ToolStripControllerHosts.ToolStripColorPickerSplitButton();
       this.menuStrip.SuspendLayout();
       this.statusStrip.SuspendLayout();
       this.toolStrip1.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).BeginInit();
       this.propertiesSplitContainer.Panel1.SuspendLayout();
       this.propertiesSplitContainer.Panel2.SuspendLayout();
       this.propertiesSplitContainer.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).BeginInit();
       this.optionsSplitContainer.Panel1.SuspendLayout();
       this.optionsSplitContainer.Panel2.SuspendLayout();
       this.optionsSplitContainer.SuspendLayout();
@@ -71,7 +74,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.fileToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
-      this.menuStrip.Size = new System.Drawing.Size(847, 24);
+      this.menuStrip.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+      this.menuStrip.Size = new System.Drawing.Size(988, 24);
       this.menuStrip.TabIndex = 3;
       // 
       // fileToolStripMenuItem
@@ -95,10 +99,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.colorToolStripStatusLabel,
             this.toolStripStatusLabel1});
-      this.statusStrip.Location = new System.Drawing.Point(0, 351);
+      this.statusStrip.Location = new System.Drawing.Point(0, 408);
       this.statusStrip.Name = "statusStrip";
-      this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-      this.statusStrip.Size = new System.Drawing.Size(847, 22);
+      this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
+      this.statusStrip.Size = new System.Drawing.Size(988, 22);
       this.statusStrip.TabIndex = 4;
       // 
       // colorToolStripStatusLabel
@@ -119,7 +123,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.toolStripSeparator1});
       this.toolStrip1.Location = new System.Drawing.Point(0, 24);
       this.toolStrip1.Name = "toolStrip1";
-      this.toolStrip1.Size = new System.Drawing.Size(847, 25);
+      this.toolStrip1.Size = new System.Drawing.Size(988, 25);
       this.toolStrip1.TabIndex = 5;
       this.toolStrip1.Text = "toolStrip1";
       // 
@@ -156,7 +160,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.previewLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
       this.previewLabel.Location = new System.Drawing.Point(0, 0);
       this.previewLabel.Name = "previewLabel";
-      this.previewLabel.Size = new System.Drawing.Size(561, 126);
+      this.previewLabel.Size = new System.Drawing.Size(655, 177);
       this.previewLabel.TabIndex = 7;
       this.previewLabel.Text = "Use the controls in the tool bar to change my colours";
       this.previewLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -174,9 +178,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // propertiesSplitContainer.Panel2
       // 
       this.propertiesSplitContainer.Panel2.Controls.Add(this.optionsSplitContainer);
-      this.propertiesSplitContainer.Size = new System.Drawing.Size(847, 302);
-      this.propertiesSplitContainer.SplitterDistance = 281;
-      this.propertiesSplitContainer.SplitterWidth = 5;
+      this.propertiesSplitContainer.Size = new System.Drawing.Size(988, 359);
+      this.propertiesSplitContainer.SplitterDistance = 327;
+      this.propertiesSplitContainer.SplitterWidth = 6;
       this.propertiesSplitContainer.TabIndex = 8;
       // 
       // propertyGrid
@@ -184,7 +188,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
       this.propertyGrid.Location = new System.Drawing.Point(0, 0);
       this.propertyGrid.Name = "propertyGrid";
-      this.propertyGrid.Size = new System.Drawing.Size(281, 302);
+      this.propertyGrid.Size = new System.Drawing.Size(327, 359);
       this.propertyGrid.TabIndex = 0;
       // 
       // optionsSplitContainer
@@ -202,9 +206,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // optionsSplitContainer.Panel2
       // 
       this.optionsSplitContainer.Panel2.Controls.Add(this.toolStrip2);
-      this.optionsSplitContainer.Size = new System.Drawing.Size(561, 302);
-      this.optionsSplitContainer.SplitterDistance = 126;
-      this.optionsSplitContainer.SplitterWidth = 5;
+      this.optionsSplitContainer.Size = new System.Drawing.Size(655, 359);
+      this.optionsSplitContainer.SplitterDistance = 177;
+      this.optionsSplitContainer.SplitterWidth = 6;
       this.optionsSplitContainer.TabIndex = 0;
       // 
       // toolStrip2
@@ -217,10 +221,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.toolStripColorPickerSplitButton4,
             this.toolStripColorPickerSplitButton6,
             this.toolStripColorPickerSplitButton7,
-            this.toolStripColorPickerSplitButton5});
+            this.toolStripColorPickerSplitButton5,
+            this.toolStripColorPickerSplitButton8});
       this.toolStrip2.Location = new System.Drawing.Point(0, 0);
       this.toolStrip2.Name = "toolStrip2";
-      this.toolStrip2.Size = new System.Drawing.Size(561, 38);
+      this.toolStrip2.Size = new System.Drawing.Size(655, 38);
       this.toolStrip2.TabIndex = 6;
       this.toolStrip2.Text = "toolStrip2";
       // 
@@ -230,8 +235,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton1.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.text;
       this.toolStripColorPickerSplitButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripColorPickerSplitButton1.Name = "toolStripColorPickerSplitButton1";
-      this.toolStripColorPickerSplitButton1.Size = new System.Drawing.Size(61, 35);
+      this.toolStripColorPickerSplitButton1.Size = new System.Drawing.Size(60, 35);
       this.toolStripColorPickerSplitButton1.Text = "Text";
+      this.toolStripColorPickerSplitButton1.ColorChanged += new System.EventHandler(this.textToolStripColorPickerButton_ColorChanged);
       // 
       // toolStripColorPickerSplitButton2
       // 
@@ -242,6 +248,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton2.Size = new System.Drawing.Size(54, 35);
       this.toolStripColorPickerSplitButton2.Text = "Fill";
       this.toolStripColorPickerSplitButton2.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+      this.toolStripColorPickerSplitButton2.ColorChanged += new System.EventHandler(this.backgroundToolStripColorPickerSplitButton_ColorChanged);
       // 
       // toolStripSeparator2
       // 
@@ -254,9 +261,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton3.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.text;
       this.toolStripColorPickerSplitButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripColorPickerSplitButton3.Name = "toolStripColorPickerSplitButton3";
-      this.toolStripColorPickerSplitButton3.Size = new System.Drawing.Size(45, 35);
+      this.toolStripColorPickerSplitButton3.Size = new System.Drawing.Size(44, 35);
       this.toolStripColorPickerSplitButton3.Text = "Text";
       this.toolStripColorPickerSplitButton3.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+      this.toolStripColorPickerSplitButton3.ColorChanged += new System.EventHandler(this.textToolStripColorPickerButton_ColorChanged);
       // 
       // toolStripColorPickerSplitButton4
       // 
@@ -267,6 +275,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton4.Size = new System.Drawing.Size(38, 35);
       this.toolStripColorPickerSplitButton4.Text = "Fill";
       this.toolStripColorPickerSplitButton4.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
+      this.toolStripColorPickerSplitButton4.ColorChanged += new System.EventHandler(this.backgroundToolStripColorPickerSplitButton_ColorChanged);
       // 
       // toolStripColorPickerSplitButton6
       // 
@@ -274,8 +283,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton6.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.text;
       this.toolStripColorPickerSplitButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripColorPickerSplitButton6.Name = "toolStripColorPickerSplitButton6";
-      this.toolStripColorPickerSplitButton6.Size = new System.Drawing.Size(61, 35);
+      this.toolStripColorPickerSplitButton6.Size = new System.Drawing.Size(60, 35);
       this.toolStripColorPickerSplitButton6.Text = "Text";
+      this.toolStripColorPickerSplitButton6.ColorChanged += new System.EventHandler(this.textToolStripColorPickerButton_ColorChanged);
       // 
       // toolStripColorPickerSplitButton7
       // 
@@ -286,6 +296,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton7.Size = new System.Drawing.Size(54, 35);
       this.toolStripColorPickerSplitButton7.Text = "Fill";
       this.toolStripColorPickerSplitButton7.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+      this.toolStripColorPickerSplitButton7.ColorChanged += new System.EventHandler(this.backgroundToolStripColorPickerSplitButton_ColorChanged);
       // 
       // toolStripColorPickerSplitButton5
       // 
@@ -293,19 +304,32 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStripColorPickerSplitButton5.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.text;
       this.toolStripColorPickerSplitButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.toolStripColorPickerSplitButton5.Name = "toolStripColorPickerSplitButton5";
-      this.toolStripColorPickerSplitButton5.Size = new System.Drawing.Size(45, 35);
+      this.toolStripColorPickerSplitButton5.Size = new System.Drawing.Size(44, 35);
       this.toolStripColorPickerSplitButton5.Text = "Text";
       this.toolStripColorPickerSplitButton5.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+      this.toolStripColorPickerSplitButton5.ColorChanged += new System.EventHandler(this.textToolStripColorPickerButton_ColorChanged);
+      // 
+      // toolStripColorPickerSplitButton8
+      // 
+      this.toolStripColorPickerSplitButton8.Color = System.Drawing.Color.Red;
+      this.toolStripColorPickerSplitButton8.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.fill;
+      this.toolStripColorPickerSplitButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.toolStripColorPickerSplitButton8.Name = "toolStripColorPickerSplitButton8";
+      this.toolStripColorPickerSplitButton8.Size = new System.Drawing.Size(38, 35);
+      this.toolStripColorPickerSplitButton8.Text = "Fill";
+      this.toolStripColorPickerSplitButton8.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+      this.toolStripColorPickerSplitButton8.ColorChanged += new System.EventHandler(this.backgroundToolStripColorPickerSplitButton_ColorChanged);
       // 
       // ToolStripHostDemoForm
       // 
+      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.ClientSize = new System.Drawing.Size(847, 373);
+      this.ClientSize = new System.Drawing.Size(988, 430);
       this.Controls.Add(this.propertiesSplitContainer);
       this.Controls.Add(this.toolStrip1);
       this.Controls.Add(this.menuStrip);
       this.Controls.Add(this.statusStrip);
+      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.Name = "ToolStripHostDemoForm";
       this.Text = "Using ColorGrid in ToolStrips Demonstration";
       this.menuStrip.ResumeLayout(false);
@@ -316,10 +340,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.toolStrip1.PerformLayout();
       this.propertiesSplitContainer.Panel1.ResumeLayout(false);
       this.propertiesSplitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).EndInit();
       this.propertiesSplitContainer.ResumeLayout(false);
       this.optionsSplitContainer.Panel1.ResumeLayout(false);
       this.optionsSplitContainer.Panel2.ResumeLayout(false);
       this.optionsSplitContainer.Panel2.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).EndInit();
       this.optionsSplitContainer.ResumeLayout(false);
       this.toolStrip2.ResumeLayout(false);
       this.toolStrip2.PerformLayout();
@@ -353,5 +379,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private ToolStripControllerHosts.ToolStripColorPickerSplitButton toolStripColorPickerSplitButton5;
     private ToolStripControllerHosts.ToolStripColorPickerSplitButton toolStripColorPickerSplitButton6;
     private ToolStripControllerHosts.ToolStripColorPickerSplitButton toolStripColorPickerSplitButton7;
+    private ToolStripControllerHosts.ToolStripColorPickerSplitButton toolStripColorPickerSplitButton8;
   }
 }

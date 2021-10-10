@@ -119,7 +119,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private string GetFullReadmePath(string fileName)
     {
-      return Path.GetFullPath(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"), fileName));
+      return Path.GetFullPath(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\"), fileName));
     }
 
     private void LoadDocumentForTab(TabPage page)
@@ -135,7 +135,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         Debug.Print("Loading readme: {0}", page.Tag);
 
         fullPath = this.GetFullReadmePath(page.Tag.ToString());
-        text = File.Exists(fullPath) ? File.ReadAllText(fullPath) : string.Format("Cannot find file '{0}'", fullPath);
+        text = File.Exists(fullPath)
+          ? File.ReadAllText(fullPath)
+          : string.Format("Cannot find file '{0}'", fullPath);
 
         if (text.IndexOf('\n') != -1 && text.IndexOf('\r') == -1)
         {
