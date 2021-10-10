@@ -2,8 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFrameworks>net48;net35;net40;net452;net462;net472;net5.0</TargetFrameworks> -->
-    <TargetFrameworks>net48;net35;net40;net452;net462;net472;</TargetFrameworks>
+    <TargetFrameworks>net48;net35;net40;net452;net462;net472;net5.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>Cyotek.Windows.Forms</RootNamespace>
   </PropertyGroup>

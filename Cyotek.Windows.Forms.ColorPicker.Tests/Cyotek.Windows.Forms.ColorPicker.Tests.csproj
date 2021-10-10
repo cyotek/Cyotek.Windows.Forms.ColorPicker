@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFrameworks>net48;net35;net40;net452;net462;net472;net5.0</TargetFrameworks> -->
-    <TargetFrameworks>net48;net35;net40;net452;net462;net472;</TargetFrameworks>
+    <TargetFrameworks>net48;net35;net40;net452;net462;net472;net5.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,7 +32,7 @@
   
   <!-- This package needs to go -->
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net5.0'">
     <PackageReference Include="FluentAssertions" Version="6.1.0" />
   </ItemGroup>
 

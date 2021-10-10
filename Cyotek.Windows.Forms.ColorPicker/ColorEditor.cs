@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
@@ -514,12 +514,10 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void AddColorProperties<T>()
+    private void AddColorProperties(Type type)
     {
-      Type type;
       Type colorType;
 
-      type = typeof(T);
       colorType = typeof(Color);
 
       // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -571,8 +569,8 @@ namespace Cyotek.Windows.Forms
 
     private void FillNamedColors()
     {
-      this.AddColorProperties<SystemColors>();
-      this.AddColorProperties<Color>();
+      this.AddColorProperties(typeof(SystemColors));
+      this.AddColorProperties(typeof(Color));
       this.SetDropDownWidth();
     }
 
