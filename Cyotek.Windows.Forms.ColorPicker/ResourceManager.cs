@@ -25,6 +25,12 @@ namespace Cyotek.Windows.Forms
 
     public static Cursor EyeDropper => ResourceManager.GetResourceCursor("eyedropper.cur");
 
+    public static Image LoadPalette => ResourceManager.GetResourceImage("palette-load.png");
+
+    public static Image SavePalette => ResourceManager.GetResourceImage("palette-save.png");
+
+    public static Image ScreenPicker => ResourceManager.GetResourceImage("eyedropper.png");
+
     #endregion Public Properties
 
     #region Private Methods

@@ -2,16 +2,35 @@
 
 SETLOCAL
 
-CALL ..\..\..\build\set35vars.bat
+CALL %CTKBLDROOT%setupEnv.cmd
 
-%msbuildexe% Cyotek.Windows.Forms.ColorPicker.sln /p:Configuration=Release /verbosity:minimal /nologo /t:Clean,Build
-CALL dualsigncmd Cyotek.Windows.Forms.ColorPicker\bin\Release\Cyotek.Windows.Forms.ColorPicker.dll
+SET BASENAME=Cyotek.Windows.Forms.ColorPicker
+SET RELDIR=%BASENAME%\bin\Release\
+SET PRJFILE=%BASENAME%\%BASENAME%.csproj
+SET DLLNAME=%BASENAME%.dll
 
-PUSHD
-IF NOT EXIST nuget MKDIR nuget
-CD nuget
-%nugetexe% pack ..\Cyotek.Windows.Forms.ColorPicker\Cyotek.Windows.Forms.ColorPicker.csproj -Prop Configuration=Release
-%zipexe% a -bd -tZip  Cyotek.Windows.Forms.ColorPicker.x.x.x.x.zip ..\Cyotek.Windows.Forms.ColorPicker\bin\Release\Cyotek.Windows.Forms.ColorPicker.*
+IF EXIST %RELDIR%*.nupkg  DEL /F %RELDIR%*.nupkg
+IF EXIST %RELDIR%*.snupkg DEL /F %RELDIR%*.snupkg
+IF EXIST %RELDIR%*.zip    DEL /F %RELDIR%*.zip
+
+dotnet build %PRJFILE% --configuration Release
+
+PUSHD %RELDIR%
+
+CALL signcmd net35\%DLLNAME%
+CALL signcmd net40\%DLLNAME%
+CALL signcmd net452\%DLLNAME%
+CALL signcmd net462\%DLLNAME%
+CALL signcmd net472\%DLLNAME%
+CALL signcmd net48\%DLLNAME%
+CALL signcmd net5.0-windows\%DLLNAME%
+
+%zipexe% a Cyotek.Windows.Forms.ColorPicker.x.x.x.zip -r
+
 POPD
+
+dotnet pack %PRJFILE% --configuration Release --no-build
+CALL sign-package %RELDIR%*.nupkg
+CALL sign-package %RELDIR%*.snupkg
 
 ENDLOCAL

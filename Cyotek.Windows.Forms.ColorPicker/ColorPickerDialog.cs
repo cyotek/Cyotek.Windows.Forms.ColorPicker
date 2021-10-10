@@ -102,6 +102,10 @@ namespace Cyotek.Windows.Forms
     {
       base.OnLoad(e);
 
+      loadPaletteButton.Image = ResourceManager.LoadPalette;
+      savePaletteButton.Image = ResourceManager.SavePalette;
+      screenColorPicker.Image = ResourceManager.ScreenPicker;
+
       colorEditor.ShowAlphaChannel = this.ShowAlphaChannel;
 
       if (!this.ShowAlphaChannel)
