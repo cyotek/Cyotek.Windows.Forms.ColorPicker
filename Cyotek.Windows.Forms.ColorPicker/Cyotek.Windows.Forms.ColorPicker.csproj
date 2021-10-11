@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Cyotek.Windows.Forms.ColorPicker.xml</DocumentationFile>
+    <!-- <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Cyotek.Windows.Forms.ColorPicker.xml</DocumentationFile> -->
   </PropertyGroup>
 
   <PropertyGroup>
