@@ -1,15 +1,17 @@
-﻿using System.Drawing;
-using System.IO;
-using FluentAssertions;
-using NUnit.Framework;
-
-// Cyotek Color Picker controls library
-// Copyright © 2013-2017 Cyotek Ltd.
+// Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See license.txt for the full text.
+// Copyright © 2013-2021 Cyotek Ltd.
 
-// If you use this code in your applications, donations or attribution are welcome
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System.Drawing;
+using System.IO;
+using NUnit.Framework;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
@@ -34,7 +36,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.CanRead;
 
       // assert
-      actual.Should().BeTrue();
+      Assert.IsTrue(actual);
     }
 
     [Test]
@@ -50,7 +52,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.CanWrite;
 
       // assert
-      actual.Should().BeTrue();
+      Assert.IsTrue(actual);
     }
 
     [Test]
@@ -75,7 +77,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       }
 
       // assert
-      actual.Should().Equal(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -93,7 +95,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       File.Delete(workFileName);
 
       // assert
-      actual.Should().BeOfType<AdobePhotoshopColorSwatchSerializer>();
+      Assert.IsInstanceOf<AdobePhotoshopColorSwatchSerializer>(actual);
     }
 
     [Test]
@@ -120,19 +122,24 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       // assert
       // TODO: The grayscale color space suffers the same problem as HSB - see that test for more details
-      actual.Count.Should().Be(expected.Count);
+      this.AssertNear(expected, actual);
+    }
+
+    private void AssertNear(ColorCollection expected, ColorCollection actual)
+    {
+      Assert.AreEqual(expected.Count, actual.Count);
+
       for (int i = 0; i < actual.Count; i++)
       {
-        Color actualColor;
-        Color expectedColor;
-
-        actualColor = actual[i];
-        expectedColor = expected[i];
-
-        ((int)actualColor.R).Should().BeInRange(expectedColor.R - 1, expectedColor.R + 1);
-        ((int)actualColor.G).Should().BeInRange(expectedColor.G - 1, expectedColor.G + 1);
-        ((int)actualColor.B).Should().BeInRange(expectedColor.B - 1, expectedColor.B + 1);
+        this.AssertNear(expected[i], actual[i]);
       }
+    }
+
+    private void AssertNear(Color expected, Color actual)
+    {
+      Assert.That(actual.R, Is.EqualTo(expected.R).Within(1));
+      Assert.That(actual.G, Is.EqualTo(expected.G).Within(1));
+      Assert.That(actual.B, Is.EqualTo(expected.B).Within(1));
     }
 
     [Test]
@@ -162,19 +169,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       // file specification only allows whole numbers. This is causing a loss of precision
       // when converting to RGB with a +/- 1 difference. Might be a problem, might not be...
       // the intended use case is for RGB palettes only but may need to revisit this
-      actual.Count.Should().Be(expected.Count);
-      for (int i = 0; i < actual.Count; i++)
-      {
-        Color actualColor;
-        Color expectedColor;
-
-        actualColor = actual[i];
-        expectedColor = expected[i];
-
-        ((int)actualColor.R).Should().BeInRange(expectedColor.R - 1, expectedColor.R + 1);
-        ((int)actualColor.G).Should().BeInRange(expectedColor.G - 1, expectedColor.G + 1);
-        ((int)actualColor.B).Should().BeInRange(expectedColor.B - 1, expectedColor.B + 1);
-      }
+      this.AssertNear(expected, actual);
     }
 
     [Test]

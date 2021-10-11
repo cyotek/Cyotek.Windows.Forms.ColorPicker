@@ -1,15 +1,17 @@
-﻿using System;
-using System.Drawing;
-using FluentAssertions;
-using NUnit.Framework;
-
-// Cyotek Color Picker controls library
-// Copyright © 2013-2017 Cyotek Ltd.
+// Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See license.txt for the full text.
+// Copyright © 2013-2021 Cyotek Ltd.
 
-// If you use this code in your applications, donations or attribution are welcome
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
+using System.Drawing;
+using NUnit.Framework;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
@@ -25,32 +27,32 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     public void CloneFromInterfaceTest()
     {
       // arrange
-      ColorCollection target;
+      ColorCollection actual;
       ColorCollection expected;
 
       expected = this.CreateDawnBringer32Palette(false);
 
       // act
-      target = (ColorCollection)((ICloneable)expected).Clone();
+      actual = (ColorCollection)((ICloneable)expected).Clone();
 
       // assert
-      target.Should().Equal(expected);
+      CollectionAssert.AreEqual(actual, expected);
     }
 
     [Test]
     public void CloneTest()
     {
       // arrange
-      ColorCollection target;
+      ColorCollection actual;
       ColorCollection expected;
 
       expected = this.CreateDawnBringer32Palette(false);
 
       // act
-      target = expected.Clone();
+      actual = expected.Clone();
 
       // assert
-      target.Should().Equal(expected);
+      CollectionAssert.AreEqual(actual, expected);
     }
 
     [Test]
@@ -70,7 +72,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = other == target;
 
       // assert
-      actual.Should().BeFalse();
+      Assert.IsFalse(actual);
     }
 
     [Test]
@@ -86,7 +88,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.Equals(null);
 
       // assert
-      actual.Should().BeFalse();
+      Assert.IsFalse(actual);
     }
 
     [Test]
@@ -104,7 +106,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.Equals(other);
 
       // assert
-      actual.Should().BeTrue();
+      Assert.IsTrue(actual);
     }
 
     [Test]
@@ -122,7 +124,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.Equals(other);
 
       // assert
-      actual.Should().BeFalse();
+      Assert.IsFalse(actual);
     }
 
     [Test]
@@ -140,8 +142,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = other == target;
 
       // assert
-      actual.Should().BeTrue();
-      ((object)other).Should().NotBeSameAs(target);
+      Assert.IsTrue(actual);
+      Assert.AreNotSame(target, other);
     }
 
     [Test]
@@ -159,8 +161,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = other == target;
 
       // assert
-      actual.Should().BeTrue();
-      ((object)other).Should().BeSameAs(target);
+      Assert.IsTrue(actual);
+      Assert.AreSame(target, other);
     }
 
     [Test]
@@ -181,7 +183,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.Find(Color.FromArgb(128, Color.CornflowerBlue), false);
 
       // assert
-      actual.Should().Be(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -202,7 +204,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.Find(Color.FromArgb(128, Color.CornflowerBlue), true);
 
       // assert
-      actual.Should().Be(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -223,7 +225,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.Find(Color.Yellow);
 
       // assert
-      actual.Should().Be(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -244,7 +246,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.Find(Color.FromArgb(100, 149, 237));
 
       // assert
-      actual.Should().Be(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     #endregion
