@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System;
+using System.IO;
 
 namespace Cyotek.Windows.Forms
 {
@@ -13,6 +14,7 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Serializes and deserializes color palettes into and from other documents.
   /// </summary>
+  [Obsolete("This class will be removed in a future update to the library.")]
   public interface IPaletteSerializer
   {
     #region Properties

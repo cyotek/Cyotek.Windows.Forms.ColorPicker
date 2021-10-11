@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 
@@ -21,6 +21,7 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Serializes and deserializes 8bit color palettes from raw byte data.
   /// </summary>
+  [Obsolete("This class will be removed in a future update to the library.")]
   public class AdobeColorTablePaletteSerializer : PaletteSerializer
   {
     #region Properties

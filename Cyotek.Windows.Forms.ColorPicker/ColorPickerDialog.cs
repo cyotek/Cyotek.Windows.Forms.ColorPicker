@@ -1,4 +1,12 @@
-﻿using System;
+// Cyotek Color Picker controls library
+// Copyright © 2013-2021 Cyotek Ltd.
+// http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See license.txt for the full text.
+
+// If you use this code in your applications, donations or attribution are welcome
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -8,13 +16,6 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
 
   [DefaultEvent("PreviewColorChanged")]
   [DefaultProperty("Color")]
@@ -101,6 +102,10 @@ namespace Cyotek.Windows.Forms
     {
       base.OnLoad(e);
 
+      loadPaletteButton.Image = ResourceManager.LoadPalette;
+      savePaletteButton.Image = ResourceManager.SavePalette;
+      screenColorPicker.Image = ResourceManager.ScreenPicker;
+
       colorEditor.ShowAlphaChannel = this.ShowAlphaChannel;
 
       if (!this.ShowAlphaChannel)
@@ -149,10 +154,10 @@ namespace Cyotek.Windows.Forms
       e.Cancel = true;
 
       using (ColorDialog dialog = new ColorDialog
-                                  {
-                                    FullOpen = true,
-                                    Color = e.Color
-                                  })
+      {
+        FullOpen = true,
+        Color = e.Color
+      })
       {
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
@@ -164,11 +169,11 @@ namespace Cyotek.Windows.Forms
     private void loadPaletteButton_Click(object sender, EventArgs e)
     {
       using (FileDialog dialog = new OpenFileDialog
-                                 {
-                                   Filter = PaletteSerializer.DefaultOpenFilter,
-                                   DefaultExt = "pal",
-                                   Title = "Open Palette File"
-                                 })
+      {
+        Filter = PaletteSerializer.DefaultOpenFilter,
+        DefaultExt = "pal",
+        Title = "Open Palette File"
+      })
       {
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
@@ -237,10 +242,7 @@ namespace Cyotek.Windows.Forms
       {
         if (_textureBrush == null)
         {
-          using (Bitmap background = new Bitmap(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.cellbackground.png"))))
-          {
-            _textureBrush = new TextureBrush(background, WrapMode.Tile);
-          }
+          _textureBrush = new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
         }
 
         e.Graphics.FillRectangle(_textureBrush, region);
@@ -257,11 +259,11 @@ namespace Cyotek.Windows.Forms
     private void savePaletteButton_Click(object sender, EventArgs e)
     {
       using (FileDialog dialog = new SaveFileDialog
-                                 {
-                                   Filter = PaletteSerializer.DefaultSaveFilter,
-                                   DefaultExt = "pal",
-                                   Title = "Save Palette File As"
-                                 })
+      {
+        Filter = PaletteSerializer.DefaultSaveFilter,
+        DefaultExt = "pal",
+        Title = "Save Palette File As"
+      })
       {
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {

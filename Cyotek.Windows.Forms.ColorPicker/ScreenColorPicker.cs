@@ -1,4 +1,12 @@
-﻿using System;
+// Cyotek Color Picker controls library
+// Copyright © 2013-2021 Cyotek Ltd.
+// http://cyotek.com/blog/tag/colorpicker
+
+// Licensed under the MIT License. See license.txt for the full text.
+
+// If you use this code in your applications, donations or attribution are welcome
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -7,14 +15,6 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   /// <summary>
   /// Represents a control that allows the selection of a color by dragging the mouse across the desktop
   /// </summary>
@@ -422,10 +422,8 @@ namespace Cyotek.Windows.Forms
       {
         if (_eyedropperCursor == null)
         {
-          // ReSharper disable AssignNullToNotNullAttribute
-          _eyedropperCursor = new Cursor(this.GetType().Assembly.GetManifestResourceStream(string.Concat(this.GetType().Namespace, ".Resources.eyedropper.cur")));
+          _eyedropperCursor = ResourceManager.EyeDropper;
         }
-        // ReSharper restore AssignNullToNotNullAttribute
 
         this.Cursor = _eyedropperCursor;
         this.IsCapturing = true;
@@ -612,9 +610,9 @@ namespace Cyotek.Windows.Forms
       viewport = this.ClientRectangle;
 
       using (Pen pen = new Pen(this.GridColor)
-                       {
-                         DashStyle = DashStyle.Dot
-                       })
+      {
+        DashStyle = DashStyle.Dot
+      })
       {
         for (int x = viewport.Left + 1; x < viewport.Right; x += pixelSize)
         {
