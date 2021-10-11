@@ -1,14 +1,16 @@
-﻿using System.IO;
-using FluentAssertions;
-using NUnit.Framework;
-
-// Cyotek Color Picker controls library
-// Copyright © 2013-2017 Cyotek Ltd.
+// Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See license.txt for the full text.
+// Copyright © 2013-2021 Cyotek Ltd.
 
-// If you use this code in your applications, donations or attribution are welcome
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System.IO;
+using NUnit.Framework;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
 {
@@ -30,7 +32,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = PaletteSerializer.DefaultOpenFilter;
 
       // assert
-      actual.Should().Be(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -46,7 +48,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = PaletteSerializer.DefaultSaveFilter;
 
       // assert
-      actual.Should().Be(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -70,7 +72,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.ReadInt16(stream);
 
       // assert
-      expected.Should().Be(actual);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -96,7 +98,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       actual = target.ReadInt32(stream);
 
       // assert
-      expected.Should().Be(actual);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -124,7 +126,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       }
 
       // assert
-      actual.Should().Equal(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     [Test]
@@ -154,7 +156,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       }
 
       // assert
-      actual.Should().Equal(expected);
+      Assert.AreEqual(expected, actual);
     }
 
     #endregion
