@@ -14,6 +14,7 @@ IF EXIST %RELDIR%*.snupkg DEL /F %RELDIR%*.snupkg
 IF EXIST %RELDIR%*.zip    DEL /F %RELDIR%*.zip
 
 dotnet build %PRJFILE% --configuration Release
+IF %ERRORLEVEL% NEQ 0 GOTO :failed
 
 PUSHD %RELDIR%
 
@@ -23,14 +24,24 @@ CALL signcmd net452\%DLLNAME%
 CALL signcmd net462\%DLLNAME%
 CALL signcmd net472\%DLLNAME%
 CALL signcmd net48\%DLLNAME%
+CALL signcmd netcoreapp3.1\%DLLNAME%
 CALL signcmd net5.0-windows\%DLLNAME%
 
-%zipexe% a Cyotek.Windows.Forms.ColorPicker.x.x.x.zip -r
+%zipexe% a %BASENAME%.x.x.x.zip -r
 
 POPD
 
 dotnet pack %PRJFILE% --configuration Release --no-build
+IF %ERRORLEVEL% NEQ 0 GOTO :failed
+
 CALL sign-package %RELDIR%*.nupkg
 CALL sign-package %RELDIR%*.snupkg
 
 ENDLOCAL
+
+GOTO :eof
+
+:buildfailed
+:failed
+cecho {0c}ERROR  {#}: Build failed.{\n}
+exit /b 1
