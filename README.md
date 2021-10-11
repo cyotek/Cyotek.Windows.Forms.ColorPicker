@@ -2,6 +2,7 @@
 
 [![Build status][cibadge]][ci]
 [![NuGet][nugetbadge]][nuget]
+[![NuGet (Pre-release)][nugetprbadge]][nuget]
 
 The **Cyotek.Windows.Forms.ColorPickers** library contains a
 series of custom controls and utility classes for Windows Forms
@@ -213,7 +214,11 @@ some time, donations are welcome.
 [colordialogscreen]: res/cp-colorpickerdialog.png
 
 [nuget]: https://www.nuget.org/packages/Cyotek.Windows.Forms.ColorPicker/
-[nugetbadge]: https://img.shields.io/nuget/v/Cyotek.Windows.Forms.ColorPicker.svg
+[nugetbadge]: https://img.shields.io/nuget/v/Cyotek.Windows.Forms.ColorPicker
+[nugetprbadge]: https://img.shields.io/nuget/vpre/Cyotek.Windows.Forms.ColorPicker
+
+[ci]: https://ci.appveyor.com/project/cyotek/cyotek-windows-forms-colorpicker
+[cibadge]: https://img.shields.io/appveyor/build/cyotek/cyotek-windows-forms-colorpicker
 
 [ghissue]: https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker/issues
 [ghpull]: https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker/pulls
@@ -224,6 +229,3 @@ some time, donations are welcome.
 [paypalimg]: https://static.cyotek.com/assets/images/donate.gif
 [bmac]: https://www.buymeacoffee.com/cyotek
 [bmacimg]: https://static.cyotek.com/assets/images/bmac.png
-
-[ci]: https://ci.appveyor.com/project/cyotek/cyotek-windows-forms-colorpicker
-[cibadge]: https://ci.appveyor.com/api/projects/status/lk901pafq02l9rgl
