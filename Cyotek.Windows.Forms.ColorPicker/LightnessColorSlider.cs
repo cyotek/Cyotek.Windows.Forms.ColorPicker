@@ -1,17 +1,20 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright © 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   public class LightnessColorSlider : ColorSlider, IColorEditor
   {
     #region Constants
@@ -30,8 +33,8 @@ namespace Cyotek.Windows.Forms
 
     public LightnessColorSlider()
     {
-      this.BarStyle = ColorBarStyle.TwoColor;
-      this.Color = Color.Black;
+      base.BarStyle = ColorBarStyle.Custom;
+      _color = Color.Black;
     }
 
     #endregion
@@ -104,15 +107,20 @@ namespace Cyotek.Windows.Forms
 
     protected virtual void CreateScale()
     {
+      ColorCollection custom;
       HslColor color;
 
-      color = new HslColor(this.Color);
+      custom = new ColorCollection();
+      color = new HslColor(_color);
+      
+      for (int i = 0; i < 99; i++)
+      {
+        color.L = i / 100D;
 
-      color.L = 0;
-      this.Color1 = color.ToRgbColor();
+        custom.Add(color.ToRgbColor(_color.A));
+      }
 
-      color.L = 1;
-      this.Color2 = color.ToRgbColor();
+      this.CustomColors = custom;
     }
 
     /// <summary>
@@ -129,27 +137,6 @@ namespace Cyotek.Windows.Forms
       handler = (EventHandler)this.Events[_eventColorChanged];
 
       handler?.Invoke(this, e);
-    }
-
-    /// <summary>
-    /// Raises the <see cref="ColorSlider.ValueChanged" /> event.
-    /// </summary>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected override void OnValueChanged(EventArgs e)
-    {
-      if (!this.LockUpdates)
-      {
-        HslColor color;
-
-        this.LockUpdates = true;
-        color = new HslColor(this.Color);
-        color.L = this.Value / 100D;
-        _color = color.ToRgbColor();
-        this.OnColorChanged(e);
-        this.LockUpdates = false;
-      }
-
-      base.OnValueChanged(e);
     }
 
     #endregion
@@ -170,7 +157,7 @@ namespace Cyotek.Windows.Forms
       get { return _color; }
       set
       {
-        if (this.Color != value)
+        if (_color != value)
         {
           _color = value;
 

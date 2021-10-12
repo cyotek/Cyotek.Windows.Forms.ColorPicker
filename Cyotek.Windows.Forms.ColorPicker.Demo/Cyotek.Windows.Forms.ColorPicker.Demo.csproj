@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -89,6 +89,12 @@
     </None>
   </ItemGroup>
 
+  <!-- Don't clutter the Solution Explorer with NCrunch setting files -->
+  <ItemGroup>
+    <None Remove="*.ncrunchproject" />
+  </ItemGroup>
+
+  <!-- Workarounds for .NET 3.5 compilation via dotnet -->
   <PropertyGroup>
     <!-- https://github.com/dotnet/msbuild/issues/1333#issuecomment-296346352 -->
     <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net35'">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>

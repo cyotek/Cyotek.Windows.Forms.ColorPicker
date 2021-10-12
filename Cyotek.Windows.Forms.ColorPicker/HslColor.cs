@@ -1,29 +1,32 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright © 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.Drawing;
 using System.Text;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   // http://en.wikipedia.org/wiki/HSL_color_space
 
   [Serializable]
   public struct HslColor
   {
-    #region Constants
+    #region Public Fields
 
     public static readonly HslColor Empty;
 
-    #endregion
+    #endregion Public Fields
 
-    #region Fields
+    #region Private Fields
 
     private int _alpha;
 
@@ -35,21 +38,17 @@ namespace Cyotek.Windows.Forms
 
     private double _saturation;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Static Constructors
+    #region Public Constructors
 
     static HslColor()
     {
       Empty = new HslColor
-              {
-                IsEmpty = true
-              };
+      {
+        IsEmpty = true
+      };
     }
-
-    #endregion
-
-    #region Constructors
 
     public HslColor(double hue, double saturation, double lightness)
       : this(255, hue, saturation, lightness)
@@ -73,35 +72,9 @@ namespace Cyotek.Windows.Forms
       _isEmpty = false;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Operators
-
-    public static bool operator ==(HslColor a, HslColor b)
-    {
-      // ReSharper disable CompareOfFloatsByEqualityOperator
-      return a.H == b.H && a.L == b.L && a.S == b.S && a.A == b.A;
-      // ReSharper restore CompareOfFloatsByEqualityOperator
-    }
-
-    public static implicit operator HslColor(Color color)
-    {
-      return new HslColor(color);
-    }
-
-    public static implicit operator Color(HslColor color)
-    {
-      return color.ToRgbColor();
-    }
-
-    public static bool operator !=(HslColor a, HslColor b)
-    {
-      return !(a == b);
-    }
-
-    #endregion
-
-    #region Properties
+    #region Public Properties
 
     public int A
     {
@@ -145,9 +118,31 @@ namespace Cyotek.Windows.Forms
       set { _saturation = Math.Min(1, Math.Max(0, value)); }
     }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Methods
+    #region Public Methods
+
+    public static implicit operator Color(HslColor color)
+    {
+      return color.ToRgbColor();
+    }
+
+    public static implicit operator HslColor(Color color)
+    {
+      return new HslColor(color);
+    }
+
+    public static bool operator !=(HslColor a, HslColor b)
+    {
+      return !(a == b);
+    }
+
+    public static bool operator ==(HslColor a, HslColor b)
+    {
+      // ReSharper disable CompareOfFloatsByEqualityOperator
+      return a.H == b.H && a.L == b.L && a.S == b.S && a.A == b.A;
+      // ReSharper restore CompareOfFloatsByEqualityOperator
+    }
 
     public override bool Equals(object obj)
     {
@@ -180,64 +175,35 @@ namespace Cyotek.Windows.Forms
 
     public Color ToRgbColor(int alpha)
     {
-      double q;
-      if (this.L < 0.5)
+      byte r;
+      byte g;
+      byte b;
+
+      // https://www.programmingalgorithms.com/algorithm/hsl-to-rgb
+
+      if (Math.Abs(_saturation) < double.Epsilon)
       {
-        q = this.L * (1 + this.S);
+        r = g = b = Convert.ToByte(_lightness * 255F);
       }
       else
       {
-        q = this.L + this.S - this.L * this.S;
-      }
-      double p = 2 * this.L - q;
-      double hk = this.H / 360;
+        double v1;
+        double v2;
+        double hue;
 
-      // r,g,b colors
-      double[] tc = new[]
-                    {
-                      hk + 1d / 3d,
-                      hk,
-                      hk - 1d / 3d
-                    };
-      double[] colors = new[]
-                        {
-                          0.0,
-                          0.0,
-                          0.0
-                        };
+        hue = _hue / 360;
 
-      for (int color = 0; color < colors.Length; color++)
-      {
-        if (tc[color] < 0)
-        {
-          tc[color] += 1;
-        }
-        if (tc[color] > 1)
-        {
-          tc[color] -= 1;
-        }
+        v2 = _lightness < 0.5
+          ? _lightness * (1 + _saturation)
+          : _lightness + _saturation - _lightness * _saturation;
+        v1 = 2 * _lightness - v2;
 
-        if (tc[color] < 1d / 6d)
-        {
-          colors[color] = p + (q - p) * 6 * tc[color];
-        }
-        else if (tc[color] >= 1d / 6d && tc[color] < 1d / 2d)
-        {
-          colors[color] = q;
-        }
-        else if (tc[color] >= 1d / 2d && tc[color] < 2d / 3d)
-        {
-          colors[color] = p + (q - p) * 6 * (2d / 3d - tc[color]);
-        }
-        else
-        {
-          colors[color] = p;
-        }
-
-        colors[color] *= 255;
+        r = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue + 1.0f / 3));
+        g = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue));
+        b = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue - 1.0f / 3));
       }
 
-      return Color.FromArgb(alpha, (int)colors[0], (int)colors[1], (int)colors[2]);
+      return Color.FromArgb(alpha, r, g, b);
     }
 
     public override string ToString()
@@ -258,6 +224,59 @@ namespace Cyotek.Windows.Forms
       return builder.ToString();
     }
 
-    #endregion
+    #endregion Public Methods
+
+    #region Private Methods
+
+    private static byte Clamp(double v)
+    {
+      if (v < 0)
+      {
+        v = 0;
+      }
+
+      if (v > 255)
+      {
+        v = 255;
+      }
+
+      return (byte)v;
+    }
+
+    private static double HueToRgb(double v1, double v2, double vH)
+    {
+      double result;
+
+      if (vH < 0)
+      {
+        vH++;
+      }
+
+      if (vH > 1)
+      {
+        vH--;
+      }
+
+      if (6 * vH < 1)
+      {
+        result = v1 + (v2 - v1) * 6 * vH;
+      }
+      else if (2 * vH < 1)
+      {
+        result = v2;
+      }
+      else if (3 * vH < 2)
+      {
+        result = v1 + (v2 - v1) * (2.0f / 3 - vH) * 6;
+      }
+      else
+      {
+        result = v1;
+      }
+
+      return result;
+    }
+
+    #endregion Private Methods
   }
 }
