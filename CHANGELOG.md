@@ -2,12 +2,12 @@
 
 ## Change Log
 
-### 2.0.0-alpha1
+### 2.0.0 (WIP)
 
 #### Changed
 
 * Added dedicated targets for .NET 3.5, .NET 4.0, .NET 4.5.2,
-  .NET 4.6.2, .NET 4.7.2, .NET 4.8, .NET 5.0 and .NET Core 3.1
+  .NET 4.6.2,.NET 4.7.2, .NET 4.8, .NET 5.0 and .NET Core 3.1
 
 #### Deprecated
 
@@ -20,6 +20,15 @@
 * The `AdobePhotoshopColorSwatchColorSpace` and
   `AdobePhotoshopColorSwatchFileVersion` enums have been marked
   as obsolete
+
+#### Fixed
+
+* The method `HslColor.ToRgbColor` didn't convert colours
+  properly, most visible in the `LightnessColorSlider` which
+  always showed a black and white scale no matter what the base
+  color was
+* Changing the `LightnessColorSlider.Value` property no longer
+  updates the `Color` property
 
 ### 1.8.0
 
