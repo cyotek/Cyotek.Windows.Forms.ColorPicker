@@ -35,6 +35,7 @@ namespace Cyotek.Windows.Forms
     {
       base.BarStyle = ColorBarStyle.Custom;
       _color = Color.Black;
+      this.CreateScale();
     }
 
     #endregion
@@ -113,7 +114,7 @@ namespace Cyotek.Windows.Forms
       custom = new ColorCollection();
       color = new HslColor(_color);
       
-      for (int i = 0; i < 99; i++)
+      for (int i = 0; i < 100; i++)
       {
         color.L = i / 100D;
 
