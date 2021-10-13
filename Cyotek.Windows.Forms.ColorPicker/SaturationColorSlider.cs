@@ -1,35 +1,38 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright © 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   /// <summary>
   /// Represents a control for selecting the saturation of a color
   /// </summary>
   public class SaturationColorSlider : ColorSlider
   {
-    #region Constants
+    #region Private Fields
 
     private static readonly object _eventColorChanged = new object();
 
-    #endregion
-
-    #region Fields
+    private Brush _cellBackgroundBrush;
 
     private Color _color;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
     public SaturationColorSlider()
     {
@@ -37,9 +40,9 @@ namespace Cyotek.Windows.Forms
       this.Color = Color.Black;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Events
+    #region Public Events
 
     [Category("Property Changed")]
     public event EventHandler ColorChanged
@@ -48,9 +51,9 @@ namespace Cyotek.Windows.Forms
       remove { this.Events.RemoveHandler(_eventColorChanged, value); }
     }
 
-    #endregion
+    #endregion Public Events
 
-    #region Properties
+    #region Public Properties
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -122,9 +125,9 @@ namespace Cyotek.Windows.Forms
       set { base.Value = (int)value; }
     }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Methods
+    #region Protected Methods
 
     protected virtual void CreateScale()
     {
@@ -137,6 +140,24 @@ namespace Cyotek.Windows.Forms
 
       color.S = 1;
       this.Color2 = color.ToRgbColor();
+    }
+
+    protected virtual Brush CreateTransparencyBrush()
+    {
+      return new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        if (_cellBackgroundBrush != null)
+        {
+          _cellBackgroundBrush.Dispose();
+        }
+      }
+
+      base.Dispose(disposing);
     }
 
     /// <summary>
@@ -155,6 +176,21 @@ namespace Cyotek.Windows.Forms
       handler?.Invoke(this, e);
     }
 
-    #endregion
+    protected override void PaintBar(PaintEventArgs e)
+    {
+      if (this.Color.A != 255)
+      {
+        if (_cellBackgroundBrush == null)
+        {
+          _cellBackgroundBrush = this.CreateTransparencyBrush();
+        }
+
+        e.Graphics.FillRectangle(_cellBackgroundBrush, this.BarBounds);
+      }
+
+      base.PaintBar(e);
+    }
+
+    #endregion Protected Methods
   }
 }

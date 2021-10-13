@@ -4,6 +4,18 @@
 
 ### 2.0.0 (WIP)
 
+#### Added
+
+* Added `Lightness` property to the `ColorWheel` control, used
+  to set the lightness of the generated color and to avoid
+  resetting of lightness when using the `ColorEditorManager`
+* Added `Alpha` property to the `ColorWheel` control, used to
+  set the alpha channel of the generated color and to avoid
+  resetting of alpha when using the `ColorEditorManager`
+* Added `DisplayLightness` property to the `ColorWheel` control.
+  When set, the wheel is drawn using the specified lightness,
+  otherwise it draws the wheel at 50% (default)
+
 #### Changed
 
 * Added dedicated targets for .NET 3.5, .NET 4.0, .NET 4.5.2,
@@ -29,6 +41,11 @@
   color was
 * Changing the `LightnessColorSlider.Value` property no longer
   updates the `Color` property
+* The `ColorManagerEditor` does a better job of syncing values
+  between attached controls
+* The `SaturationColorSlider` and `LightnessColorSlider`
+  controls now display a checker box background for non-solid
+  colours
 
 ### 1.8.0
 

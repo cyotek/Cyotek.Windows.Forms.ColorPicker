@@ -1,5 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright © 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -8,36 +18,31 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2018 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-  // https://www.paypal.me/cyotek
-
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]
   public class ColorWheel : Control, IColorEditor
   {
-    #region Constants
+    #region Private Fields
+
+    private static readonly object _eventAlphaChanged = new object();
 
     private static readonly object _eventColorChanged = new object();
 
     private static readonly object _eventColorStepChanged = new object();
 
+    private static readonly object _eventDisplayLightnessChanged = new object();
+
     private static readonly object _eventHslColorChanged = new object();
 
     private static readonly object _eventLargeChangeChanged = new object();
+
+    private static readonly object _eventLightnessChanged = new object();
 
     private static readonly object _eventSelectionSizeChanged = new object();
 
     private static readonly object _eventSmallChangeChanged = new object();
 
-    #endregion
-
-    #region Fields
+    private double _alpha;
 
     private Brush _brush;
 
@@ -49,13 +54,19 @@ namespace Cyotek.Windows.Forms
 
     private int _colorStep;
 
-    private bool _isDragging;
+    private bool _displayLightness;
 
     private HslColor _hslColor;
 
+    private bool _isDragging;
+
     private int _largeChange;
 
+    private double _lightness;
+
     private bool _lockUpdates;
+
+    private PointF[] _points;
 
     private float _radius;
 
@@ -67,11 +78,9 @@ namespace Cyotek.Windows.Forms
 
     private int _updateCount;
 
-    private PointF[] _points;
+    #endregion Private Fields
 
-    #endregion
-
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorWheel"/> class.
@@ -80,22 +89,66 @@ namespace Cyotek.Windows.Forms
     {
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, true);
       _color = Color.Black;
-      _hslColor = new HslColor(_color);
+      _hslColor = new HslColor(_color)
+      {
+        L = 0.5
+      };
       _colorStep = 4;
       _selectionSize = 10;
       _smallChange = 1;
       _largeChange = 5;
+      _lightness = 0.5;
+      _alpha = 1;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Events
+    #region Public Events
+
+    /// <summary>
+    /// Occurs when the Alpha property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler AlphaChanged
+    {
+      add
+      {
+        this.Events.AddHandler(_eventAlphaChanged, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventAlphaChanged, value);
+      }
+    }
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
 
     [Category("Property Changed")]
     public event EventHandler ColorStepChanged
     {
       add { this.Events.AddHandler(_eventColorStepChanged, value); }
       remove { this.Events.RemoveHandler(_eventColorStepChanged, value); }
+    }
+
+    /// <summary>
+    /// Occurs when the DisplayLightness property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler DisplayLightnessChanged
+    {
+      add
+      {
+        this.Events.AddHandler(_eventDisplayLightnessChanged, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventDisplayLightnessChanged, value);
+      }
     }
 
     [Category("Property Changed")]
@@ -112,6 +165,22 @@ namespace Cyotek.Windows.Forms
       remove { this.Events.RemoveHandler(_eventLargeChangeChanged, value); }
     }
 
+    /// <summary>
+    /// Occurs when the Lightness property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler LightnessChanged
+    {
+      add
+      {
+        this.Events.AddHandler(_eventLightnessChanged, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventLightnessChanged, value);
+      }
+    }
+
     [Category("Property Changed")]
     public event EventHandler SelectionSizeChanged
     {
@@ -126,9 +195,45 @@ namespace Cyotek.Windows.Forms
       remove { this.Events.RemoveHandler(_eventSmallChangeChanged, value); }
     }
 
-    #endregion
+    #endregion Public Events
 
-    #region Properties
+    #region Public Properties
+
+    [Category("Behavior")]
+    [DefaultValue(1)]
+    public double Alpha
+    {
+      get { return _alpha; }
+      set
+      {
+        if (Math.Abs(_alpha - value) > double.Epsilon)
+        {
+          _alpha = value;
+
+          this.OnAlphaChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (_color != value)
+        {
+          _color = value;
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
+      }
+    }
 
     /// <summary>
     /// Gets or sets the increment for rendering the color wheel.
@@ -152,6 +257,22 @@ namespace Cyotek.Windows.Forms
           _colorStep = value;
 
           this.OnColorStepChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public bool DisplayLightness
+    {
+      get { return _displayLightness; }
+      set
+      {
+        if (_displayLightness != value)
+        {
+          _displayLightness = value;
+
+          this.OnDisplayLightnessChanged(EventArgs.Empty);
         }
       }
     }
@@ -214,6 +335,22 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    [Category("Behavior")]
+    [DefaultValue(0.5)]
+    public double Lightness
+    {
+      get { return _lightness; }
+      set
+      {
+        if (Math.Abs(_lightness - value) > double.Epsilon)
+        {
+          _lightness = value;
+
+          this.OnLightnessChanged(EventArgs.Empty);
+        }
+      }
+    }
+
     /// <summary>
     /// Gets or sets the size of the selection handle.
     /// </summary>
@@ -262,6 +399,10 @@ namespace Cyotek.Windows.Forms
       set { base.Text = value; }
     }
 
+    #endregion Public Properties
+
+    #region Protected Properties
+
     /// <summary>
     ///   Gets a value indicating whether painting of the control is allowed.
     /// </summary>
@@ -301,9 +442,9 @@ namespace Cyotek.Windows.Forms
       set { _selectionGlyph = value; }
     }
 
-    #endregion
+    #endregion Protected Properties
 
-    #region Methods
+    #region Public Methods
 
     /// <summary>
     ///   Disables any redrawing of the image box
@@ -329,32 +470,44 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion Public Methods
+
+    #region Protected Methods
+
     /// <summary>
     /// Calculates wheel attributes.
     /// </summary>
     protected virtual void CalculateWheel()
     {
-      List<PointF> points;
-      List<Color> colors;
+      int count;
+      PointF[] points;
+      Color[] colors;
       Size size;
+      double angle;
 
-      points = new List<PointF>();
-      colors = new List<Color>();
+      count = 360 / _colorStep;
+      points = new PointF[count];
+      colors = new Color[count];
       size = this.ClientSize;
+      angle = 0;
 
       // Only define the points if the control is above a minimum size, otherwise if it's too small, you get an "out of memory" exceptions (of all things) when creating the brush
       if (size.Width > 16 && size.Height > 16)
       {
         int w;
         int h;
+        double l;
 
         w = size.Width;
         h = size.Height;
+        l = _displayLightness
+          ? _lightness
+          : 0.5;
 
         _centerPoint = new PointF(w / 2.0F, h / 2.0F);
         _radius = this.GetRadius(_centerPoint);
 
-        for (double angle = 0; angle < 360; angle += _colorStep)
+        for (int i = 0; i < count; i++)
         {
           double angleR;
           PointF location;
@@ -362,13 +515,15 @@ namespace Cyotek.Windows.Forms
           angleR = angle * (Math.PI / 180);
           location = this.GetColorLocation(angleR, _radius);
 
-          points.Add(location);
-          colors.Add(new HslColor(angle, 1, 0.5).ToRgbColor());
+          points[i] = location;
+          colors[i] = new HslColor(angle, 1, l).ToRgbColor();
+
+          angle += _colorStep;
         }
       }
 
-      _points = points.ToArray();
-      _colors = colors.ToArray();
+      _points = points;
+      _colors = colors;
     }
 
     /// <summary>
@@ -381,11 +536,11 @@ namespace Cyotek.Windows.Forms
       if (_points.Length != 0 && _points.Length == _colors.Length)
       {
         result = new PathGradientBrush(_points, WrapMode.Clamp)
-                 {
-                   CenterPoint = _centerPoint,
-                   CenterColor = Color.White,
-                   SurroundColors = _colors
-                 };
+        {
+          CenterPoint = _centerPoint,
+          CenterColor = Color.White,
+          SurroundColors = _colors
+        };
       }
       else
       {
@@ -539,6 +694,19 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="AlphaChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnAlphaChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventAlphaChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
     /// Raises the <see cref="ColorChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -574,6 +742,21 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="DisplayLightnessChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnDisplayLightnessChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.RefreshWheel();
+
+      handler = (EventHandler)this.Events[_eventDisplayLightnessChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Control.GotFocus" /> event.
     /// </summary>
     /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -594,7 +777,7 @@ namespace Cyotek.Windows.Forms
 
       if (!_lockUpdates)
       {
-        this.Color = _hslColor.ToRgbColor();
+        this.SetRgbColor(_hslColor);
       }
 
       this.Invalidate();
@@ -625,13 +808,16 @@ namespace Cyotek.Windows.Forms
         case Keys.Up:
           hue += step;
           break;
+
         case Keys.Left:
         case Keys.Down:
           hue -= step;
           break;
+
         case Keys.PageUp:
           hue += _largeChange;
           break;
+
         case Keys.PageDown:
           hue -= _largeChange;
           break;
@@ -654,7 +840,7 @@ namespace Cyotek.Windows.Forms
         // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
         // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
         _lockUpdates = true;
-        this.Color = color.ToRgbColor();
+        this.SetRgbColor(color);
         this.HslColor = color;
         _lockUpdates = false;
 
@@ -673,6 +859,24 @@ namespace Cyotek.Windows.Forms
       EventHandler handler;
 
       handler = (EventHandler)this.Events[_eventLargeChangeChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="LightnessChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnLightnessChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      if (_displayLightness)
+      {
+        this.RefreshWheel();
+      }
+
+      handler = (EventHandler)this.Events[_eventLightnessChanged];
 
       handler?.Invoke(this, e);
     }
@@ -894,16 +1098,20 @@ namespace Cyotek.Windows.Forms
         angle = 360 - angle;
       }
 
-      newColor = new HslColor(angle, saturation, 0.5);
+      newColor = new HslColor(angle, saturation, _lightness);
 
       if (_hslColor != newColor)
       {
         _lockUpdates = true;
         this.HslColor = newColor;
-        this.Color = _hslColor.ToRgbColor();
+        this.SetRgbColor(_hslColor);
         _lockUpdates = false;
       }
     }
+
+    #endregion Protected Methods
+
+    #region Private Methods
 
     private void DisposeOfSelectionGlyph()
     {
@@ -941,37 +1149,11 @@ namespace Cyotek.Windows.Forms
       this.Invalidate();
     }
 
-    #endregion
-
-    #region IColorEditor Interface
-
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged
+    private void SetRgbColor(HslColor hslColor)
     {
-      add { this.Events.AddHandler(_eventColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+      this.Color = hslColor.ToRgbColor(Convert.ToInt32(_alpha * 255));
     }
 
-    /// <summary>
-    /// Gets or sets the component color.
-    /// </summary>
-    /// <value>The component color.</value>
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "Black")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (_color != value)
-        {
-          _color = value;
-
-          this.OnColorChanged(EventArgs.Empty);
-        }
-      }
-    }
-
-    #endregion
+    #endregion Private Methods
   }
 }
