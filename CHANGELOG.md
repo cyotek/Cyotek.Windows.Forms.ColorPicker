@@ -15,6 +15,10 @@
 * Added `DisplayLightness` property to the `ColorWheel` control.
   When set, the wheel is drawn using the specified lightness,
   otherwise it draws the wheel at 50% (default)
+* Added `ScreenColorPicker.CaptureMouse` and `ReleaseMouse`
+  methods. These allow you to initiate a screen picker operation
+  without having to click and drag in the source control, for
+  example via hotkey
 
 #### Changed
 
