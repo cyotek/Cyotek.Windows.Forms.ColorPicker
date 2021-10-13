@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
@@ -34,5 +34,15 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     }
 
     #endregion
+
+    private void releaseButton_Click(object sender, EventArgs e)
+    {
+      screenColorPicker1.ReleaseMouse();
+    }
+
+    private void captureButton_Click(object sender, EventArgs e)
+    {
+      screenColorPicker1.CaptureMouse();
+    }
   }
 }

@@ -1,60 +1,29 @@
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright © 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
-  internal class NativeMethods
+  internal static class NativeMethods
   {
-    // ReSharper disable InconsistentNaming
+    
+    #region Public Fields
 
-    #region Constants
+    public const int WM_LBUTTONDOWN = 0x0201;
 
-    public const int R2_NOT = 6; // Inverted drawing mode
 
-    #endregion
-
-    #region Protected Constructors
-
-    protected NativeMethods()
-    {
-    }
-
-    #endregion
-
-    #region Public Class Members
-
-    [DllImport("user32.dll", EntryPoint = "GetDC", CallingConvention = CallingConvention.StdCall)]
-    public static extern IntPtr GetDC(IntPtr hWnd);
-
-    [DllImport("gdi32.dll", EntryPoint = "LineTo", CallingConvention = CallingConvention.StdCall)]
-    public static extern bool LineTo(IntPtr hdc, int x, int y);
-
-    [DllImport("gdi32.dll", EntryPoint = "MoveToEx", CallingConvention = CallingConvention.StdCall)]
-    public static extern bool MoveToEx(IntPtr hdc, int x, int y, IntPtr lpPoint);
-
-    [DllImport("user32.dll", EntryPoint = "ReleaseDC", CallingConvention = CallingConvention.StdCall)]
-    public static extern IntPtr ReleaseDC(IntPtr hWnd, IntPtr hDC);
-
-    [DllImport("gdi32.dll", EntryPoint = "SetROP2", CallingConvention = CallingConvention.StdCall)]
-    public static extern int SetROP2(IntPtr hdc, int fnDrawMode);
-
-    #endregion
-
-    [DllImport(_gdi32DllName)]
-    public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
-
-    private const string _gdi32DllName = "gdi32.dll";
-
-    private const string _user32DllName = "user32.dll";
+public const int     WM_NCLBUTTONDOWN  = 0x00A1;
 
     /// <summary>
     ///   Logical pixels inch in X
@@ -65,6 +34,29 @@ namespace Cyotek.Windows.Forms
     ///   Logical pixels inch in Y
     /// </summary>
     public const int LOGPIXELSY = 90;
+
+    public const int R2_NOT = 6; // Inverted drawing mode
+
+    //public const int WH_MOUSE = 7;
+    public const int WH_MOUSE_LL = 14;
+
+    #endregion Public Fields
+
+    #region Private Fields
+
+    private const string _gdi32DllName = "gdi32.dll";
+
+    private const string _user32DllName = "user32.dll";
+
+    #endregion Private Fields
+
+    #region Public Methods
+
+    [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+    [DllImport(_user32DllName, EntryPoint = "GetDC", CallingConvention = CallingConvention.StdCall)]
+    public static extern IntPtr GetDC(IntPtr hWnd);
 
     public static Point GetDesktopDpi()
     {
@@ -89,10 +81,60 @@ namespace Cyotek.Windows.Forms
       return new Point(dpix, dpiy);
     }
 
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern IntPtr GetModuleHandle(string lpModuleName);
+
     [DllImport(_user32DllName)]
     public static extern IntPtr GetDesktopWindow();
 
+    [DllImport(_gdi32DllName)]
+    public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 
-    // ReSharper restore InconsistentNaming
+    [DllImport(_gdi32DllName, EntryPoint = "LineTo", CallingConvention = CallingConvention.StdCall)]
+    public static extern bool LineTo(IntPtr hdc, int x, int y);
+
+    [DllImport(_gdi32DllName, EntryPoint = "MoveToEx", CallingConvention = CallingConvention.StdCall)]
+    public static extern bool MoveToEx(IntPtr hdc, int x, int y, IntPtr lpPoint);
+
+    [DllImport(_user32DllName, EntryPoint = "ReleaseDC", CallingConvention = CallingConvention.StdCall)]
+    public static extern IntPtr ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+    [DllImport(_gdi32DllName, EntryPoint = "SetROP2", CallingConvention = CallingConvention.StdCall)]
+    public static extern int SetROP2(IntPtr hdc, int fnDrawMode);
+
+    [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+
+    [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+    public const int WM_MOUSEMOVE = 0x0200;
+
+    #endregion Public Methods
+
+    #region Public Classes
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class MouseHookStruct
+    {
+      public POINT pt;
+
+      public int hwnd;
+
+      public int wHitTestCode;
+
+      public int dwExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class POINT
+    {
+      public int x;
+
+      public int y;
+    }
+
+    #endregion Public Classes
   }
 }
