@@ -1,24 +1,27 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright © 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   /// <summary>
   /// Represents a control that binds multiple editors together as a single composite unit.
   /// </summary>
   [DefaultEvent("ColorChanged")]
   public class ColorEditorManager : Component, IColorEditor
   {
-    #region Constants
+    #region Private Fields
 
     private static readonly object _eventColorChanged = new object();
 
@@ -31,10 +34,6 @@ namespace Cyotek.Windows.Forms
     private static readonly object _eventLightnessColorSliderChanged = new object();
 
     private static readonly object _eventScreenColorPickerChanged = new object();
-
-    #endregion
-
-    #region Fields
 
     private Color _color;
 
@@ -50,9 +49,16 @@ namespace Cyotek.Windows.Forms
 
     private ColorWheel _wheel;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Events
+    #region Public Events
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
 
     [Category("Property Changed")]
     public event EventHandler ColorEditorChanged
@@ -89,9 +95,30 @@ namespace Cyotek.Windows.Forms
       remove { this.Events.RemoveHandler(_eventScreenColorPickerChanged, value); }
     }
 
-    #endregion
+    #endregion Public Events
 
-    #region Properties
+    #region Public Properties
+
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (_color != value)
+        {
+          _color = value;
+          _hslColor = new HslColor(value);
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
+      }
+    }
 
     /// <summary>
     /// Gets or sets the linked <see cref="ColorEditor"/>.
@@ -103,8 +130,13 @@ namespace Cyotek.Windows.Forms
       get { return _colorEditor; }
       set
       {
-        if (this.ColorEditor != value)
+        if (!object.ReferenceEquals(_colorEditor, value))
         {
+          if (_colorEditor != null)
+          {
+            this.UnbindEvents(_colorEditor);
+          }
+
           _colorEditor = value;
 
           this.OnColorEditorChanged(EventArgs.Empty);
@@ -122,8 +154,13 @@ namespace Cyotek.Windows.Forms
       get { return _grid; }
       set
       {
-        if (this.ColorGrid != value)
+        if (!object.ReferenceEquals(_grid, value))
         {
+          if (_grid != null)
+          {
+            this.UnbindEvents(_grid);
+          }
+
           _grid = value;
 
           this.OnColorGridChanged(EventArgs.Empty);
@@ -141,8 +178,13 @@ namespace Cyotek.Windows.Forms
       get { return _wheel; }
       set
       {
-        if (this.ColorWheel != value)
+        if (!object.ReferenceEquals(_wheel, value))
         {
+          if (_wheel != null)
+          {
+            this.UnbindEvents(_wheel);
+          }
+
           _wheel = value;
 
           this.OnColorWheelChanged(EventArgs.Empty);
@@ -181,8 +223,13 @@ namespace Cyotek.Windows.Forms
       get { return _lightnessColorSlider; }
       set
       {
-        if (this.LightnessColorSlider != value)
+        if (!object.ReferenceEquals(_lightnessColorSlider, value))
         {
+          if (_lightnessColorSlider != null)
+          {
+            this.UnbindEvents(_lightnessColorSlider);
+          }
+
           _lightnessColorSlider = value;
 
           this.OnLightnessColorSliderChanged(EventArgs.Empty);
@@ -200,8 +247,13 @@ namespace Cyotek.Windows.Forms
       get { return _screenColorPicker; }
       set
       {
-        if (this.ScreenColorPicker != value)
+        if (!object.ReferenceEquals(_screenColorPicker, value))
         {
+          if (_screenColorPicker != null)
+          {
+            this.UnbindEvents(_screenColorPicker);
+          }
+
           _screenColorPicker = value;
 
           this.OnScreenColorPickerChanged(EventArgs.Empty);
@@ -209,15 +261,19 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion Public Properties
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets a value indicating whether updating of linked components is disabled.
     /// </summary>
     /// <value><c>true</c> if updated of linked components is disabled; otherwise, <c>false</c>.</value>
     protected bool LockUpdates { get; set; }
 
-    #endregion
+    #endregion Protected Properties
 
-    #region Methods
+    #region Protected Methods
 
     /// <summary>
     /// Binds events for the specified editor.
@@ -226,6 +282,11 @@ namespace Cyotek.Windows.Forms
     protected virtual void BindEvents(IColorEditor control)
     {
       control.ColorChanged += this.ColorChangedHandler;
+
+      if (control is LightnessColorSlider lightnessColorSlider)
+      {
+        lightnessColorSlider.ValueChanged += this.ColorChangedHandler;
+      }
     }
 
     /// <summary>
@@ -357,10 +418,51 @@ namespace Cyotek.Windows.Forms
         try
         {
           this.LockUpdates = true;
+
+          if (object.ReferenceEquals(sender, this))
+          {
+            if (_wheel != null)
+            {
+              _wheel.Lightness = _hslColor.L;
+            }
+          }
+          else if (object.ReferenceEquals(sender, _colorEditor))
+          {
+            if (_wheel != null)
+            {
+              _wheel.Lightness = _colorEditor.HslColor.L;
+            }
+
+            if (_lightnessColorSlider != null)
+            {
+              _lightnessColorSlider.Value = (float)(_colorEditor.HslColor.L * 100);
+            }
+          }
+          else if (object.ReferenceEquals(sender, _lightnessColorSlider))
+          {
+            if (_wheel != null)
+            {
+              _wheel.Lightness = _lightnessColorSlider.Value / 100D;
+            }
+
+            if (_colorEditor != null)
+            {
+              HslColor color;
+
+              color = _colorEditor.HslColor;
+              color.L = _lightnessColorSlider.Value / 100D;
+              _colorEditor.HslColor = color;
+            }
+          }
+
           this.SetColor(this.ColorGrid, sender);
           this.SetColor(this.ColorWheel, sender);
           this.SetColor(this.ScreenColorPicker, sender);
-          this.SetColor(this.ColorEditor, sender);
+          if (!object.ReferenceEquals(sender, _lightnessColorSlider))
+          {
+            this.SetColor(this.ColorEditor, sender);
+          }
+
           this.SetColor(this.LightnessColorSlider, sender);
         }
         finally
@@ -369,6 +471,20 @@ namespace Cyotek.Windows.Forms
         }
       }
     }
+
+    protected virtual void UnbindEvents(IColorEditor control)
+    {
+      control.ColorChanged -= this.ColorChangedHandler;
+
+      if (control is LightnessColorSlider lightnessColorSlider)
+      {
+        lightnessColorSlider.ValueChanged -= this.ColorChangedHandler;
+      }
+    }
+
+    #endregion Protected Methods
+
+    #region Private Methods
 
     /// <summary>
     /// Handler for linked controls.
@@ -390,38 +506,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion
-
-    #region IColorEditor Interface
-
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged
-    {
-      add { this.Events.AddHandler(_eventColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
-    }
-
-    /// <summary>
-    /// Gets or sets the component color.
-    /// </summary>
-    /// <value>The component color.</value>
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (_color != value)
-        {
-          _color = value;
-          _hslColor = new HslColor(value);
-
-          this.OnColorChanged(EventArgs.Empty);
-        }
-      }
-    }
-
-    #endregion
+    #endregion Private Methods
   }
 }
