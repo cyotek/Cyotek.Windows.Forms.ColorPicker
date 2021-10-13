@@ -1,10 +1,13 @@
-// Cyotek Color Picker controls library
-// Copyright © 2013-2021 Cyotek Ltd.
+// Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See license.txt for the full text.
+// Copyright © 2013-2021 Cyotek Ltd.
 
-// If you use this code in your applications, donations or attribution are welcome
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
 
 using System;
 using System.ComponentModel;
@@ -70,7 +73,7 @@ namespace Cyotek.Windows.Forms
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
       this.SetStyle(ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, false);
       _zoom = 8;
-      this.Color = Color.Empty;
+      _color = Color.Empty;
       _showTextWithSnapshot = false;
       this.TabStop = false;
       this.TabIndex = 0;
@@ -139,7 +142,7 @@ namespace Cyotek.Windows.Forms
       get { return _color; }
       set
       {
-        if (this.Color != value)
+        if (_color != value)
         {
           _color = value;
 
@@ -190,7 +193,7 @@ namespace Cyotek.Windows.Forms
       get { return _image; }
       set
       {
-        if (this.Image != value)
+        if (_image != value)
         {
           _image = value;
 
@@ -656,6 +659,10 @@ namespace Cyotek.Windows.Forms
     /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     protected virtual void PaintAdornments(PaintEventArgs e)
     {
+      Rectangle client;
+
+      client = this.ClientRectangle;
+
       // grid
       if (_showGrid)
       {
@@ -669,15 +676,15 @@ namespace Cyotek.Windows.Forms
       }
 
       // image
-      if (this.Image != null && (!_hasSnapshot || _showTextWithSnapshot))
+      if (_image != null && (!_hasSnapshot || _showTextWithSnapshot))
       {
-        e.Graphics.DrawImage(this.Image, (this.ClientSize.Width - this.Image.Size.Width) / 2, (this.ClientSize.Height - this.Image.Size.Height) / 2);
+        e.Graphics.DrawImage(_image, (client.Width - _image.Size.Width) / 2, (client.Height - _image.Size.Height) / 2);
       }
 
       // draw text
       if (!string.IsNullOrEmpty(this.Text) && (!_hasSnapshot || _showTextWithSnapshot))
       {
-        TextRenderer.DrawText(e.Graphics, this.Text, this.Font, this.ClientRectangle, this.ForeColor, this.BackColor, TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis);
+        TextRenderer.DrawText(e.Graphics, this.Text, this.Font, client, this.ForeColor, this.BackColor, TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis);
       }
     }
 

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="demoLabel.Text" xml:space="preserve">
-    <value>The ScreenColorPicker control allows you to select a colour from the screen. Click in this area and drag the mouse around the screen. You can also configure text to appear always, or only if no snapshot is currently captured.
+    <value>The ScreenColorPicker control allows you to select a colour from the screen. Click in the grid area and drag the mouse around the screen. You can also configure text to appear always, or only if no snapshot is currently captured.
 
 Alternatively, you can trigger the picker by calling the CaptureMouse method (for example, via a hotkey). This will cause the selection mode to enter without having to click and drag. Move your mouse to update the snapshot and click the left mouse button to both select the colour and end the capture.</value>
   </data>
