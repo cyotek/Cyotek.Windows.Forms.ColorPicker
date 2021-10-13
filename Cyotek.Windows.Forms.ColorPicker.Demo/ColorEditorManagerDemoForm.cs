@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
