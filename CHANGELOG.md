@@ -43,6 +43,9 @@
   updates the `Color` property
 * The `ColorManagerEditor` does a better job of syncing values
   between attached controls
+* The `SaturationColorSlider` and `LightnessColorSlider`
+  controls now display a checker box background for non-solid
+  colours
 
 ### 1.8.0
 

@@ -12,24 +12,24 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
   public class LightnessColorSlider : ColorSlider, IColorEditor
   {
-    #region Constants
+    #region Private Fields
 
     private static readonly object _eventColorChanged = new object();
 
-    #endregion
-
-    #region Fields
+    private Brush _cellBackgroundBrush;
 
     private Color _color;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
     public LightnessColorSlider()
     {
@@ -38,9 +38,20 @@ namespace Cyotek.Windows.Forms
       this.CreateScale();
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Public Events
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
+
+    #endregion Public Events
+
+    #region Public Properties
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -48,6 +59,28 @@ namespace Cyotek.Windows.Forms
     {
       get { return base.BarStyle; }
       set { base.BarStyle = value; }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (_color != value)
+        {
+          _color = value;
+
+          if (!this.LockUpdates)
+          {
+            this.LockUpdates = true;
+            this.Value = (float)new HslColor(value).L * 100;
+            this.OnColorChanged(EventArgs.Empty);
+            this.LockUpdates = false;
+          }
+        }
+      }
     }
 
     [Browsable(false)]
@@ -96,15 +129,19 @@ namespace Cyotek.Windows.Forms
       set { base.Value = (int)value; }
     }
 
+    #endregion Public Properties
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets a value indicating whether input changes should be processed.
     /// </summary>
     /// <value><c>true</c> if input changes should be processed; otherwise, <c>false</c>.</value>
     protected bool LockUpdates { get; set; }
 
-    #endregion
+    #endregion Protected Properties
 
-    #region Methods
+    #region Protected Methods
 
     protected virtual void CreateScale()
     {
@@ -113,7 +150,7 @@ namespace Cyotek.Windows.Forms
 
       custom = new ColorCollection();
       color = new HslColor(_color);
-      
+
       for (int i = 0; i < 100; i++)
       {
         color.L = i / 100D;
@@ -122,6 +159,24 @@ namespace Cyotek.Windows.Forms
       }
 
       this.CustomColors = custom;
+    }
+
+    protected virtual Brush CreateTransparencyBrush()
+    {
+      return new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        if (_cellBackgroundBrush != null)
+        {
+          _cellBackgroundBrush.Dispose();
+        }
+      }
+
+      base.Dispose(disposing);
     }
 
     /// <summary>
@@ -140,39 +195,21 @@ namespace Cyotek.Windows.Forms
       handler?.Invoke(this, e);
     }
 
-    #endregion
-
-    #region IColorEditor Interface
-
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged
+    protected override void PaintBar(PaintEventArgs e)
     {
-      add { this.Events.AddHandler(_eventColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
-    }
-
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "Black")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
+      if (this.Color.A != 255)
       {
-        if (_color != value)
+        if (_cellBackgroundBrush == null)
         {
-          _color = value;
-
-          if (!this.LockUpdates)
-          {
-            this.LockUpdates = true;
-            this.Value = (float)new HslColor(value).L * 100;
-            this.OnColorChanged(EventArgs.Empty);
-            this.LockUpdates = false;
-          }
+          _cellBackgroundBrush = this.CreateTransparencyBrush();
         }
+
+        e.Graphics.FillRectangle(_cellBackgroundBrush, this.BarBounds);
       }
+
+      base.PaintBar(e);
     }
 
-    #endregion
+    #endregion Protected Methods
   }
 }
