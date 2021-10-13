@@ -24,6 +24,8 @@ namespace Cyotek.Windows.Forms
   {
     #region Private Fields
 
+    private static readonly object _eventAlphaChanged = new object();
+
     private static readonly object _eventColorChanged = new object();
 
     private static readonly object _eventColorStepChanged = new object();
@@ -39,6 +41,8 @@ namespace Cyotek.Windows.Forms
     private static readonly object _eventSelectionSizeChanged = new object();
 
     private static readonly object _eventSmallChangeChanged = new object();
+
+    private double _alpha;
 
     private Brush _brush;
 
@@ -94,11 +98,28 @@ namespace Cyotek.Windows.Forms
       _smallChange = 1;
       _largeChange = 5;
       _lightness = 0.5;
+      _alpha = 1;
     }
 
     #endregion Public Constructors
 
     #region Public Events
+
+    /// <summary>
+    /// Occurs when the Alpha property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler AlphaChanged
+    {
+      add
+      {
+        this.Events.AddHandler(_eventAlphaChanged, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventAlphaChanged, value);
+      }
+    }
 
     [Category("Property Changed")]
     public event EventHandler ColorChanged
@@ -177,6 +198,22 @@ namespace Cyotek.Windows.Forms
     #endregion Public Events
 
     #region Public Properties
+
+    [Category("Behavior")]
+    [DefaultValue(1)]
+    public double Alpha
+    {
+      get { return _alpha; }
+      set
+      {
+        if (Math.Abs(_alpha - value) > double.Epsilon)
+        {
+          _alpha = value;
+
+          this.OnAlphaChanged(EventArgs.Empty);
+        }
+      }
+    }
 
     /// <summary>
     /// Gets or sets the component color.
@@ -657,6 +694,19 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="AlphaChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnAlphaChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventAlphaChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
     /// Raises the <see cref="ColorChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -727,7 +777,7 @@ namespace Cyotek.Windows.Forms
 
       if (!_lockUpdates)
       {
-        this.Color = _hslColor.ToRgbColor();
+        this.SetRgbColor(_hslColor);
       }
 
       this.Invalidate();
@@ -790,7 +840,7 @@ namespace Cyotek.Windows.Forms
         // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
         // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
         _lockUpdates = true;
-        this.Color = color.ToRgbColor();
+        this.SetRgbColor(color);
         this.HslColor = color;
         _lockUpdates = false;
 
@@ -1054,7 +1104,7 @@ namespace Cyotek.Windows.Forms
       {
         _lockUpdates = true;
         this.HslColor = newColor;
-        this.Color = _hslColor.ToRgbColor();
+        this.SetRgbColor(_hslColor);
         _lockUpdates = false;
       }
     }
@@ -1097,6 +1147,11 @@ namespace Cyotek.Windows.Forms
       }
 
       this.Invalidate();
+    }
+
+    private void SetRgbColor(HslColor hslColor)
+    {
+      this.Color = hslColor.ToRgbColor(Convert.ToInt32(_alpha * 255));
     }
 
     #endregion Private Methods

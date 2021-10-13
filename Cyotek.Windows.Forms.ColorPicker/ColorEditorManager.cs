@@ -23,6 +23,8 @@ namespace Cyotek.Windows.Forms
   {
     #region Private Fields
 
+    private const double _rgbMultiplier = 0.003921568627451;
+
     private static readonly object _eventColorChanged = new object();
 
     private static readonly object _eventColorEditorChanged = new object();
@@ -424,6 +426,7 @@ namespace Cyotek.Windows.Forms
             if (_wheel != null)
             {
               _wheel.Lightness = _hslColor.L;
+              _wheel.Alpha = _color.A * _rgbMultiplier;
             }
           }
           else if (object.ReferenceEquals(sender, _colorEditor))
@@ -431,6 +434,7 @@ namespace Cyotek.Windows.Forms
             if (_wheel != null)
             {
               _wheel.Lightness = _colorEditor.HslColor.L;
+              _wheel.Alpha = _colorEditor.Color.A * _rgbMultiplier;
             }
 
             if (_lightnessColorSlider != null)
