@@ -543,7 +543,8 @@ namespace Cyotek.Windows.Forms
     {
       base.OnMouseMove(e);
 
-      if (_isCapturing)
+      // Only process mousemove if we aren't using the hook version
+      if (_isCapturing && this.Capture)
       {
         this.UpdateSnapshot();
         this.UpdateColor();
