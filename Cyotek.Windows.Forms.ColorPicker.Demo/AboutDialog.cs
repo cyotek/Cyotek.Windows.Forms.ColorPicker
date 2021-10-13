@@ -23,16 +23,25 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   internal partial class AboutDialog : BaseForm
   {
-    #region Constructors
+    #region Public Constructors
 
     public AboutDialog()
     {
       this.InitializeComponent();
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Static Methods
+    #region Protected Properties
+
+    protected TabControl TabControl
+    {
+      get { return docsTabControl; }
+    }
+
+    #endregion Protected Properties
+
+    #region Internal Methods
 
     internal static void ShowAboutDialog()
     {
@@ -42,18 +51,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       }
     }
 
-    #endregion
+    #endregion Internal Methods
 
-    #region Properties
-
-    protected TabControl TabControl
-    {
-      get { return docsTabControl; }
-    }
-
-    #endregion
-
-    #region Methods
+    #region Protected Methods
 
     protected override void OnFontChanged(EventArgs e)
     {
@@ -91,16 +91,20 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       }
     }
 
+    #endregion Protected Methods
+
+    #region Private Methods
+
     private void AddReadme(string fileName)
     {
       docsTabControl.TabPages.Add(new TabPage
-                                  {
-                                    UseVisualStyleBackColor = true,
-                                    Padding = new Padding(9),
-                                    ToolTipText = this.GetFullReadmePath(fileName),
-                                    Text = fileName,
-                                    Tag = fileName
-                                  });
+      {
+        UseVisualStyleBackColor = true,
+        Padding = new Padding(9),
+        ToolTipText = this.GetFullReadmePath(fileName),
+        Text = fileName,
+        Tag = fileName
+      });
     }
 
     private void closeButton_Click(object sender, EventArgs e)
@@ -122,6 +126,18 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private string GetFullReadmePath(string fileName)
     {
       return Path.GetFullPath(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\"), fileName));
+    }
+
+    private void HtmlPanelImageLoadHandler(object sender, TheArtOfDev.HtmlRenderer.Core.Entities.HtmlImageLoadEventArgs e)
+    {
+      if (e.Src.StartsWith("https://img.shields.io/", StringComparison.OrdinalIgnoreCase))
+      {
+        e.Callback("https://raster.shields.io/" + e.Src.Substring(23) + ".png");
+      }
+      else if (e.Src.StartsWith("res/", StringComparison.OrdinalIgnoreCase))
+      {
+        e.Callback(this.GetFullReadmePath(e.Src));
+      }
     }
 
     private void LoadDocumentForTab(TabPage page)
@@ -150,22 +166,24 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         {
           case ".md":
             documentView = new HtmlPanel
-                           {
-                             Dock = DockStyle.Fill,
-                             BaseStylesheet = Resources.CSS,
-                             Text = string.Concat("<html><body>", CommonMarkConverter.Convert(text), "</body></html>") // HACK: HTML panel screws up rendering if a <body> tag isn't present
-                           };
+            {
+              Dock = DockStyle.Fill,
+              BaseStylesheet = Resources.CSS,
+              Text = string.Concat("<html><body>", CommonMarkConverter.Convert(text), "</body></html>") // HACK: HTML panel screws up rendering if a <body> tag isn't present
+            };
+            ((HtmlPanel)documentView).ImageLoad += this.HtmlPanelImageLoadHandler;
             break;
+
           default:
             documentView = new TextBox
-                           {
-                             ReadOnly = true,
-                             Multiline = true,
-                             WordWrap = true,
-                             ScrollBars = ScrollBars.Vertical,
-                             Dock = DockStyle.Fill,
-                             Text = text
-                           };
+            {
+              ReadOnly = true,
+              Multiline = true,
+              WordWrap = true,
+              ScrollBars = ScrollBars.Vertical,
+              Dock = DockStyle.Fill,
+              Text = text
+            };
             break;
         }
 
@@ -196,6 +214,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       }
     }
 
-    #endregion
+    #endregion Private Methods
   }
 }
