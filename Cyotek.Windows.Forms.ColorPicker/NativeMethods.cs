@@ -31,7 +31,11 @@ namespace Cyotek.Windows.Forms
 
     public const int R2_NOT = 6;
 
+    public const int WH_KEYBOARD_LL = 13;
+
     public const int WH_MOUSE_LL = 14;
+
+    public const int WM_KEYDOWN = 0x0100;
 
     public const int WM_LBUTTONDOWN = 0x0201;
 
@@ -100,6 +104,9 @@ namespace Cyotek.Windows.Forms
 
     [DllImport(_gdi32DllName, EntryPoint = "SetROP2", CallingConvention = CallingConvention.StdCall)]
     public static extern int SetROP2(IntPtr hdc, int fnDrawMode);
+
+    [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
     [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
     public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);

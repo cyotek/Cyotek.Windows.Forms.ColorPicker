@@ -1306,7 +1306,6 @@ namespace Cyotek.Windows.Forms
       {
         Point start;
         Point end;
-        IntPtr hdc;
 
         if (this.Orientation == Orientation.Horizontal)
         {

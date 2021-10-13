@@ -327,12 +327,12 @@ namespace Cyotek.Windows.Forms
 
     public void CaptureMouse()
     {
-      ScreenColorPickerMouseHook.Capture(this);
+      ScreenColorPickerHooks.Capture(this);
     }
 
     public void ReleaseMouse()
     {
-      ScreenColorPickerMouseHook.Release();
+      ScreenColorPickerHooks.Release();
     }
 
     #endregion Public Methods
