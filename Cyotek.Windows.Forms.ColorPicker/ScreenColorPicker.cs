@@ -406,15 +406,8 @@ namespace Cyotek.Windows.Forms
     {
       if (disposing)
       {
-        if (_eyedropperCursor != null)
-        {
-          _eyedropperCursor.Dispose();
-        }
-
-        if (_snapshotImage != null)
-        {
-          _snapshotImage.Dispose();
-        }
+        _eyedropperCursor?.Dispose();
+        _snapshotImage?.Dispose();
       }
 
       this.ReleaseMouse();
@@ -699,10 +692,7 @@ namespace Cyotek.Windows.Forms
 
       center = this.GetCenterPoint();
 
-      using (Pen pen = new Pen(this.ForeColor))
-      {
-        e.Graphics.DrawRectangle(pen, center.X * _zoom, center.Y * _zoom, _zoom + 2, _zoom + 2);
-      }
+      PaintHelper.DrawInvertedRect(e.Graphics, (center.X * _zoom) - 1, (center.Y * _zoom) - 1, _zoom + 3, _zoom + 3);
     }
 
     /// <summary>

@@ -17,13 +17,7 @@ namespace Cyotek.Windows.Forms
 {
   internal static class NativeMethods
   {
-    
     #region Public Fields
-
-    public const int WM_LBUTTONDOWN = 0x0201;
-
-
-public const int     WM_NCLBUTTONDOWN  = 0x00A1;
 
     /// <summary>
     ///   Logical pixels inch in X
@@ -35,10 +29,15 @@ public const int     WM_NCLBUTTONDOWN  = 0x00A1;
     /// </summary>
     public const int LOGPIXELSY = 90;
 
-    public const int R2_NOT = 6; // Inverted drawing mode
+    public const int R2_NOT = 6;
 
-    //public const int WH_MOUSE = 7;
     public const int WH_MOUSE_LL = 14;
+
+    public const int WM_LBUTTONDOWN = 0x0201;
+
+    public const int WM_MOUSEMOVE = 0x0200;
+
+    public const int WM_NCLBUTTONDOWN = 0x00A1;
 
     #endregion Public Fields
 
@@ -81,14 +80,14 @@ public const int     WM_NCLBUTTONDOWN  = 0x00A1;
       return new Point(dpix, dpiy);
     }
 
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    public static extern IntPtr GetModuleHandle(string lpModuleName);
-
     [DllImport(_user32DllName)]
     public static extern IntPtr GetDesktopWindow();
 
     [DllImport(_gdi32DllName)]
     public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern IntPtr GetModuleHandle(string lpModuleName);
 
     [DllImport(_gdi32DllName, EntryPoint = "LineTo", CallingConvention = CallingConvention.StdCall)]
     public static extern bool LineTo(IntPtr hdc, int x, int y);
@@ -109,32 +108,6 @@ public const int     WM_NCLBUTTONDOWN  = 0x00A1;
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
-    public const int WM_MOUSEMOVE = 0x0200;
-
     #endregion Public Methods
-
-    #region Public Classes
-
-    [StructLayout(LayoutKind.Sequential)]
-    public class MouseHookStruct
-    {
-      public POINT pt;
-
-      public int hwnd;
-
-      public int wHitTestCode;
-
-      public int dwExtraInfo;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public class POINT
-    {
-      public int x;
-
-      public int y;
-    }
-
-    #endregion Public Classes
   }
 }
