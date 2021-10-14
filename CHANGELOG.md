@@ -20,12 +20,18 @@
   without having to click and drag in the source control, for
   example via hotkey
 * Added `ScreenColorPicker.Selecting` and `Selected` events,
-  allowing you to know when a selection operation starts and ends
+  allowing you to know when a selection operation starts and
+  ends
+* Added `ColorSlider.NubOutlineColor`
 
 #### Changed
 
 * Added dedicated targets for .NET 3.5, .NET 4.0, .NET 4.5.2,
   .NET 4.6.2,.NET 4.7.2, .NET 4.8, .NET 5.0 and .NET Core 3.1
+* Focus rectangles in slider controls now use an inverse
+  painting operation
+* Drag handles in the slider controls are no longer fully
+  outside the bar, but are half inside and half out
 
 #### Deprecated
 
