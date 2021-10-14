@@ -1,7 +1,7 @@
 // Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Copyright © 2021 Cyotek Ltd.
+// Copyright (c) 2021 Cyotek Ltd.
 
 // This work is licensed under the MIT License.
 // See LICENSE.TXT for the full text
@@ -28,7 +28,7 @@ namespace Cyotek.Windows.Forms
 
     private static readonly LowLevelMouseProc _mouseHookProc = ScreenColorPickerHooks.MouseHookProc;
 
-    private static IntPtr _keyboardHooK = IntPtr.Zero;
+    private static IntPtr _keyboardHook = IntPtr.Zero;
 
     private static IntPtr _mouseHook = IntPtr.Zero;
 
@@ -45,7 +45,7 @@ namespace Cyotek.Windows.Forms
       if (owner.MarkAsCapturing())
       {
         _mouseHook = ScreenColorPickerHooks.SetHook(_mouseHookProc);
-        _keyboardHooK = ScreenColorPickerHooks.SetHook(_keyboardHookProc);
+        _keyboardHook = ScreenColorPickerHooks.SetHook(_keyboardHookProc);
 
         _owner = owner;
       }
@@ -57,7 +57,7 @@ namespace Cyotek.Windows.Forms
       _owner = null;
 
       ScreenColorPickerHooks.Release(ref _mouseHook);
-      ScreenColorPickerHooks.Release(ref _keyboardHooK);
+      ScreenColorPickerHooks.Release(ref _keyboardHook);
     }
 
     #endregion Public Methods
