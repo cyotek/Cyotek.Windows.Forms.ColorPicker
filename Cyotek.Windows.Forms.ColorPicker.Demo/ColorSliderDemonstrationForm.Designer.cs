@@ -41,12 +41,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       Cyotek.Windows.Forms.GroupBox lightnessSliderGroupBox;
       System.Windows.Forms.MenuStrip menuStrip;
       System.Windows.Forms.ToolStrip toolStrip1;
+      System.Windows.Forms.ToolStripLabel toolStripLabel4;
       System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
       System.Windows.Forms.ToolStripLabel toolStripLabel3;
       System.Windows.Forms.ToolStripLabel toolStripLabel1;
       System.Windows.Forms.ToolStripLabel toolStripLabel2;
       System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-      System.Windows.Forms.ToolStripLabel toolStripLabel4;
       this.saturationColorSlider = new Cyotek.Windows.Forms.SaturationColorSlider();
       this.hueColorSlider = new Cyotek.Windows.Forms.HueColorSlider();
       this.alphaColorSlider = new Cyotek.Windows.Forms.RgbaColorSlider();
@@ -67,6 +67,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.backgroundToolStripColorPickerSplitButton = new Cyotek.Windows.Forms.ToolStripControllerHosts.ToolStripColorPickerSplitButton();
       this.nubColorToolStripColorPickerSplitButton = new Cyotek.Windows.Forms.ToolStripControllerHosts.ToolStripColorPickerSplitButton();
+      this.nubOutlineColorToolStripColorPickerSplitButton = new Cyotek.Windows.Forms.ToolStripControllerHosts.ToolStripColorPickerSplitButton();
       this.nubWidthToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
       this.nubHeightToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
       this.showValueDividerToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -83,12 +84,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       lightnessSliderGroupBox = new Cyotek.Windows.Forms.GroupBox();
       menuStrip = new System.Windows.Forms.MenuStrip();
       toolStrip1 = new System.Windows.Forms.ToolStrip();
+      toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
       toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
       toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
       toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
       toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-      toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
       saturationSliderGroupBox.SuspendLayout();
       hueSliderGroupBox.SuspendLayout();
       alphaSliderGroupBox.SuspendLayout();
@@ -115,9 +116,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       saturationSliderGroupBox.Controls.Add(this.saturationColorSlider);
       saturationSliderGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-      saturationSliderGroupBox.Location = new System.Drawing.Point(120, 192);
+      saturationSliderGroupBox.Location = new System.Drawing.Point(120, 191);
       saturationSliderGroupBox.Name = "saturationSliderGroupBox";
-      saturationSliderGroupBox.Size = new System.Drawing.Size(111, 184);
+      saturationSliderGroupBox.Size = new System.Drawing.Size(111, 183);
       saturationSliderGroupBox.TabIndex = 5;
       saturationSliderGroupBox.TabStop = false;
       saturationSliderGroupBox.Text = "SaturationColorSlider";
@@ -130,7 +131,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.saturationColorSlider.Location = new System.Drawing.Point(7, 25);
       this.saturationColorSlider.Name = "saturationColorSlider";
       this.saturationColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.saturationColorSlider.Size = new System.Drawing.Size(97, 152);
+      this.saturationColorSlider.Size = new System.Drawing.Size(97, 151);
       this.saturationColorSlider.TabIndex = 0;
       this.saturationColorSlider.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       this.saturationColorSlider.Enter += new System.EventHandler(this.GotFocusHandler);
@@ -139,9 +140,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       hueSliderGroupBox.Controls.Add(this.hueColorSlider);
       hueSliderGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-      hueSliderGroupBox.Location = new System.Drawing.Point(3, 192);
+      hueSliderGroupBox.Location = new System.Drawing.Point(3, 191);
       hueSliderGroupBox.Name = "hueSliderGroupBox";
-      hueSliderGroupBox.Size = new System.Drawing.Size(111, 184);
+      hueSliderGroupBox.Size = new System.Drawing.Size(111, 183);
       hueSliderGroupBox.TabIndex = 4;
       hueSliderGroupBox.TabStop = false;
       hueSliderGroupBox.Text = "HueColorSlider";
@@ -154,7 +155,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.hueColorSlider.Location = new System.Drawing.Point(7, 25);
       this.hueColorSlider.Name = "hueColorSlider";
       this.hueColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.hueColorSlider.Size = new System.Drawing.Size(97, 152);
+      this.hueColorSlider.Size = new System.Drawing.Size(97, 151);
       this.hueColorSlider.TabIndex = 0;
       this.hueColorSlider.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       this.hueColorSlider.Enter += new System.EventHandler(this.GotFocusHandler);
@@ -165,7 +166,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       alphaSliderGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
       alphaSliderGroupBox.Location = new System.Drawing.Point(354, 3);
       alphaSliderGroupBox.Name = "alphaSliderGroupBox";
-      alphaSliderGroupBox.Size = new System.Drawing.Size(114, 183);
+      alphaSliderGroupBox.Size = new System.Drawing.Size(112, 182);
       alphaSliderGroupBox.TabIndex = 3;
       alphaSliderGroupBox.TabStop = false;
       alphaSliderGroupBox.Text = "RgbColorSlider (Alpha Channel)";
@@ -179,7 +180,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.alphaColorSlider.Location = new System.Drawing.Point(7, 25);
       this.alphaColorSlider.Name = "alphaColorSlider";
       this.alphaColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.alphaColorSlider.Size = new System.Drawing.Size(100, 151);
+      this.alphaColorSlider.Size = new System.Drawing.Size(98, 150);
       this.alphaColorSlider.TabIndex = 0;
       this.alphaColorSlider.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       this.alphaColorSlider.Enter += new System.EventHandler(this.GotFocusHandler);
@@ -190,7 +191,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       blueSliderGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
       blueSliderGroupBox.Location = new System.Drawing.Point(237, 3);
       blueSliderGroupBox.Name = "blueSliderGroupBox";
-      blueSliderGroupBox.Size = new System.Drawing.Size(111, 183);
+      blueSliderGroupBox.Size = new System.Drawing.Size(111, 182);
       blueSliderGroupBox.TabIndex = 2;
       blueSliderGroupBox.TabStop = false;
       blueSliderGroupBox.Text = "RgbColorSlider (Blue Channel)";
@@ -204,7 +205,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.blueRgbColorSlider.Location = new System.Drawing.Point(7, 25);
       this.blueRgbColorSlider.Name = "blueRgbColorSlider";
       this.blueRgbColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.blueRgbColorSlider.Size = new System.Drawing.Size(97, 151);
+      this.blueRgbColorSlider.Size = new System.Drawing.Size(97, 150);
       this.blueRgbColorSlider.TabIndex = 0;
       this.blueRgbColorSlider.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       this.blueRgbColorSlider.Enter += new System.EventHandler(this.GotFocusHandler);
@@ -215,7 +216,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       greenSliderGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
       greenSliderGroupBox.Location = new System.Drawing.Point(120, 3);
       greenSliderGroupBox.Name = "greenSliderGroupBox";
-      greenSliderGroupBox.Size = new System.Drawing.Size(111, 183);
+      greenSliderGroupBox.Size = new System.Drawing.Size(111, 182);
       greenSliderGroupBox.TabIndex = 1;
       greenSliderGroupBox.TabStop = false;
       greenSliderGroupBox.Text = "RgbColorSlider (Green Channel)";
@@ -229,7 +230,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.greenRgbColorSlider.Location = new System.Drawing.Point(7, 25);
       this.greenRgbColorSlider.Name = "greenRgbColorSlider";
       this.greenRgbColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.greenRgbColorSlider.Size = new System.Drawing.Size(97, 151);
+      this.greenRgbColorSlider.Size = new System.Drawing.Size(97, 150);
       this.greenRgbColorSlider.TabIndex = 0;
       this.greenRgbColorSlider.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       this.greenRgbColorSlider.Enter += new System.EventHandler(this.GotFocusHandler);
@@ -240,7 +241,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       redSliderGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
       redSliderGroupBox.Location = new System.Drawing.Point(3, 3);
       redSliderGroupBox.Name = "redSliderGroupBox";
-      redSliderGroupBox.Size = new System.Drawing.Size(111, 183);
+      redSliderGroupBox.Size = new System.Drawing.Size(111, 182);
       redSliderGroupBox.TabIndex = 0;
       redSliderGroupBox.TabStop = false;
       redSliderGroupBox.Text = "RgbColorSlider (Red Channel)";
@@ -253,7 +254,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.redRgbColorSlider.Location = new System.Drawing.Point(7, 25);
       this.redRgbColorSlider.Name = "redRgbColorSlider";
       this.redRgbColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.redRgbColorSlider.Size = new System.Drawing.Size(97, 151);
+      this.redRgbColorSlider.Size = new System.Drawing.Size(97, 150);
       this.redRgbColorSlider.TabIndex = 0;
       this.redRgbColorSlider.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       this.redRgbColorSlider.Enter += new System.EventHandler(this.GotFocusHandler);
@@ -262,9 +263,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       nubStylesGroupBox.Controls.Add(this.tableLayoutPanel1);
       nubStylesGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-      nubStylesGroupBox.Location = new System.Drawing.Point(354, 192);
+      nubStylesGroupBox.Location = new System.Drawing.Point(354, 191);
       nubStylesGroupBox.Name = "nubStylesGroupBox";
-      nubStylesGroupBox.Size = new System.Drawing.Size(114, 184);
+      nubStylesGroupBox.Size = new System.Drawing.Size(112, 183);
       nubStylesGroupBox.TabIndex = 7;
       nubStylesGroupBox.TabStop = false;
       nubStylesGroupBox.Text = "Orientation Styles";
@@ -291,32 +292,32 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66333F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-      this.tableLayoutPanel1.Size = new System.Drawing.Size(108, 162);
+      this.tableLayoutPanel1.Size = new System.Drawing.Size(106, 161);
       this.tableLayoutPanel1.TabIndex = 3;
       // 
       // verticalLeftColorSlider
       // 
       this.verticalLeftColorSlider.Color = System.Drawing.Color.SeaGreen;
       this.verticalLeftColorSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.verticalLeftColorSlider.Location = new System.Drawing.Point(75, 3);
+      this.verticalLeftColorSlider.Location = new System.Drawing.Point(73, 3);
       this.verticalLeftColorSlider.Margin = new System.Windows.Forms.Padding(3, 3, 6, 6);
       this.verticalLeftColorSlider.Name = "verticalLeftColorSlider";
       this.verticalLeftColorSlider.NubStyle = Cyotek.Windows.Forms.ColorSliderNubStyle.TopLeft;
       this.verticalLeftColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
       this.verticalLeftColorSlider.ShowValueDivider = true;
-      this.verticalLeftColorSlider.Size = new System.Drawing.Size(27, 72);
+      this.verticalLeftColorSlider.Size = new System.Drawing.Size(27, 71);
       this.verticalLeftColorSlider.TabIndex = 2;
       // 
       // verticalRightColorSlider
       // 
       this.verticalRightColorSlider.Color = System.Drawing.Color.SeaGreen;
       this.verticalRightColorSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.verticalRightColorSlider.Location = new System.Drawing.Point(39, 3);
+      this.verticalRightColorSlider.Location = new System.Drawing.Point(38, 3);
       this.verticalRightColorSlider.Margin = new System.Windows.Forms.Padding(3, 3, 6, 6);
       this.verticalRightColorSlider.Name = "verticalRightColorSlider";
       this.verticalRightColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
       this.verticalRightColorSlider.ShowValueDivider = true;
-      this.verticalRightColorSlider.Size = new System.Drawing.Size(27, 72);
+      this.verticalRightColorSlider.Size = new System.Drawing.Size(26, 71);
       this.verticalRightColorSlider.TabIndex = 1;
       // 
       // verticalColorSlider
@@ -329,7 +330,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.verticalColorSlider.NubStyle = Cyotek.Windows.Forms.ColorSliderNubStyle.None;
       this.verticalColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
       this.verticalColorSlider.ShowValueDivider = true;
-      this.verticalColorSlider.Size = new System.Drawing.Size(27, 72);
+      this.verticalColorSlider.Size = new System.Drawing.Size(26, 71);
       this.verticalColorSlider.TabIndex = 0;
       // 
       // horizontalColorSlider
@@ -337,12 +338,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.horizontalColorSlider.Color = System.Drawing.Color.SeaGreen;
       this.tableLayoutPanel1.SetColumnSpan(this.horizontalColorSlider, 3);
       this.horizontalColorSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.horizontalColorSlider.Location = new System.Drawing.Point(3, 84);
+      this.horizontalColorSlider.Location = new System.Drawing.Point(3, 83);
       this.horizontalColorSlider.Margin = new System.Windows.Forms.Padding(3, 3, 6, 6);
       this.horizontalColorSlider.Name = "horizontalColorSlider";
       this.horizontalColorSlider.NubStyle = Cyotek.Windows.Forms.ColorSliderNubStyle.None;
       this.horizontalColorSlider.ShowValueDivider = true;
-      this.horizontalColorSlider.Size = new System.Drawing.Size(99, 17);
+      this.horizontalColorSlider.Size = new System.Drawing.Size(97, 17);
       this.horizontalColorSlider.TabIndex = 3;
       // 
       // horizontalBottomColorSlider
@@ -350,11 +351,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.horizontalBottomColorSlider.Color = System.Drawing.Color.SeaGreen;
       this.tableLayoutPanel1.SetColumnSpan(this.horizontalBottomColorSlider, 3);
       this.horizontalBottomColorSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.horizontalBottomColorSlider.Location = new System.Drawing.Point(3, 110);
+      this.horizontalBottomColorSlider.Location = new System.Drawing.Point(3, 109);
       this.horizontalBottomColorSlider.Margin = new System.Windows.Forms.Padding(3, 3, 6, 6);
       this.horizontalBottomColorSlider.Name = "horizontalBottomColorSlider";
       this.horizontalBottomColorSlider.ShowValueDivider = true;
-      this.horizontalBottomColorSlider.Size = new System.Drawing.Size(99, 17);
+      this.horizontalBottomColorSlider.Size = new System.Drawing.Size(97, 17);
       this.horizontalBottomColorSlider.TabIndex = 4;
       // 
       // horizontalTopColorSlider
@@ -362,12 +363,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.horizontalTopColorSlider.Color = System.Drawing.Color.SeaGreen;
       this.tableLayoutPanel1.SetColumnSpan(this.horizontalTopColorSlider, 3);
       this.horizontalTopColorSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.horizontalTopColorSlider.Location = new System.Drawing.Point(3, 136);
+      this.horizontalTopColorSlider.Location = new System.Drawing.Point(3, 135);
       this.horizontalTopColorSlider.Margin = new System.Windows.Forms.Padding(3, 3, 6, 6);
       this.horizontalTopColorSlider.Name = "horizontalTopColorSlider";
       this.horizontalTopColorSlider.NubStyle = Cyotek.Windows.Forms.ColorSliderNubStyle.TopLeft;
       this.horizontalTopColorSlider.ShowValueDivider = true;
-      this.horizontalTopColorSlider.Size = new System.Drawing.Size(99, 20);
+      this.horizontalTopColorSlider.Size = new System.Drawing.Size(97, 20);
       this.horizontalTopColorSlider.TabIndex = 5;
       // 
       // propertiesSplitContainer
@@ -385,7 +386,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       propertiesSplitContainer.Panel2.Controls.Add(this.propertyGrid);
       propertiesSplitContainer.Size = new System.Drawing.Size(784, 512);
-      propertiesSplitContainer.SplitterDistance = 471;
+      propertiesSplitContainer.SplitterDistance = 469;
       propertiesSplitContainer.SplitterWidth = 5;
       propertiesSplitContainer.TabIndex = 2;
       // 
@@ -404,8 +405,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // eventsSplitContainer.Panel2
       // 
       eventsSplitContainer.Panel2.Controls.Add(this.eventsListBox);
-      eventsSplitContainer.Size = new System.Drawing.Size(471, 512);
-      eventsSplitContainer.SplitterDistance = 379;
+      eventsSplitContainer.Size = new System.Drawing.Size(469, 512);
+      eventsSplitContainer.SplitterDistance = 377;
       eventsSplitContainer.SplitterWidth = 5;
       eventsSplitContainer.TabIndex = 0;
       // 
@@ -430,16 +431,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       tableLayoutPanel.RowCount = 2;
       tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
       tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-      tableLayoutPanel.Size = new System.Drawing.Size(471, 379);
+      tableLayoutPanel.Size = new System.Drawing.Size(469, 377);
       tableLayoutPanel.TabIndex = 0;
       // 
       // lightnessSliderGroupBox
       // 
       lightnessSliderGroupBox.Controls.Add(this.lightnessColorSlider);
       lightnessSliderGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-      lightnessSliderGroupBox.Location = new System.Drawing.Point(237, 192);
+      lightnessSliderGroupBox.Location = new System.Drawing.Point(237, 191);
       lightnessSliderGroupBox.Name = "lightnessSliderGroupBox";
-      lightnessSliderGroupBox.Size = new System.Drawing.Size(111, 184);
+      lightnessSliderGroupBox.Size = new System.Drawing.Size(111, 183);
       lightnessSliderGroupBox.TabIndex = 6;
       lightnessSliderGroupBox.TabStop = false;
       lightnessSliderGroupBox.Text = "LightnessColorSlider";
@@ -452,7 +453,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.lightnessColorSlider.Location = new System.Drawing.Point(7, 25);
       this.lightnessColorSlider.Name = "lightnessColorSlider";
       this.lightnessColorSlider.Orientation = System.Windows.Forms.Orientation.Vertical;
-      this.lightnessColorSlider.Size = new System.Drawing.Size(97, 152);
+      this.lightnessColorSlider.Size = new System.Drawing.Size(97, 151);
       this.lightnessColorSlider.TabIndex = 0;
       this.lightnessColorSlider.ValueChanged += new System.EventHandler(this.ValueChangedHandler);
       this.lightnessColorSlider.Enter += new System.EventHandler(this.GotFocusHandler);
@@ -465,7 +466,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.eventsListBox.ItemHeight = 15;
       this.eventsListBox.Location = new System.Drawing.Point(0, 0);
       this.eventsListBox.Name = "eventsListBox";
-      this.eventsListBox.Size = new System.Drawing.Size(471, 128);
+      this.eventsListBox.Size = new System.Drawing.Size(469, 130);
       this.eventsListBox.TabIndex = 0;
       // 
       // propertyGrid
@@ -474,7 +475,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.propertyGrid.Location = new System.Drawing.Point(0, 0);
       this.propertyGrid.Name = "propertyGrid";
       this.propertyGrid.SelectedObject = this.alphaColorSlider;
-      this.propertyGrid.Size = new System.Drawing.Size(308, 512);
+      this.propertyGrid.Size = new System.Drawing.Size(310, 512);
       this.propertyGrid.TabIndex = 0;
       // 
       // menuStrip
@@ -511,6 +512,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             toolStripSeparator1,
             toolStripLabel3,
             this.nubColorToolStripColorPickerSplitButton,
+            this.nubOutlineColorToolStripColorPickerSplitButton,
             toolStripLabel1,
             this.nubWidthToolStripTextBox,
             toolStripLabel2,
@@ -522,6 +524,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       toolStrip1.Size = new System.Drawing.Size(784, 25);
       toolStrip1.TabIndex = 1;
       toolStrip1.Text = "toolStrip1";
+      // 
+      // toolStripLabel4
+      // 
+      toolStripLabel4.Name = "toolStripLabel4";
+      toolStripLabel4.Size = new System.Drawing.Size(66, 22);
+      toolStripLabel4.Text = "Base Color:";
       // 
       // backgroundToolStripColorPickerSplitButton
       // 
@@ -552,9 +560,21 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.nubColorToolStripColorPickerSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.nubColorToolStripColorPickerSplitButton.Name = "nubColorToolStripColorPickerSplitButton";
       this.nubColorToolStripColorPickerSplitButton.Size = new System.Drawing.Size(32, 22);
-      this.nubColorToolStripColorPickerSplitButton.Text = "Fill";
+      this.nubColorToolStripColorPickerSplitButton.Text = "Nub Color";
       this.nubColorToolStripColorPickerSplitButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
       this.nubColorToolStripColorPickerSplitButton.ColorChanged += new System.EventHandler(this.NubColorToolStripColorPickerSplitButton_ColorChanged);
+      // 
+      // nubOutlineColorToolStripColorPickerSplitButton
+      // 
+      this.nubOutlineColorToolStripColorPickerSplitButton.Color = System.Drawing.Color.White;
+      this.nubOutlineColorToolStripColorPickerSplitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.nubOutlineColorToolStripColorPickerSplitButton.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.NubOutlineColor;
+      this.nubOutlineColorToolStripColorPickerSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.nubOutlineColorToolStripColorPickerSplitButton.Name = "nubOutlineColorToolStripColorPickerSplitButton";
+      this.nubOutlineColorToolStripColorPickerSplitButton.Size = new System.Drawing.Size(32, 22);
+      this.nubOutlineColorToolStripColorPickerSplitButton.Text = "Nub Outline Color";
+      this.nubOutlineColorToolStripColorPickerSplitButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+      this.nubOutlineColorToolStripColorPickerSplitButton.ColorChanged += new System.EventHandler(this.NubOutlineColorToolStripColorPickerSplitButton_ColorChanged);
       // 
       // toolStripLabel1
       // 
@@ -564,6 +584,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // nubWidthToolStripTextBox
       // 
+      this.nubWidthToolStripTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.nubWidthToolStripTextBox.Name = "nubWidthToolStripTextBox";
       this.nubWidthToolStripTextBox.Size = new System.Drawing.Size(24, 25);
       this.nubWidthToolStripTextBox.Text = "8";
@@ -577,6 +598,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // nubHeightToolStripTextBox
       // 
+      this.nubHeightToolStripTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.nubHeightToolStripTextBox.Name = "nubHeightToolStripTextBox";
       this.nubHeightToolStripTextBox.Size = new System.Drawing.Size(24, 25);
       this.nubHeightToolStripTextBox.Text = "8";
@@ -597,12 +619,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.showValueDividerToolStripButton.Size = new System.Drawing.Size(23, 22);
       this.showValueDividerToolStripButton.Text = "Show Value Divider";
       this.showValueDividerToolStripButton.CheckedChanged += new System.EventHandler(this.ShowValueDividerToolStripButton_CheckedChanged);
-      // 
-      // toolStripLabel4
-      // 
-      toolStripLabel4.Name = "toolStripLabel4";
-      toolStripLabel4.Size = new System.Drawing.Size(66, 22);
-      toolStripLabel4.Text = "Base Color:";
       // 
       // ColorSliderDemonstrationForm
       // 
@@ -662,9 +678,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private RgbaColorSlider verticalLeftColorSlider;
     private RgbaColorSlider verticalRightColorSlider;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-    private ToolStripControllerHosts.ToolStripColorPickerSplitButton nubColorToolStripColorPickerSplitButton;
+    private ToolStripControllerHosts.ToolStripColorPickerSplitButton nubOutlineColorToolStripColorPickerSplitButton;
     private System.Windows.Forms.ToolStripButton showValueDividerToolStripButton;
     private System.Windows.Forms.ToolStripTextBox nubWidthToolStripTextBox;
     private System.Windows.Forms.ToolStripTextBox nubHeightToolStripTextBox;
+    private ToolStripControllerHosts.ToolStripColorPickerSplitButton nubColorToolStripColorPickerSplitButton;
   }
 }

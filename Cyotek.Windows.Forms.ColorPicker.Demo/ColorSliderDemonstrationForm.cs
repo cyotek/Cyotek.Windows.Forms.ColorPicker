@@ -103,6 +103,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.UpdateSliders((s, a) => s.NubColor = a, nubColorToolStripColorPickerSplitButton.Color);
     }
 
+    private void NubOutlineColorToolStripColorPickerSplitButton_ColorChanged(object sender, EventArgs e)
+    {
+      this.UpdateSliders((s, a) => s.NubOutlineColor = a, nubOutlineColorToolStripColorPickerSplitButton.Color);
+    }
+
     private void NubWidthToolStripTextBox_TextChanged(object sender, EventArgs e)
     {
       if (int.TryParse(nubWidthToolStripTextBox.Text, out int w)
