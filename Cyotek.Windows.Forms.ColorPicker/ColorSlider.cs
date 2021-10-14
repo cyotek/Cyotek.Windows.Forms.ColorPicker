@@ -13,7 +13,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -53,6 +52,8 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventNubColorChanged = new object();
 
+    private static readonly object _eventNubOutlineColorChanged = new object();
+
     private static readonly object _eventNubSizeChanged = new object();
 
     private static readonly object _eventNubStyleChanged = new object();
@@ -91,6 +92,8 @@ namespace Cyotek.Windows.Forms
 
     private Color _nubColor;
 
+    private Color _nubOutlineColor;
+
     private Size _nubSize;
 
     private ColorSliderNubStyle _nubStyle;
@@ -124,6 +127,7 @@ namespace Cyotek.Windows.Forms
       _nubStyle = ColorSliderNubStyle.BottomRight;
       _nubSize = new Size(8, 8);
       _nubColor = Color.Black;
+      _nubOutlineColor = Color.White;
       _smallChange = 1;
       _largeChange = 10;
     }
@@ -214,6 +218,22 @@ namespace Cyotek.Windows.Forms
     {
       add => this.Events.AddHandler(_eventNubColorChanged, value);
       remove => this.Events.RemoveHandler(_eventNubColorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the NubOutlineColor property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler NubOutlineColorChanged
+    {
+      add
+      {
+        this.Events.AddHandler(_eventNubOutlineColorChanged, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventNubOutlineColorChanged, value);
+      }
     }
 
     [Category("Property Changed")]
@@ -512,6 +532,22 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "White")]
+    public Color NubOutlineColor
+    {
+      get { return _nubOutlineColor; }
+      set
+      {
+        if (_nubOutlineColor != value)
+        {
+          _nubOutlineColor = value;
+
+          this.OnNubOutlineColorChanged(EventArgs.Empty);
+        }
+      }
+    }
+
     /// <summary>
     /// Gets or sets the size of the selection nub.
     /// </summary>
@@ -671,67 +707,7 @@ namespace Cyotek.Windows.Forms
     /// <returns>Image.</returns>
     protected virtual Image CreateNubGlyph()
     {
-      Image image;
-
-      image = new Bitmap(_nubSize.Width + 1, _nubSize.Height + 1, PixelFormat.Format32bppArgb);
-
-      using (Graphics g = Graphics.FromImage(image))
-      {
-        Point[] outer;
-        Point firstCorner;
-        Point lastCorner;
-        Point tipCorner;
-
-        if (_nubStyle == ColorSliderNubStyle.BottomRight)
-        {
-          lastCorner = new Point(_nubSize.Width, _nubSize.Height);
-
-          if (_orientation == Orientation.Horizontal)
-          {
-            firstCorner = new Point(0, _nubSize.Height);
-            tipCorner = new Point(_nubSize.Width / 2, 0);
-          }
-          else
-          {
-            firstCorner = new Point(_nubSize.Width, 0);
-            tipCorner = new Point(0, _nubSize.Height / 2);
-          }
-        }
-        else
-        {
-          firstCorner = Point.Empty;
-
-          if (_orientation == Orientation.Horizontal)
-          {
-            lastCorner = new Point(_nubSize.Width, 0);
-            tipCorner = new Point(_nubSize.Width / 2, _nubSize.Height);
-          }
-          else
-          {
-            lastCorner = new Point(0, _nubSize.Height);
-            tipCorner = new Point(_nubSize.Width, _nubSize.Height / 2);
-          }
-        }
-
-        // draw the shape
-        outer = new[]
-                {
-                  firstCorner,
-                  lastCorner,
-                  tipCorner
-                };
-
-        // TODO: Add 3D edging similar to the mousewheel's diamond
-
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-
-        using (Brush brush = new SolidBrush(_nubColor))
-        {
-          g.FillPolygon(brush, outer);
-        }
-      }
-
-      return image;
+      return null;
     }
 
     /// <summary>
@@ -789,25 +765,29 @@ namespace Cyotek.Windows.Forms
       int top;
       int right;
       int bottom;
+      int hw;
+      int hh;
 
       left = 0;
       top = 0;
       right = 0;
       bottom = 0;
+      hh = _nubSize.Height / 2 + 1;
+      hw = _nubSize.Width / 2 + 1;
 
       switch (_nubStyle)
       {
         case ColorSliderNubStyle.BottomRight:
           if (_orientation == Orientation.Horizontal)
           {
-            bottom = _nubSize.Height + 1;
-            left = _nubSize.Width / 2 + 1;
+            bottom = hh;
+            left = hw;
             right = left;
           }
           else
           {
-            right = _nubSize.Width + 1;
-            top = _nubSize.Height / 2 + 1;
+            right = hw;
+            top = hh;
             bottom = top;
           }
           break;
@@ -815,14 +795,14 @@ namespace Cyotek.Windows.Forms
         case ColorSliderNubStyle.TopLeft:
           if (_orientation == Orientation.Horizontal)
           {
-            top = _nubSize.Height + 1;
-            left = _nubSize.Width / 2 + 1;
+            top = hh;
+            left = hw;
             right = left;
           }
           else
           {
-            left = _nubSize.Width + 1;
-            top = _nubSize.Height / 2 + 1;
+            left = hw;
+            top = hh;
             bottom = top;
           }
           break;
@@ -1132,10 +1112,24 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      this.DefineBar();
       this.Invalidate();
 
       handler = (EventHandler)this.Events[_eventNubColorChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="NubOutlineColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnNubOutlineColorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventNubOutlineColorChanged];
 
       handler?.Invoke(this, e);
     }
@@ -1296,8 +1290,14 @@ namespace Cyotek.Windows.Forms
         PaintHelper.DrawInvertedLine(e.Graphics, start, end);
       }
 
+      // focus
+      if (this.Focused)
+      {
+        NativeMethods.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(_barBounds, -2, -2));
+      }
+
       // drag nub
-      if (_nubStyle != ColorSliderNubStyle.None && _selectionGlyph != null)
+      if (_nubStyle != ColorSliderNubStyle.None)
       {
         int x;
         int y;
@@ -1305,35 +1305,31 @@ namespace Cyotek.Windows.Forms
         if (_orientation == Orientation.Horizontal)
         {
           x = point.X - _nubSize.Width / 2;
+
           if (_nubStyle == ColorSliderNubStyle.BottomRight)
           {
-            y = _barBounds.Bottom;
+            y = _barBounds.Bottom - _nubSize.Height / 2;
           }
           else
           {
-            y = _barBounds.Top - _nubSize.Height;
+            y = _barBounds.Top - _nubSize.Height / 2;
           }
         }
         else
         {
           y = point.Y - _nubSize.Height / 2;
+
           if (_nubStyle == ColorSliderNubStyle.BottomRight)
           {
-            x = _barBounds.Right;
+            x = _barBounds.Right - _nubSize.Width / 2;
           }
           else
           {
-            x = _barBounds.Left - _nubSize.Width;
+            x = _barBounds.Left - _nubSize.Width / 2;
           }
         }
 
-        e.Graphics.DrawImage(_selectionGlyph, x, y);
-      }
-
-      // focus
-      if (this.Focused)
-      {
-        NativeMethods.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(_barBounds, -2, -2));
+        this.DrawNub(e.Graphics, x, y);
       }
     }
 
@@ -1492,6 +1488,67 @@ namespace Cyotek.Windows.Forms
       }
 
       return value;
+    }
+
+    private void DrawNub(Graphics g, int x, int y)
+    {
+      Point[] outer;
+      Point firstCorner;
+      Point lastCorner;
+      Point tipCorner;
+
+      // TODO: Cache points and use graphics rotation to render
+
+      if (_nubStyle == ColorSliderNubStyle.BottomRight)
+      {
+        lastCorner = new Point(x + _nubSize.Width, y + _nubSize.Height);
+
+        if (_orientation == Orientation.Horizontal)
+        {
+          firstCorner = new Point(x, y + _nubSize.Height);
+          tipCorner = new Point(x + _nubSize.Width / 2, y);
+        }
+        else
+        {
+          firstCorner = new Point(x + _nubSize.Width, y);
+          tipCorner = new Point(x, y + _nubSize.Height / 2);
+        }
+      }
+      else
+      {
+        firstCorner = new Point(x, y);
+
+        if (_orientation == Orientation.Horizontal)
+        {
+          lastCorner = new Point(x + _nubSize.Width, y);
+          tipCorner = new Point(x + _nubSize.Width / 2, y + _nubSize.Height);
+        }
+        else
+        {
+          lastCorner = new Point(x, y + _nubSize.Height);
+          tipCorner = new Point(x + _nubSize.Width, y + _nubSize.Height / 2);
+        }
+      }
+
+      // draw the shape
+      outer = new[]
+      {
+        firstCorner,
+        lastCorner,
+        tipCorner
+      };
+
+      g.SmoothingMode = SmoothingMode.AntiAlias;
+
+      using (Brush brush = new SolidBrush(_nubColor))
+      {
+        g.FillPolygon(brush, outer);
+      }
+
+      using (Pen pen = new Pen(_nubOutlineColor))
+      {
+        g.DrawPolygon(pen, outer);
+      }
     }
 
     #endregion Private Methods
