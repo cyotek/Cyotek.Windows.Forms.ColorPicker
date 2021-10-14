@@ -19,6 +19,8 @@
   methods. These allow you to initiate a screen picker operation
   without having to click and drag in the source control, for
   example via hotkey
+* Added `ScreenColorPicker.Selecting` and `Selected` events,
+  allowing you to know when a selection operation starts and ends
 
 #### Changed
 

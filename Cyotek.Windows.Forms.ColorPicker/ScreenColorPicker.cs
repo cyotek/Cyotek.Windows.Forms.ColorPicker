@@ -1,7 +1,7 @@
 // Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Copyright © 2013-2021 Cyotek Ltd.
+// Copyright (c) 2013-2021 Cyotek Ltd.
 
 // This work is licensed under the MIT License.
 // See LICENSE.TXT for the full text
@@ -32,6 +32,10 @@ namespace Cyotek.Windows.Forms
     private static readonly object _eventGridColorChanged = new object();
 
     private static readonly object _eventImageChanged = new object();
+
+    private static readonly object _eventSelected = new object();
+
+    private static readonly object _eventSelecting = new object();
 
     private static readonly object _eventShowGridChanged = new object();
 
@@ -104,6 +108,32 @@ namespace Cyotek.Windows.Forms
     {
       add { this.Events.AddHandler(_eventImageChanged, value); }
       remove { this.Events.RemoveHandler(_eventImageChanged, value); }
+    }
+
+    [Category("Action")]
+    public event EventHandler Selected
+    {
+      add
+      {
+        this.Events.AddHandler(_eventSelected, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventSelected, value);
+      }
+    }
+
+    [Category("Action")]
+    public event CancelEventHandler Selecting
+    {
+      add
+      {
+        this.Events.AddHandler(_eventSelecting, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventSelecting, value);
+      }
     }
 
     [Category("Property Changed")]
@@ -339,16 +369,27 @@ namespace Cyotek.Windows.Forms
 
     #region Internal Methods
 
-    internal void MarkAsCapturing()
+    internal bool MarkAsCapturing()
     {
-      if (_eyedropperCursor == null)
+      CancelEventArgs e;
+
+      e = new CancelEventArgs();
+
+      this.OnSelecting(e);
+
+      if (!e.Cancel)
       {
-        _eyedropperCursor = ResourceManager.EyeDropper;
+        if (_eyedropperCursor == null)
+        {
+          _eyedropperCursor = ResourceManager.EyeDropper;
+        }
+
+        Cursor.Current = _eyedropperCursor;
+        _isCapturing = true;
+        this.Invalidate();
       }
 
-      Cursor.Current = _eyedropperCursor;
-      _isCapturing = true;
-      this.Invalidate();
+      return !e.Cancel;
     }
 
     internal void MarkAsReleased()
@@ -357,6 +398,8 @@ namespace Cyotek.Windows.Forms
       _isCapturing = false;
       this.Invalidate();
       _lastUpdate = Point.Empty;
+
+      this.OnSelected(EventArgs.Empty);
     }
 
     internal void RequestUpdate()
@@ -589,6 +632,32 @@ namespace Cyotek.Windows.Forms
       base.OnResize(e);
 
       this.CreateSnapshotImage();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="Selected" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnSelected(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventSelected];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="Selecting" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="CancelEventArgs" /> instance containing the event data.</param>
+    protected virtual void OnSelecting(CancelEventArgs e)
+    {
+      CancelEventHandler handler;
+
+      handler = (CancelEventHandler)this.Events[_eventSelecting];
+
+      handler?.Invoke(this, e);
     }
 
     /// <summary>

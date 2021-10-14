@@ -31,16 +31,19 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScreenColorPickerDemoForm));
       this.propertiesSplitContainer = new System.Windows.Forms.SplitContainer();
       this.propertyGrid = new System.Windows.Forms.PropertyGrid();
-      this.screenColorPicker1 = new Cyotek.Windows.Forms.ScreenColorPicker();
+      this.screenColorPicker = new Cyotek.Windows.Forms.ScreenColorPicker();
       this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
+      this.eventsSplitContainer = new System.Windows.Forms.SplitContainer();
       this.demoLabel = new System.Windows.Forms.Label();
-      this.releaseButton = new System.Windows.Forms.Button();
       this.captureButton = new System.Windows.Forms.Button();
+      this.releaseButton = new System.Windows.Forms.Button();
+      this.eventsListBox = new Cyotek.Windows.Forms.ColorPicker.Demo.EventsListBox();
       this.statusStrip = new System.Windows.Forms.StatusStrip();
       this.colorToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
       ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).BeginInit();
       this.propertiesSplitContainer.Panel1.SuspendLayout();
       this.propertiesSplitContainer.Panel2.SuspendLayout();
@@ -49,6 +52,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.optionsSplitContainer.Panel1.SuspendLayout();
       this.optionsSplitContainer.Panel2.SuspendLayout();
       this.optionsSplitContainer.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.eventsSplitContainer)).BeginInit();
+      this.eventsSplitContainer.Panel1.SuspendLayout();
+      this.eventsSplitContainer.Panel2.SuspendLayout();
+      this.eventsSplitContainer.SuspendLayout();
       this.statusStrip.SuspendLayout();
       this.menuStrip.SuspendLayout();
       this.SuspendLayout();
@@ -76,18 +83,20 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
       this.propertyGrid.Location = new System.Drawing.Point(0, 0);
       this.propertyGrid.Name = "propertyGrid";
-      this.propertyGrid.SelectedObject = this.screenColorPicker1;
+      this.propertyGrid.SelectedObject = this.screenColorPicker;
       this.propertyGrid.Size = new System.Drawing.Size(259, 295);
       this.propertyGrid.TabIndex = 0;
       // 
-      // screenColorPicker1
+      // screenColorPicker
       // 
-      this.screenColorPicker1.Color = System.Drawing.Color.Empty;
-      this.screenColorPicker1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.screenColorPicker1.Location = new System.Drawing.Point(0, 0);
-      this.screenColorPicker1.Name = "screenColorPicker1";
-      this.screenColorPicker1.Size = new System.Drawing.Size(76, 295);
-      this.screenColorPicker1.ColorChanged += new System.EventHandler(this.screenColorPicker1_ColorChanged);
+      this.screenColorPicker.Color = System.Drawing.Color.Empty;
+      this.screenColorPicker.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.screenColorPicker.Location = new System.Drawing.Point(0, 0);
+      this.screenColorPicker.Name = "screenColorPicker";
+      this.screenColorPicker.Size = new System.Drawing.Size(70, 295);
+      this.screenColorPicker.ColorChanged += new System.EventHandler(this.ScreenColorPicker_ColorChanged);
+      this.screenColorPicker.Selected += new System.EventHandler(this.ScreenColorPicker_Selected);
+      this.screenColorPicker.Selecting += new System.ComponentModel.CancelEventHandler(this.ScreenColorPicker_Selecting);
       // 
       // optionsSplitContainer
       // 
@@ -98,42 +107,51 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // optionsSplitContainer.Panel1
       // 
-      this.optionsSplitContainer.Panel1.Controls.Add(this.screenColorPicker1);
+      this.optionsSplitContainer.Panel1.Controls.Add(this.screenColorPicker);
       // 
       // optionsSplitContainer.Panel2
       // 
-      this.optionsSplitContainer.Panel2.Controls.Add(this.demoLabel);
-      this.optionsSplitContainer.Panel2.Controls.Add(this.releaseButton);
-      this.optionsSplitContainer.Panel2.Controls.Add(this.captureButton);
+      this.optionsSplitContainer.Panel2.Controls.Add(this.eventsSplitContainer);
       this.optionsSplitContainer.Size = new System.Drawing.Size(519, 295);
-      this.optionsSplitContainer.SplitterDistance = 76;
+      this.optionsSplitContainer.SplitterDistance = 70;
       this.optionsSplitContainer.SplitterWidth = 6;
       this.optionsSplitContainer.TabIndex = 0;
       // 
+      // eventsSplitContainer
+      // 
+      this.eventsSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.eventsSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+      this.eventsSplitContainer.Location = new System.Drawing.Point(0, 0);
+      this.eventsSplitContainer.Name = "eventsSplitContainer";
+      this.eventsSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+      // 
+      // eventsSplitContainer.Panel1
+      // 
+      this.eventsSplitContainer.Panel1.Controls.Add(this.colorPreviewBox);
+      this.eventsSplitContainer.Panel1.Controls.Add(this.demoLabel);
+      this.eventsSplitContainer.Panel1.Controls.Add(this.captureButton);
+      this.eventsSplitContainer.Panel1.Controls.Add(this.releaseButton);
+      // 
+      // eventsSplitContainer.Panel2
+      // 
+      this.eventsSplitContainer.Panel2.Controls.Add(this.eventsListBox);
+      this.eventsSplitContainer.Size = new System.Drawing.Size(443, 295);
+      this.eventsSplitContainer.SplitterDistance = 195;
+      this.eventsSplitContainer.TabIndex = 0;
+      // 
       // demoLabel
       // 
-      this.demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
       this.demoLabel.AutoEllipsis = true;
       this.demoLabel.BackColor = System.Drawing.SystemColors.Info;
       this.demoLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.demoLabel.Dock = System.Windows.Forms.DockStyle.Right;
       this.demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
-      this.demoLabel.Location = new System.Drawing.Point(162, 3);
+      this.demoLabel.Location = new System.Drawing.Point(84, 0);
       this.demoLabel.Name = "demoLabel";
       this.demoLabel.Padding = new System.Windows.Forms.Padding(10);
-      this.demoLabel.Size = new System.Drawing.Size(270, 290);
-      this.demoLabel.TabIndex = 4;
+      this.demoLabel.Size = new System.Drawing.Size(359, 195);
+      this.demoLabel.TabIndex = 2;
       this.demoLabel.Text = resources.GetString("demoLabel.Text");
-      // 
-      // releaseButton
-      // 
-      this.releaseButton.Location = new System.Drawing.Point(3, 32);
-      this.releaseButton.Name = "releaseButton";
-      this.releaseButton.Size = new System.Drawing.Size(75, 23);
-      this.releaseButton.TabIndex = 1;
-      this.releaseButton.Text = "&Release";
-      this.releaseButton.UseVisualStyleBackColor = true;
-      this.releaseButton.Click += new System.EventHandler(this.releaseButton_Click);
       // 
       // captureButton
       // 
@@ -143,7 +161,27 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.captureButton.TabIndex = 0;
       this.captureButton.Text = "&Capture";
       this.captureButton.UseVisualStyleBackColor = true;
-      this.captureButton.Click += new System.EventHandler(this.captureButton_Click);
+      this.captureButton.Click += new System.EventHandler(this.CaptureButton_Click);
+      // 
+      // releaseButton
+      // 
+      this.releaseButton.Location = new System.Drawing.Point(3, 32);
+      this.releaseButton.Name = "releaseButton";
+      this.releaseButton.Size = new System.Drawing.Size(75, 23);
+      this.releaseButton.TabIndex = 1;
+      this.releaseButton.Text = "&Release";
+      this.releaseButton.UseVisualStyleBackColor = true;
+      this.releaseButton.Click += new System.EventHandler(this.ReleaseButton_Click);
+      // 
+      // eventsListBox
+      // 
+      this.eventsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.eventsListBox.FormattingEnabled = true;
+      this.eventsListBox.ItemHeight = 15;
+      this.eventsListBox.Location = new System.Drawing.Point(0, 0);
+      this.eventsListBox.Name = "eventsListBox";
+      this.eventsListBox.Size = new System.Drawing.Size(443, 96);
+      this.eventsListBox.TabIndex = 0;
       // 
       // statusStrip
       // 
@@ -184,7 +222,17 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
       this.closeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
       this.closeToolStripMenuItem.Text = "&Close";
-      this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+      this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
+      // 
+      // colorPreviewBox
+      // 
+      this.colorPreviewBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.colorPreviewBox.Color = System.Drawing.Color.Empty;
+      this.colorPreviewBox.Location = new System.Drawing.Point(3, 139);
+      this.colorPreviewBox.Name = "colorPreviewBox";
+      this.colorPreviewBox.Size = new System.Drawing.Size(75, 53);
+      this.colorPreviewBox.TabIndex = 3;
       // 
       // ScreenColorPickerDemoForm
       // 
@@ -205,6 +253,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.optionsSplitContainer.Panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).EndInit();
       this.optionsSplitContainer.ResumeLayout(false);
+      this.eventsSplitContainer.Panel1.ResumeLayout(false);
+      this.eventsSplitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.eventsSplitContainer)).EndInit();
+      this.eventsSplitContainer.ResumeLayout(false);
       this.statusStrip.ResumeLayout(false);
       this.statusStrip.PerformLayout();
       this.menuStrip.ResumeLayout(false);
@@ -221,12 +273,15 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private System.Windows.Forms.SplitContainer optionsSplitContainer;
     private System.Windows.Forms.StatusStrip statusStrip;
     private System.Windows.Forms.ToolStripStatusLabel colorToolStripStatusLabel;
-    private ScreenColorPicker screenColorPicker1;
+    private ScreenColorPicker screenColorPicker;
     private System.Windows.Forms.MenuStrip menuStrip;
     private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     private System.Windows.Forms.Button releaseButton;
     private System.Windows.Forms.Button captureButton;
     private System.Windows.Forms.Label demoLabel;
+    private System.Windows.Forms.SplitContainer eventsSplitContainer;
+    private EventsListBox eventsListBox;
+    private ColorPreviewBox colorPreviewBox;
   }
 }

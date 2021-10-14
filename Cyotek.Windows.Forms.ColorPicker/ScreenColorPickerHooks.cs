@@ -42,13 +42,12 @@ namespace Cyotek.Windows.Forms
     {
       ScreenColorPickerHooks.Release();
 
-      _mouseHook = ScreenColorPickerHooks.SetHook(_mouseHookProc);
-      _keyboardHooK = ScreenColorPickerHooks.SetHook(_keyboardHookProc);
-
-      if (_mouseHook != IntPtr.Zero && _keyboardHooK != IntPtr.Zero)
+      if (owner.MarkAsCapturing())
       {
+        _mouseHook = ScreenColorPickerHooks.SetHook(_mouseHookProc);
+        _keyboardHooK = ScreenColorPickerHooks.SetHook(_keyboardHookProc);
+
         _owner = owner;
-        _owner.MarkAsCapturing();
       }
     }
 

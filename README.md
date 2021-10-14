@@ -82,7 +82,12 @@ standard interface.
 ![ScreenColorPicker control demonstration][screenpickerscreen]
 
 This control allows the user to pick a colour from any pixel
-displayed on the screen.
+displayed on the screen. The user can either trigger the
+operation by clicking and dragging the control, or it can be
+done programmatically via the `CaptureMouse` method, allowing
+selections to be triggered via other actions, for example a hot
+key. The `Zoom` property can be used set the grid size of the
+preview.
 
 ### ColorPickerDialog Form
 
