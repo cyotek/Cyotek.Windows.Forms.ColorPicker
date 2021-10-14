@@ -772,8 +772,8 @@ namespace Cyotek.Windows.Forms
       top = 0;
       right = 0;
       bottom = 0;
-      hh = _nubSize.Height / 2 + 1;
-      hw = _nubSize.Width / 2 + 1;
+      hh = _nubSize.Height / 2;
+      hw = _nubSize.Width / 2;
 
       switch (_nubStyle)
       {
