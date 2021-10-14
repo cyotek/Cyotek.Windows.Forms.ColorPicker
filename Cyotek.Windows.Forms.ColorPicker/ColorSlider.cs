@@ -1360,7 +1360,7 @@ namespace Cyotek.Windows.Forms
       // focus
       if (this.Focused)
       {
-        ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(this.BarBounds, -2, -2));
+        NativeMethods.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(_barBounds, -2, -2));
       }
     }
 

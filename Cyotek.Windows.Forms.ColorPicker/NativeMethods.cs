@@ -1,7 +1,7 @@
 // Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Copyright © 2013-2021 Cyotek Ltd.
+// Copyright (c) 2013-2021 Cyotek Ltd.
 
 // This work is licensed under the MIT License.
 // See LICENSE.TXT for the full text
@@ -57,6 +57,26 @@ namespace Cyotek.Windows.Forms
 
     [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
     public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+    [DllImport(_user32DllName)]
+    public static extern bool DrawFocusRect(IntPtr hDC, [In] ref RECT lprc);
+
+    public static void DrawFocusRectangle(Graphics g, Rectangle rectangle)
+    {
+      NativeMethods.DrawFocusRectangle(g, rectangle.Left, rectangle.Top, rectangle.Width, rectangle.Height);
+    }
+
+    public static void DrawFocusRectangle(Graphics g, int x, int y, int w, int h)
+    {
+      NativeMethods.RECT rect;
+
+      rect = new NativeMethods.RECT(x, y, x + w, y + h);
+
+      // The Win32 API DrawFocusRect draws using an inverted brush and so works on black,
+      // whereas ControlPaint.DrawFocusRect decidedly does not
+      NativeMethods.DrawFocusRect(g.GetHdc(), ref rect);
+      g.ReleaseHdc();
+    }
 
     [DllImport(_user32DllName, EntryPoint = "GetDC", CallingConvention = CallingConvention.StdCall)]
     public static extern IntPtr GetDC(IntPtr hWnd);
@@ -116,5 +136,29 @@ namespace Cyotek.Windows.Forms
     public static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
     #endregion Public Methods
+
+    #region Public Structs
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT
+    {
+      public int left;
+
+      public int top;
+
+      public int right;
+
+      public int bottom;
+
+      public RECT(int left, int top, int right, int bottom)
+      {
+        this.left = left;
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+      }
+    }
+
+    #endregion Public Structs
   }
 }
