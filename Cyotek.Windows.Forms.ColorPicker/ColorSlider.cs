@@ -1159,6 +1159,7 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
+      this.DefineBar();
       this.Invalidate();
 
       handler = (EventHandler)this.Events[_eventNubColorChanged];
