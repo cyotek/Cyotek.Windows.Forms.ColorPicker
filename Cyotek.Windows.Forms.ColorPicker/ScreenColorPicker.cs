@@ -1,10 +1,13 @@
-// Cyotek Color Picker controls library
-// Copyright © 2013-2021 Cyotek Ltd.
+// Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See license.txt for the full text.
+// Copyright (c) 2013-2021 Cyotek Ltd.
 
-// If you use this code in your applications, donations or attribution are welcome
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
 
 using System;
 using System.ComponentModel;
@@ -22,7 +25,7 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent("ColorChanged")]
   public class ScreenColorPicker : Control, IColorEditor
   {
-    #region Constants
+    #region Private Fields
 
     private static readonly object _eventColorChanged = new object();
 
@@ -30,15 +33,15 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventImageChanged = new object();
 
+    private static readonly object _eventSelected = new object();
+
+    private static readonly object _eventSelecting = new object();
+
     private static readonly object _eventShowGridChanged = new object();
 
     private static readonly object _eventShowTextWithSnapshotChanged = new object();
 
     private static readonly object _eventZoomChanged = new object();
-
-    #endregion
-
-    #region Fields
 
     private Color _color;
 
@@ -46,17 +49,25 @@ namespace Cyotek.Windows.Forms
 
     private Color _gridColor;
 
+    private bool _hasSnapshot;
+
     private Image _image;
+
+    private bool _isCapturing;
+
+    private Point _lastUpdate;
 
     private bool _showGrid;
 
     private bool _showTextWithSnapshot;
 
+    private Bitmap _snapshotImage;
+
     private int _zoom;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScreenColorPicker"/> class.
@@ -65,18 +76,25 @@ namespace Cyotek.Windows.Forms
     {
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
       this.SetStyle(ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, false);
-      this.Zoom = 8;
-      this.Color = Color.Empty;
-      this.ShowTextWithSnapshot = false;
+      _zoom = 8;
+      _color = Color.Empty;
+      _showTextWithSnapshot = false;
       this.TabStop = false;
       this.TabIndex = 0;
-      this.ShowGrid = true;
-      this.GridColor = SystemColors.ControlDark;
+      _showGrid = true;
+      _gridColor = SystemColors.ControlDark;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Events
+    #region Public Events
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add { this.Events.AddHandler(_eventColorChanged, value); }
+      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+    }
 
     [Category("Property Changed")]
     public event EventHandler GridColorChanged
@@ -90,6 +108,32 @@ namespace Cyotek.Windows.Forms
     {
       add { this.Events.AddHandler(_eventImageChanged, value); }
       remove { this.Events.RemoveHandler(_eventImageChanged, value); }
+    }
+
+    [Category("Action")]
+    public event EventHandler Selected
+    {
+      add
+      {
+        this.Events.AddHandler(_eventSelected, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventSelected, value);
+      }
+    }
+
+    [Category("Action")]
+    public event CancelEventHandler Selecting
+    {
+      add
+      {
+        this.Events.AddHandler(_eventSelecting, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventSelecting, value);
+      }
     }
 
     [Category("Property Changed")]
@@ -113,9 +157,29 @@ namespace Cyotek.Windows.Forms
       remove { this.Events.RemoveHandler(_eventZoomChanged, value); }
     }
 
-    #endregion
+    #endregion Public Events
 
-    #region Properties
+    #region Public Properties
+
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
+    [Category("Behavior")]
+    [DefaultValue(typeof(Color), "Empty")]
+    public virtual Color Color
+    {
+      get { return _color; }
+      set
+      {
+        if (_color != value)
+        {
+          _color = value;
+
+          this.OnColorChanged(EventArgs.Empty);
+        }
+      }
+    }
 
     /// <summary>
     /// Gets or sets the color of the grid.
@@ -128,7 +192,7 @@ namespace Cyotek.Windows.Forms
       get { return _gridColor; }
       set
       {
-        if (this.GridColor != value)
+        if (_gridColor != value)
         {
           _gridColor = value;
 
@@ -142,7 +206,11 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     /// <value><c>true</c> if a snapshot image is available; otherwise, <c>false</c>.</value>
     [Browsable(false)]
-    public bool HasSnapshot { get; protected set; }
+    public bool HasSnapshot
+    {
+      get => _hasSnapshot;
+      protected set => _hasSnapshot = value;
+    }
 
     /// <summary>
     /// Gets or sets the image.
@@ -155,7 +223,7 @@ namespace Cyotek.Windows.Forms
       get { return _image; }
       set
       {
-        if (this.Image != value)
+        if (_image != value)
         {
           _image = value;
 
@@ -175,7 +243,7 @@ namespace Cyotek.Windows.Forms
       get { return _showGrid; }
       set
       {
-        if (this.ShowGrid != value)
+        if (_showGrid != value)
         {
           _showGrid = value;
 
@@ -195,7 +263,7 @@ namespace Cyotek.Windows.Forms
       get { return _showTextWithSnapshot; }
       set
       {
-        if (this.ShowTextWithSnapshot != value)
+        if (_showTextWithSnapshot != value)
         {
           _showTextWithSnapshot = value;
 
@@ -243,7 +311,7 @@ namespace Cyotek.Windows.Forms
       get { return _zoom; }
       set
       {
-        if (this.Zoom != value)
+        if (_zoom != value)
         {
           _zoom = value;
 
@@ -252,11 +320,19 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion Public Properties
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets a value indicating snapshot capture is in progress.
     /// </summary>
     /// <value><c>true</c> if snapshot capture is in progress; otherwise, <c>false</c>.</value>
-    protected bool IsCapturing { get; set; }
+    protected bool IsCapturing
+    {
+      get => _isCapturing;
+      set => _isCapturing = value;
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether redraw operations should occur.
@@ -268,11 +344,81 @@ namespace Cyotek.Windows.Forms
     /// Gets or sets the snapshot image.
     /// </summary>
     /// <value>The snapshot image.</value>
-    protected Bitmap SnapshotImage { get; set; }
+    [Obsolete("Setter will be removed in a future update.")]
+    protected Bitmap SnapshotImage
+    {
+      get => _snapshotImage;
+      set => _snapshotImage = value;
+    }
 
-    #endregion
+    #endregion Protected Properties
 
-    #region Methods
+    #region Public Methods
+
+    public void CaptureMouse()
+    {
+      ScreenColorPickerHooks.Capture(this);
+    }
+
+    public void ReleaseMouse()
+    {
+      ScreenColorPickerHooks.Release();
+    }
+
+    #endregion Public Methods
+
+    #region Internal Methods
+
+    internal bool MarkAsCapturing()
+    {
+      CancelEventArgs e;
+
+      e = new CancelEventArgs();
+
+      this.OnSelecting(e);
+
+      if (!e.Cancel)
+      {
+        if (_eyedropperCursor == null)
+        {
+          _eyedropperCursor = ResourceManager.EyeDropper;
+        }
+
+        Cursor.Current = _eyedropperCursor;
+        _isCapturing = true;
+        this.Invalidate();
+      }
+
+      return !e.Cancel;
+    }
+
+    internal void MarkAsReleased()
+    {
+      Cursor.Current = Cursors.Default;
+      _isCapturing = false;
+      this.Invalidate();
+      _lastUpdate = Point.Empty;
+
+      this.OnSelected(EventArgs.Empty);
+    }
+
+    internal void RequestUpdate()
+    {
+      this.UpdateSnapshot();
+    }
+
+    internal void UpdateColor()
+    {
+      Point center;
+
+      // update the active color
+      center = this.GetCenterPoint();
+      this.Color = _snapshotImage.GetPixel(center.X, center.Y);
+    }
+
+    #endregion Internal Methods
+
+    #region Protected Methods
 
     /// <summary>
     /// Creates the snapshot image.
@@ -281,16 +427,16 @@ namespace Cyotek.Windows.Forms
     {
       Size size;
 
-      if (this.SnapshotImage != null)
+      if (_snapshotImage != null)
       {
-        this.SnapshotImage.Dispose();
-        this.SnapshotImage = null;
+        _snapshotImage.Dispose();
+        _snapshotImage = null;
       }
 
       size = this.GetSnapshotSize();
       if (!size.IsEmpty)
       {
-        this.SnapshotImage = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
+        _snapshotImage = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
         this.Invalidate();
       }
     }
@@ -303,16 +449,11 @@ namespace Cyotek.Windows.Forms
     {
       if (disposing)
       {
-        if (_eyedropperCursor != null)
-        {
-          _eyedropperCursor.Dispose();
-        }
-
-        if (this.SnapshotImage != null)
-        {
-          this.SnapshotImage.Dispose();
-        }
+        _eyedropperCursor?.Dispose();
+        _snapshotImage?.Dispose();
       }
+
+      this.ReleaseMouse();
 
       base.Dispose(disposing);
     }
@@ -322,11 +463,13 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     protected virtual Point GetCenterPoint()
     {
+      Size size;
       int x;
       int y;
 
-      x = this.ClientSize.Width / this.Zoom / 2;
-      y = this.ClientSize.Height / this.Zoom / 2;
+      size = this.ClientSize;
+      x = size.Width / _zoom / 2;
+      y = size.Height / _zoom / 2;
 
       return new Point(x, y);
     }
@@ -336,13 +479,17 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     protected virtual Size GetSnapshotSize()
     {
+      Size size;
       int snapshotWidth;
       int snapshotHeight;
 
-      snapshotWidth = (int)Math.Ceiling(this.ClientSize.Width / (double)this.Zoom);
-      snapshotHeight = (int)Math.Ceiling(this.ClientSize.Height / (double)this.Zoom);
+      size = this.ClientSize;
+      snapshotWidth = (int)Math.Ceiling(size.Width / (double)_zoom);
+      snapshotHeight = (int)Math.Ceiling(size.Height / (double)_zoom);
 
-      return snapshotHeight != 0 && snapshotWidth != 0 ? new Size(snapshotWidth, snapshotHeight) : Size.Empty;
+      return snapshotHeight > 0 && snapshotWidth > 0
+        ? new Size(snapshotWidth, snapshotHeight)
+        : Size.Empty;
     }
 
     /// <summary>
@@ -418,16 +565,9 @@ namespace Cyotek.Windows.Forms
     {
       base.OnMouseDown(e);
 
-      if (e.Button == MouseButtons.Left && !this.IsCapturing)
+      if (e.Button == MouseButtons.Left && !_isCapturing)
       {
-        if (_eyedropperCursor == null)
-        {
-          _eyedropperCursor = ResourceManager.EyeDropper;
-        }
-
-        this.Cursor = _eyedropperCursor;
-        this.IsCapturing = true;
-        this.Invalidate();
+        this.MarkAsCapturing();
       }
     }
 
@@ -439,9 +579,11 @@ namespace Cyotek.Windows.Forms
     {
       base.OnMouseMove(e);
 
-      if (this.IsCapturing)
+      // Only process mousemove if we aren't using the hook version
+      if (_isCapturing && this.Capture)
       {
         this.UpdateSnapshot();
+        this.UpdateColor();
       }
     }
 
@@ -453,11 +595,9 @@ namespace Cyotek.Windows.Forms
     {
       base.OnMouseUp(e);
 
-      if (this.IsCapturing)
+      if (_isCapturing)
       {
-        this.Cursor = Cursors.Default;
-        this.IsCapturing = false;
-        this.Invalidate();
+        this.MarkAsReleased();
       }
     }
 
@@ -472,12 +612,12 @@ namespace Cyotek.Windows.Forms
       this.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc
 
       // draw the current snapshot, if present
-      if (this.SnapshotImage != null)
+      if (_snapshotImage != null)
       {
         e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
         e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-        e.Graphics.DrawImage(this.SnapshotImage, new Rectangle(0, 0, this.SnapshotImage.Width * this.Zoom, this.SnapshotImage.Height * this.Zoom), new Rectangle(Point.Empty, this.SnapshotImage.Size), GraphicsUnit.Pixel);
+        e.Graphics.DrawImage(_snapshotImage, new Rectangle(0, 0, _snapshotImage.Width * _zoom, _snapshotImage.Height * _zoom), new Rectangle(Point.Empty, _snapshotImage.Size), GraphicsUnit.Pixel);
       }
 
       this.PaintAdornments(e);
@@ -492,6 +632,32 @@ namespace Cyotek.Windows.Forms
       base.OnResize(e);
 
       this.CreateSnapshotImage();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="Selected" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnSelected(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventSelected];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="Selecting" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="CancelEventArgs" /> instance containing the event data.</param>
+    protected virtual void OnSelecting(CancelEventArgs e)
+    {
+      CancelEventHandler handler;
+
+      handler = (CancelEventHandler)this.Events[_eventSelecting];
+
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -556,28 +722,32 @@ namespace Cyotek.Windows.Forms
     /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
     protected virtual void PaintAdornments(PaintEventArgs e)
     {
+      Rectangle client;
+
+      client = this.ClientRectangle;
+
       // grid
-      if (this.ShowGrid)
+      if (_showGrid)
       {
         this.PaintGrid(e);
       }
 
       // center marker
-      if (this.HasSnapshot)
+      if (_hasSnapshot)
       {
         this.PaintCenterMarker(e);
       }
 
       // image
-      if (this.Image != null && (!this.HasSnapshot || this.ShowTextWithSnapshot))
+      if (_image != null && (!_hasSnapshot || _showTextWithSnapshot))
       {
-        e.Graphics.DrawImage(this.Image, (this.ClientSize.Width - this.Image.Size.Width) / 2, (this.ClientSize.Height - this.Image.Size.Height) / 2);
+        e.Graphics.DrawImage(_image, (client.Width - _image.Size.Width) / 2, (client.Height - _image.Size.Height) / 2);
       }
 
       // draw text
-      if (!string.IsNullOrEmpty(this.Text) && (!this.HasSnapshot || this.ShowTextWithSnapshot))
+      if (!string.IsNullOrEmpty(this.Text) && (!_hasSnapshot || _showTextWithSnapshot))
       {
-        TextRenderer.DrawText(e.Graphics, this.Text, this.Font, this.ClientRectangle, this.ForeColor, this.BackColor, TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis);
+        TextRenderer.DrawText(e.Graphics, this.Text, this.Font, client, this.ForeColor, this.BackColor, TextFormatFlags.ExpandTabs | TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.WordEllipsis);
       }
     }
 
@@ -591,10 +761,7 @@ namespace Cyotek.Windows.Forms
 
       center = this.GetCenterPoint();
 
-      using (Pen pen = new Pen(this.ForeColor))
-      {
-        e.Graphics.DrawRectangle(pen, center.X * this.Zoom, center.Y * this.Zoom, this.Zoom + 2, this.Zoom + 2);
-      }
+      PaintHelper.DrawInvertedRect(e.Graphics, (center.X * _zoom) - 1, (center.Y * _zoom) - 1, _zoom + 3, _zoom + 3);
     }
 
     /// <summary>
@@ -606,10 +773,10 @@ namespace Cyotek.Windows.Forms
       Rectangle viewport;
       int pixelSize;
 
-      pixelSize = this.Zoom;
+      pixelSize = _zoom;
       viewport = this.ClientRectangle;
 
-      using (Pen pen = new Pen(this.GridColor)
+      using (Pen pen = new Pen(_gridColor)
       {
         DashStyle = DashStyle.Dot
       })
@@ -635,61 +802,29 @@ namespace Cyotek.Windows.Forms
     {
       Point cursor;
 
-      cursor = MousePosition;
-      cursor.X -= this.SnapshotImage.Width / 2;
-      cursor.Y -= this.SnapshotImage.Height / 2;
+      cursor = Control.MousePosition;
+      cursor.X -= _snapshotImage.Width / 2;
+      cursor.Y -= _snapshotImage.Height / 2;
 
-      using (Graphics graphics = Graphics.FromImage(this.SnapshotImage))
+      if (_lastUpdate != cursor)
       {
-        Point center;
+        _lastUpdate = cursor;
 
-        // clear the image first, in case the mouse is near the borders of the screen so there isn't enough copy content to fill the area
-        graphics.Clear(Color.Empty);
-
-        // copy the image from the screen
-        graphics.CopyFromScreen(cursor, Point.Empty, this.SnapshotImage.Size);
-
-        // update the active color
-        center = this.GetCenterPoint();
-        this.Color = this.SnapshotImage.GetPixel(center.X, center.Y);
-
-        // force a redraw
-        this.HasSnapshot = true;
-        this.Refresh(); // just calling Invalidate isn't enough as the display will lag
-      }
-    }
-
-    #endregion
-
-    #region IColorEditor Interface
-
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged
-    {
-      add { this.Events.AddHandler(_eventColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
-    }
-
-    /// <summary>
-    /// Gets or sets the component color.
-    /// </summary>
-    /// <value>The component color.</value>
-    [Category("Behavior")]
-    [DefaultValue(typeof(Color), "Empty")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        if (this.Color != value)
+        using (Graphics graphics = Graphics.FromImage(_snapshotImage))
         {
-          _color = value;
+          // clear the image first, in case the mouse is near the borders of the screen so there isn't enough copy content to fill the area
+          graphics.Clear(Color.Empty);
 
-          this.OnColorChanged(EventArgs.Empty);
+          // copy the image from the screen
+          graphics.CopyFromScreen(cursor, Point.Empty, _snapshotImage.Size);
+
+          // force a redraw
+          _hasSnapshot = true;
+          this.Refresh(); // just calling Invalidate isn't enough as the display will lag
         }
       }
     }
 
-    #endregion
+    #endregion Protected Methods
   }
 }

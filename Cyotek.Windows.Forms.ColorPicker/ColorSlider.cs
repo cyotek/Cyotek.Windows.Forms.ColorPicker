@@ -1,4 +1,15 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright © 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -8,14 +19,6 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   /// <summary>
   /// Represents a control for selecting a value from a scale
   /// </summary>
@@ -1303,7 +1306,6 @@ namespace Cyotek.Windows.Forms
       {
         Point start;
         Point end;
-        IntPtr hdc;
 
         if (this.Orientation == Orientation.Horizontal)
         {
@@ -1317,11 +1319,7 @@ namespace Cyotek.Windows.Forms
         }
 
         // draw a XOR'd line using Win32 API as this functionality isn't part of .NET
-        hdc = e.Graphics.GetHdc();
-        NativeMethods.SetROP2(hdc, NativeMethods.R2_NOT);
-        NativeMethods.MoveToEx(hdc, start.X, start.Y, IntPtr.Zero);
-        NativeMethods.LineTo(hdc, end.X, end.Y);
-        e.Graphics.ReleaseHdc(hdc);
+        PaintHelper.DrawInvertedLine(e.Graphics, start, end);
       }
 
       // drag nub
