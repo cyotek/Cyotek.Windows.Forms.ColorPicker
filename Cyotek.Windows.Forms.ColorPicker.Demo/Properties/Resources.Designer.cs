@@ -90,6 +90,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap DividerToggle {
+            get {
+                object obj = ResourceManager.GetObject("DividerToggle", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap eyedropper {
             get {
                 object obj = ResourceManager.GetObject("eyedropper", resourceCulture);
@@ -113,6 +123,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo.Properties {
         internal static System.Drawing.Bitmap icon {
             get {
                 object obj = ResourceManager.GetObject("icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NubColor {
+            get {
+                object obj = ResourceManager.GetObject("NubColor", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
