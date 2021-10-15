@@ -1,7 +1,7 @@
 // Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Copyright © 2013-2021 Cyotek Ltd.
+// Copyright (c) 2013-2021 Cyotek Ltd.
 
 // This work is licensed under the MIT License.
 // See LICENSE.TXT for the full text
@@ -13,7 +13,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -27,7 +26,7 @@ namespace Cyotek.Windows.Forms
   [ToolboxItem(false)]
   public class ColorSlider : Control
   {
-    #region Constants
+    #region Private Fields
 
     private static readonly object _eventBarBoundsChanged = new object();
 
@@ -53,6 +52,8 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventNubColorChanged = new object();
 
+    private static readonly object _eventNubOutlineColorChanged = new object();
+
     private static readonly object _eventNubSizeChanged = new object();
 
     private static readonly object _eventNubStyleChanged = new object();
@@ -65,9 +66,9 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventValueChanged = new object();
 
-    #endregion
+    private static readonly float[] _pairPositions = { 0F, 1F };
 
-    #region Fields
+    private static readonly float[] _triplePositions = { 0F, 0.5F, 1F };
 
     private Rectangle _barBounds;
 
@@ -91,11 +92,15 @@ namespace Cyotek.Windows.Forms
 
     private Color _nubColor;
 
+    private Color _nubOutlineColor;
+
     private Size _nubSize;
 
     private ColorSliderNubStyle _nubStyle;
 
     private Orientation _orientation;
+
+    private Image _selectionGlyph;
 
     private bool _showValueDivider;
 
@@ -103,9 +108,9 @@ namespace Cyotek.Windows.Forms
 
     private float _value;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorSlider"/> class.
@@ -113,152 +118,169 @@ namespace Cyotek.Windows.Forms
     public ColorSlider()
     {
       this.SetStyle(ControlStyles.SupportsTransparentBackColor | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.Selectable, true);
-      this.Orientation = Orientation.Horizontal;
-      this.Color1 = Color.Black;
-      this.Color2 = Color.FromArgb(127, 127, 127);
-      this.Color3 = Color.White;
-      this.Minimum = 0;
-      this.Maximum = 100;
-      this.NubStyle = ColorSliderNubStyle.BottomRight;
-      this.NubSize = new Size(8, 8);
-      this.NubColor = Color.Black;
-      this.SmallChange = 1;
-      this.LargeChange = 10;
+      _orientation = Orientation.Horizontal;
+      _color1 = Color.Black;
+      _color2 = Color.FromArgb(127, 127, 127);
+      _color3 = Color.White;
+      _minimum = 0;
+      _maximum = 100;
+      _nubStyle = ColorSliderNubStyle.BottomRight;
+      _nubSize = new Size(8, 8);
+      _nubColor = Color.Black;
+      _nubOutlineColor = Color.White;
+      _smallChange = 1;
+      _largeChange = 10;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Events
+    #region Public Events
 
     [Category("Property Changed")]
     public event EventHandler BarBoundsChanged
     {
-      add { this.Events.AddHandler(_eventBarBoundsChanged, value); }
-      remove { this.Events.RemoveHandler(_eventBarBoundsChanged, value); }
+      add => this.Events.AddHandler(_eventBarBoundsChanged, value);
+      remove => this.Events.RemoveHandler(_eventBarBoundsChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler BarPaddingChanged
     {
-      add { this.Events.AddHandler(_eventBarPaddingChanged, value); }
-      remove { this.Events.RemoveHandler(_eventBarPaddingChanged, value); }
+      add => this.Events.AddHandler(_eventBarPaddingChanged, value);
+      remove => this.Events.RemoveHandler(_eventBarPaddingChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler BarStyleChanged
     {
-      add { this.Events.AddHandler(_eventBarStyleChanged, value); }
-      remove { this.Events.RemoveHandler(_eventBarStyleChanged, value); }
+      add => this.Events.AddHandler(_eventBarStyleChanged, value);
+      remove => this.Events.RemoveHandler(_eventBarStyleChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler Color1Changed
     {
-      add { this.Events.AddHandler(_eventColor1Changed, value); }
-      remove { this.Events.RemoveHandler(_eventColor1Changed, value); }
+      add => this.Events.AddHandler(_eventColor1Changed, value);
+      remove => this.Events.RemoveHandler(_eventColor1Changed, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler Color2Changed
     {
-      add { this.Events.AddHandler(_eventColor2Changed, value); }
-      remove { this.Events.RemoveHandler(_eventColor2Changed, value); }
+      add => this.Events.AddHandler(_eventColor2Changed, value);
+      remove => this.Events.RemoveHandler(_eventColor2Changed, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler Color3Changed
     {
-      add { this.Events.AddHandler(_eventColor3Changed, value); }
-      remove { this.Events.RemoveHandler(_eventColor3Changed, value); }
+      add => this.Events.AddHandler(_eventColor3Changed, value);
+      remove => this.Events.RemoveHandler(_eventColor3Changed, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler CustomColorsChanged
     {
-      add { this.Events.AddHandler(_eventCustomColorsChanged, value); }
-      remove { this.Events.RemoveHandler(_eventCustomColorsChanged, value); }
+      add => this.Events.AddHandler(_eventCustomColorsChanged, value);
+      remove => this.Events.RemoveHandler(_eventCustomColorsChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler DividerStyleChanged
     {
-      add { this.Events.AddHandler(_eventDividerStyleChanged, value); }
-      remove { this.Events.RemoveHandler(_eventDividerStyleChanged, value); }
+      add => this.Events.AddHandler(_eventDividerStyleChanged, value);
+      remove => this.Events.RemoveHandler(_eventDividerStyleChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler LargeChangeChanged
     {
-      add { this.Events.AddHandler(_eventLargeChangeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventLargeChangeChanged, value); }
+      add => this.Events.AddHandler(_eventLargeChangeChanged, value);
+      remove => this.Events.RemoveHandler(_eventLargeChangeChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler MaximumChanged
     {
-      add { this.Events.AddHandler(_eventMaximumChanged, value); }
-      remove { this.Events.RemoveHandler(_eventMaximumChanged, value); }
+      add => this.Events.AddHandler(_eventMaximumChanged, value);
+      remove => this.Events.RemoveHandler(_eventMaximumChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler MinimumChanged
     {
-      add { this.Events.AddHandler(_eventMinimumChanged, value); }
-      remove { this.Events.RemoveHandler(_eventMinimumChanged, value); }
+      add => this.Events.AddHandler(_eventMinimumChanged, value);
+      remove => this.Events.RemoveHandler(_eventMinimumChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler NubColorChanged
     {
-      add { this.Events.AddHandler(_eventNubColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventNubColorChanged, value); }
+      add => this.Events.AddHandler(_eventNubColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventNubColorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the NubOutlineColor property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler NubOutlineColorChanged
+    {
+      add
+      {
+        this.Events.AddHandler(_eventNubOutlineColorChanged, value);
+      }
+      remove
+      {
+        this.Events.RemoveHandler(_eventNubOutlineColorChanged, value);
+      }
     }
 
     [Category("Property Changed")]
     public event EventHandler NubSizeChanged
     {
-      add { this.Events.AddHandler(_eventNubSizeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventNubSizeChanged, value); }
+      add => this.Events.AddHandler(_eventNubSizeChanged, value);
+      remove => this.Events.RemoveHandler(_eventNubSizeChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler NubStyleChanged
     {
-      add { this.Events.AddHandler(_eventNubStyleChanged, value); }
-      remove { this.Events.RemoveHandler(_eventNubStyleChanged, value); }
+      add => this.Events.AddHandler(_eventNubStyleChanged, value);
+      remove => this.Events.RemoveHandler(_eventNubStyleChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler OrientationChanged
     {
-      add { this.Events.AddHandler(_eventOrientationChanged, value); }
-      remove { this.Events.RemoveHandler(_eventOrientationChanged, value); }
+      add => this.Events.AddHandler(_eventOrientationChanged, value);
+      remove => this.Events.RemoveHandler(_eventOrientationChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler ShowValueDividerChanged
     {
-      add { this.Events.AddHandler(_eventShowValueDividerChanged, value); }
-      remove { this.Events.RemoveHandler(_eventShowValueDividerChanged, value); }
+      add => this.Events.AddHandler(_eventShowValueDividerChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowValueDividerChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler SmallChangeChanged
     {
-      add { this.Events.AddHandler(_eventSmallChangeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventSmallChangeChanged, value); }
+      add => this.Events.AddHandler(_eventSmallChangeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSmallChangeChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler ValueChanged
     {
-      add { this.Events.AddHandler(_eventValueChanged, value); }
-      remove { this.Events.RemoveHandler(_eventValueChanged, value); }
+      add => this.Events.AddHandler(_eventValueChanged, value);
+      remove => this.Events.RemoveHandler(_eventValueChanged, value);
     }
 
-    #endregion
+    #endregion Public Events
 
-    #region Properties
+    #region Public Properties
 
     /// <summary>
     /// Gets or sets the location and size of the color bar.
@@ -268,10 +290,10 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual Rectangle BarBounds
     {
-      get { return _barBounds; }
+      get => _barBounds;
       protected set
       {
-        if (this.BarBounds != value)
+        if (_barBounds != value)
         {
           _barBounds = value;
 
@@ -288,10 +310,10 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual Padding BarPadding
     {
-      get { return _barPadding; }
+      get => _barPadding;
       protected set
       {
-        if (this.BarPadding != value)
+        if (_barPadding != value)
         {
           _barPadding = value;
 
@@ -308,10 +330,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(ColorBarStyle), "TwoColor")]
     public virtual ColorBarStyle BarStyle
     {
-      get { return _barStyle; }
+      get => _barStyle;
       set
       {
-        if (this.BarStyle != value)
+        if (_barStyle != value)
         {
           _barStyle = value;
 
@@ -329,10 +351,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Color), "Black")]
     public virtual Color Color1
     {
-      get { return _color1; }
+      get => _color1;
       set
       {
-        if (this.Color1 != value)
+        if (_color1 != value)
         {
           _color1 = value;
 
@@ -350,10 +372,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Color), "127, 127, 127")]
     public virtual Color Color2
     {
-      get { return _color2; }
+      get => _color2;
       set
       {
-        if (this.Color2 != value)
+        if (_color2 != value)
         {
           _color2 = value;
 
@@ -371,10 +393,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Color), "White")]
     public virtual Color Color3
     {
-      get { return _color3; }
+      get => _color3;
       set
       {
-        if (this.Color3 != value)
+        if (_color3 != value)
         {
           _color3 = value;
 
@@ -392,10 +414,10 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual ColorCollection CustomColors
     {
-      get { return _customColors; }
+      get => _customColors;
       set
       {
-        if (this.CustomColors != value)
+        if (!object.ReferenceEquals(_customColors, value))
         {
           _customColors = value;
 
@@ -413,8 +435,8 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Font Font
     {
-      get { return base.Font; }
-      set { base.Font = value; }
+      get => base.Font;
+      set => base.Font = value;
     }
 
     /// <summary>
@@ -426,8 +448,8 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Color ForeColor
     {
-      get { return base.ForeColor; }
-      set { base.ForeColor = value; }
+      get => base.ForeColor;
+      set => base.ForeColor = value;
     }
 
     /// <summary>
@@ -438,10 +460,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(10)]
     public virtual int LargeChange
     {
-      get { return _largeChange; }
+      get => _largeChange;
       set
       {
-        if (this.LargeChange != value)
+        if (_largeChange != value)
         {
           _largeChange = value;
 
@@ -458,12 +480,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(100F)]
     public virtual float Maximum
     {
-      get { return _maximum; }
+      get => _maximum;
       set
       {
-        // ReSharper disable CompareOfFloatsByEqualityOperator
-        if (this.Maximum != value)
-          // ReSharper restore CompareOfFloatsByEqualityOperator
+        if (Math.Abs(_maximum - value) > float.Epsilon)
         {
           _maximum = value;
 
@@ -480,12 +500,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(0F)]
     public virtual float Minimum
     {
-      get { return _minimum; }
+      get => _minimum;
       set
       {
-        // ReSharper disable CompareOfFloatsByEqualityOperator
-        if (this.Minimum != value)
-          // ReSharper restore CompareOfFloatsByEqualityOperator
+        if (Math.Abs(_minimum - value) > float.Epsilon)
         {
           _minimum = value;
 
@@ -502,14 +520,30 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Color), "Black")]
     public virtual Color NubColor
     {
-      get { return _nubColor; }
+      get => _nubColor;
       set
       {
-        if (this.NubColor != value)
+        if (_nubColor != value)
         {
           _nubColor = value;
 
           this.OnNubColorChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "White")]
+    public Color NubOutlineColor
+    {
+      get { return _nubOutlineColor; }
+      set
+      {
+        if (_nubOutlineColor != value)
+        {
+          _nubOutlineColor = value;
+
+          this.OnNubOutlineColorChanged(EventArgs.Empty);
         }
       }
     }
@@ -522,10 +556,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Size), "8, 8")]
     public virtual Size NubSize
     {
-      get { return _nubSize; }
+      get => _nubSize;
       set
       {
-        if (this.NubSize != value)
+        if (_nubSize != value)
         {
           _nubSize = value;
 
@@ -542,10 +576,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(ColorSliderNubStyle), "BottomRight")]
     public virtual ColorSliderNubStyle NubStyle
     {
-      get { return _nubStyle; }
+      get => _nubStyle;
       set
       {
-        if (this.NubStyle != value)
+        if (_nubStyle != value)
         {
           _nubStyle = value;
 
@@ -562,10 +596,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Orientation), "Horizontal")]
     public virtual Orientation Orientation
     {
-      get { return _orientation; }
+      get => _orientation;
       set
       {
-        if (this.Orientation != value)
+        if (_orientation != value)
         {
           _orientation = value;
 
@@ -582,10 +616,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(false)]
     public virtual bool ShowValueDivider
     {
-      get { return _showValueDivider; }
+      get => _showValueDivider;
       set
       {
-        if (this.ShowValueDivider != value)
+        if (_showValueDivider != value)
         {
           _showValueDivider = value;
 
@@ -602,10 +636,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(1)]
     public virtual int SmallChange
     {
-      get { return _smallChange; }
+      get => _smallChange;
       set
       {
-        if (this.SmallChange != value)
+        if (_smallChange != value)
         {
           _smallChange = value;
 
@@ -623,8 +657,8 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text
     {
-      get { return base.Text; }
-      set { base.Text = value; }
+      get => base.Text;
+      set => base.Text = value;
     }
 
     /// <summary>
@@ -635,21 +669,12 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(0F)]
     public virtual float Value
     {
-      get { return _value; }
+      get => _value;
       set
       {
-        if (value < this.Minimum)
-        {
-          value = this.Minimum;
-        }
-        if (value > this.Maximum)
-        {
-          value = this.Maximum;
-        }
+        value = this.ClampValue(value);
 
-        // ReSharper disable CompareOfFloatsByEqualityOperator
-        if (this.Value != value)
-          // ReSharper restore CompareOfFloatsByEqualityOperator
+        if (Math.Abs(_value - value) > float.Epsilon)
         {
           _value = value;
 
@@ -658,15 +683,23 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion Public Properties
+
+    #region Protected Properties
+
     /// <summary>
     /// Gets or sets the selection glyph.
     /// </summary>
     /// <value>The selection glyph.</value>
-    protected Image SelectionGlyph { get; set; }
+    protected Image SelectionGlyph
+    {
+      get => _selectionGlyph;
+      set => _selectionGlyph = value;
+    }
 
-    #endregion
+    #endregion Protected Properties
 
-    #region Methods
+    #region Protected Methods
 
     /// <summary>
     /// Creates the selection nub glyph.
@@ -674,67 +707,7 @@ namespace Cyotek.Windows.Forms
     /// <returns>Image.</returns>
     protected virtual Image CreateNubGlyph()
     {
-      Image image;
-
-      image = new Bitmap(this.NubSize.Width + 1, this.NubSize.Height + 1, PixelFormat.Format32bppArgb);
-
-      using (Graphics g = Graphics.FromImage(image))
-      {
-        Point[] outer;
-        Point firstCorner;
-        Point lastCorner;
-        Point tipCorner;
-
-        if (this.NubStyle == ColorSliderNubStyle.BottomRight)
-        {
-          lastCorner = new Point(this.NubSize.Width, this.NubSize.Height);
-
-          if (this.Orientation == Orientation.Horizontal)
-          {
-            firstCorner = new Point(0, this.NubSize.Height);
-            tipCorner = new Point(this.NubSize.Width / 2, 0);
-          }
-          else
-          {
-            firstCorner = new Point(this.NubSize.Width, 0);
-            tipCorner = new Point(0, this.NubSize.Height / 2);
-          }
-        }
-        else
-        {
-          firstCorner = Point.Empty;
-
-          if (this.Orientation == Orientation.Horizontal)
-          {
-            lastCorner = new Point(this.NubSize.Width, 0);
-            tipCorner = new Point(this.NubSize.Width / 2, this.NubSize.Height);
-          }
-          else
-          {
-            lastCorner = new Point(0, this.NubSize.Height);
-            tipCorner = new Point(this.NubSize.Width, this.NubSize.Height / 2);
-          }
-        }
-
-        // draw the shape
-        outer = new[]
-                {
-                  firstCorner,
-                  lastCorner,
-                  tipCorner
-                };
-
-        // TODO: Add 3D edging similar to the mousewheel's diamond
-
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-
-        using (Brush brush = new SolidBrush(this.NubColor))
-        {
-          g.FillPolygon(brush, outer);
-        }
-      }
-
-      return image;
+      return null;
     }
 
     /// <summary>
@@ -742,14 +715,15 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     protected virtual void DefineBar()
     {
-      if (this.SelectionGlyph != null)
-      {
-        this.SelectionGlyph.Dispose();
-      }
+      // TODO: Property is protected so in theory a custom value could have been set
+      _selectionGlyph?.Dispose();
 
-      this.BarPadding = this.GetBarPadding();
-      this.BarBounds = this.GetBarBounds();
-      this.SelectionGlyph = this.NubStyle != ColorSliderNubStyle.None ? this.CreateNubGlyph() : null;
+      _barPadding = this.GetBarPadding();
+      _barBounds = this.GetBarBounds();
+
+      _selectionGlyph = _nubStyle == ColorSliderNubStyle.None
+        ? null
+        : this.CreateNubGlyph();
     }
 
     /// <summary>
@@ -758,9 +732,9 @@ namespace Cyotek.Windows.Forms
     /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
-      if (disposing && this.SelectionGlyph != null)
+      if (disposing && _selectionGlyph != null)
       {
-        this.SelectionGlyph.Dispose();
+        _selectionGlyph.Dispose();
       }
 
       base.Dispose(disposing);
@@ -776,7 +750,7 @@ namespace Cyotek.Windows.Forms
       Padding padding;
 
       clientRectangle = this.ClientRectangle;
-      padding = this.BarPadding + this.Padding;
+      padding = _barPadding + this.Padding;
 
       return new Rectangle(clientRectangle.Left + padding.Left, clientRectangle.Top + padding.Top, clientRectangle.Width - padding.Horizontal, clientRectangle.Height - padding.Vertical);
     }
@@ -791,39 +765,44 @@ namespace Cyotek.Windows.Forms
       int top;
       int right;
       int bottom;
+      int hw;
+      int hh;
 
       left = 0;
       top = 0;
       right = 0;
       bottom = 0;
+      hh = _nubSize.Height / 2;
+      hw = _nubSize.Width / 2;
 
-      switch (this.NubStyle)
+      switch (_nubStyle)
       {
         case ColorSliderNubStyle.BottomRight:
-          if (this.Orientation == Orientation.Horizontal)
+          if (_orientation == Orientation.Horizontal)
           {
-            bottom = this.NubSize.Height + 1;
-            left = this.NubSize.Width / 2 + 1;
+            bottom = hh;
+            left = hw;
             right = left;
           }
           else
           {
-            right = this.NubSize.Width + 1;
-            top = this.NubSize.Height / 2 + 1;
+            right = hw;
+            top = hh;
             bottom = top;
           }
           break;
+
         case ColorSliderNubStyle.TopLeft:
-          if (this.Orientation == Orientation.Horizontal)
+          if (_orientation == Orientation.Horizontal)
           {
-            top = this.NubSize.Height + 1;
-            left = this.NubSize.Width / 2 + 1;
+            top = hh;
+            left = hw;
             right = left;
           }
           else
           {
-            left = this.NubSize.Width + 1;
-            top = this.NubSize.Height / 2 + 1;
+            left = hw;
+            top = hh;
             bottom = top;
           }
           break;
@@ -839,18 +818,7 @@ namespace Cyotek.Windows.Forms
     /// <returns>true if the specified key is a regular input key; otherwise, false.</returns>
     protected override bool IsInputKey(Keys keyData)
     {
-      bool result;
-
-      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown || (keyData & Keys.Home) == Keys.Home || (keyData & Keys.End) == Keys.End)
-      {
-        result = true;
-      }
-      else
-      {
-        result = base.IsInputKey(keyData);
-      }
-
-      return result;
+      return ColorSlider.IsNavigationKey(keyData) || base.IsInputKey(keyData);
     }
 
     /// <summary>
@@ -989,53 +957,52 @@ namespace Cyotek.Windows.Forms
     /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
     protected override void OnKeyDown(KeyEventArgs e)
     {
-      int step;
-      float value;
-
-      step = e.Shift ? this.LargeChange : this.SmallChange;
-      value = this.Value;
-
-      switch (e.KeyCode)
+      if (ColorSlider.IsNavigationKey(e.KeyCode))
       {
-        case Keys.Right:
-        case Keys.Down:
-          value += step;
-          break;
-        case Keys.Left:
-        case Keys.Up:
-          value -= step;
-          break;
-        case Keys.PageDown:
-          value += this.LargeChange;
-          break;
-        case Keys.PageUp:
-          value -= this.LargeChange;
-          break;
-        case Keys.Home:
-          value = this.Minimum;
-          break;
-        case Keys.End:
-          value = this.Maximum;
-          break;
-      }
-
-      if (value < this.Minimum)
-      {
-        value = this.Minimum;
-      }
-
-      if (value > this.Maximum)
-      {
-        value = this.Maximum;
-      }
-
-      // ReSharper disable CompareOfFloatsByEqualityOperator
-      if (value != this.Value)
-        // ReSharper restore CompareOfFloatsByEqualityOperator
-      {
-        this.Value = value;
+        int step;
+        float value;
 
         e.Handled = true;
+
+        step = e.Shift
+          ? _largeChange
+          : _smallChange;
+        value = _value;
+
+        switch (e.KeyCode)
+        {
+          case Keys.Right:
+          case Keys.Down:
+            value += step;
+            break;
+
+          case Keys.Left:
+          case Keys.Up:
+            value -= step;
+            break;
+
+          case Keys.PageDown:
+            value += _largeChange;
+            break;
+
+          case Keys.PageUp:
+            value -= _largeChange;
+            break;
+
+          case Keys.Home:
+            value = _minimum;
+            break;
+
+          case Keys.End:
+            value = _maximum;
+            break;
+
+          default:
+            e.Handled = false;
+            break;
+        }
+
+        this.Value = this.ClampValue(value);
       }
 
       base.OnKeyDown(e);
@@ -1132,23 +1099,9 @@ namespace Cyotek.Windows.Forms
     /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs"/> that contains the event data. </param>
     protected override void OnMouseWheel(MouseEventArgs e)
     {
-      float value;
-
       base.OnMouseWheel(e);
 
-      value = this.Value + -(e.Delta / SystemInformation.MouseWheelScrollDelta * SystemInformation.MouseWheelScrollLines);
-
-      if (value < this.Minimum)
-      {
-        value = this.Minimum;
-      }
-
-      if (value > this.Maximum)
-      {
-        value = this.Maximum;
-      }
-
-      this.Value = value;
+      this.Value = this.ClampValue(_value + -(e.Delta / SystemInformation.MouseWheelScrollDelta * SystemInformation.MouseWheelScrollLines));
     }
 
     /// <summary>
@@ -1162,6 +1115,21 @@ namespace Cyotek.Windows.Forms
       this.Invalidate();
 
       handler = (EventHandler)this.Events[_eventNubColorChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="NubOutlineColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnNubOutlineColorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventNubOutlineColorChanged];
 
       handler?.Invoke(this, e);
     }
@@ -1299,67 +1267,69 @@ namespace Cyotek.Windows.Forms
     {
       Point point;
 
-      point = this.ValueToPoint(this.Value);
+      point = this.ValueToPoint(_value);
 
       // divider
-      if (this.ShowValueDivider)
+      if (_showValueDivider)
       {
         Point start;
         Point end;
 
-        if (this.Orientation == Orientation.Horizontal)
+        if (_orientation == Orientation.Horizontal)
         {
-          start = new Point(point.X, this.BarBounds.Top);
-          end = new Point(point.X, this.BarBounds.Bottom);
+          start = new Point(point.X, _barBounds.Top);
+          end = new Point(point.X, _barBounds.Bottom);
         }
         else
         {
-          start = new Point(this.BarBounds.Left, point.Y);
-          end = new Point(this.BarBounds.Right, point.Y);
+          start = new Point(_barBounds.Left, point.Y);
+          end = new Point(_barBounds.Right, point.Y);
         }
 
         // draw a XOR'd line using Win32 API as this functionality isn't part of .NET
         PaintHelper.DrawInvertedLine(e.Graphics, start, end);
       }
 
+      // focus
+      if (this.Focused)
+      {
+        NativeMethods.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(_barBounds, -2, -2));
+      }
+
       // drag nub
-      if (this.NubStyle != ColorSliderNubStyle.None && this.SelectionGlyph != null)
+      if (_nubStyle != ColorSliderNubStyle.None)
       {
         int x;
         int y;
 
-        if (this.Orientation == Orientation.Horizontal)
+        if (_orientation == Orientation.Horizontal)
         {
-          x = point.X - this.NubSize.Width / 2;
-          if (this.NubStyle == ColorSliderNubStyle.BottomRight)
+          x = point.X - _nubSize.Width / 2;
+
+          if (_nubStyle == ColorSliderNubStyle.BottomRight)
           {
-            y = this.BarBounds.Bottom;
+            y = _barBounds.Bottom - _nubSize.Height / 2;
           }
           else
           {
-            y = this.BarBounds.Top - this.NubSize.Height;
+            y = _barBounds.Top - _nubSize.Height / 2;
           }
         }
         else
         {
-          y = point.Y - this.NubSize.Height / 2;
-          if (this.NubStyle == ColorSliderNubStyle.BottomRight)
+          y = point.Y - _nubSize.Height / 2;
+
+          if (_nubStyle == ColorSliderNubStyle.BottomRight)
           {
-            x = this.BarBounds.Right;
+            x = _barBounds.Right - _nubSize.Width / 2;
           }
           else
           {
-            x = this.BarBounds.Left - this.NubSize.Width;
+            x = _barBounds.Left - _nubSize.Width / 2;
           }
         }
 
-        e.Graphics.DrawImage(this.SelectionGlyph, x, y);
-      }
-
-      // focus
-      if (this.Focused)
-      {
-        ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(this.BarBounds, -2, -2));
+        this.DrawNub(e.Graphics, x, y);
       }
     }
 
@@ -1371,75 +1341,68 @@ namespace Cyotek.Windows.Forms
     {
       float angle;
 
-      angle = this.Orientation == Orientation.Horizontal ? 0 : 90;
+      // TODO: Should the final brush be cached?
 
-      if (this.BarBounds.Height > 0 && this.BarBounds.Width > 0)
+      angle = _orientation == Orientation.Horizontal
+        ? 0
+        : 90;
+
+      if (_barBounds.Height > 0 && _barBounds.Width > 0)
       {
         ColorBlend blend;
 
-        // HACK: Inflating the brush rectangle by 1 seems to get rid of a odd issue where the last color is drawn on the first pixel
-
         blend = new ColorBlend();
-        using (LinearGradientBrush brush = new LinearGradientBrush(Rectangle.Inflate(this.BarBounds, 1, 1), Color.Empty, Color.Empty, angle, false))
+
+        switch (_barStyle)
         {
-          switch (this.BarStyle)
-          {
-            case ColorBarStyle.TwoColor:
-              blend.Colors = new[]
-                             {
-                               this.Color1,
-                               this.Color2
+          case ColorBarStyle.TwoColor:
+            blend.Colors = new[]
+                           {
+                               _color1,
+                               _color2
                              };
-              blend.Positions = new[]
-                                {
-                                  0F,
-                                  1F
-                                };
-              break;
-            case ColorBarStyle.ThreeColor:
-              blend.Colors = new[]
-                             {
-                               this.Color1,
-                               this.Color2,
-                               this.Color3
+            blend.Positions = _pairPositions;
+            break;
+
+          case ColorBarStyle.ThreeColor:
+            blend.Colors = new[]
+                           {
+                               _color1,
+                               _color2,
+                               _color3
                              };
-              blend.Positions = new[]
-                                {
-                                  0,
-                                  0.5F,
-                                  1
-                                };
-              break;
-            case ColorBarStyle.Custom:
-              ColorCollection custom;
+            blend.Positions = _triplePositions;
+            break;
+
+          case ColorBarStyle.Custom:
+
+            if (_customColors != null && _customColors.Count > 0)
+            {
               int count;
 
-              custom = this.CustomColors;
-              count = custom?.Count ?? 0;
-
-              if (custom != null && count > 0)
-              {
-                blend.Colors = custom.ToArray();
-                blend.Positions = Enumerable.Range(0, count).Select(i => i == 0 ? 0 : i == count - 1 ? 1 : (float)(1.0D / count) * i).ToArray();
-              }
-              else
-              {
-                blend.Colors = new[]
-                               {
-                                 this.Color1,
-                                 this.Color2
+              count = _customColors.Count;
+              blend.Colors = _customColors.ToArray();
+              blend.Positions = Enumerable.Range(0, count).Select(i => i == 0 ? 0 : i == count - 1 ? 1 : (float)(1.0D / count) * i).ToArray();
+            }
+            else
+            {
+              blend.Colors = new[]
+                             {
+                                 _color1,
+                                 _color2
                                };
-                blend.Positions = new[]
-                                  {
-                                    0F,
-                                    1F
-                                  };
-              }
-              break;
-          }
+              blend.Positions = _pairPositions;
+            }
+            break;
+        }
 
-          brush.InterpolationColors = blend;
-          e.Graphics.FillRectangle(brush, this.BarBounds);
+        // HACK: Inflating the brush rectangle by 1 seems to get rid of a odd issue where the last color is drawn on the first pixel
+        using (LinearGradientBrush brush = new LinearGradientBrush(Rectangle.Inflate(_barBounds, 1, 1), Color.Empty, Color.Empty, angle, false)
+        {
+          InterpolationColors = blend
+        })
+        {
+          e.Graphics.FillRectangle(brush, _barBounds);
         }
       }
     }
@@ -1450,32 +1413,25 @@ namespace Cyotek.Windows.Forms
     /// <param name="location">The client coordinate <see cref="Point"/> to convert.</param>
     protected virtual void PointToValue(Point location)
     {
+      Rectangle clientRectangle;
       float value;
 
-      location.X += this.ClientRectangle.X - this.BarBounds.X;
-      location.Y += this.ClientRectangle.Y - this.BarBounds.Y;
+      clientRectangle = this.ClientRectangle;
+      location.X += clientRectangle.X - _barBounds.X;
+      location.Y += clientRectangle.Y - _barBounds.Y;
 
-      switch (this.Orientation)
+      switch (_orientation)
       {
         case Orientation.Horizontal:
-          value = this.Minimum + location.X / (float)this.BarBounds.Width * (this.Minimum + this.Maximum);
+          value = _minimum + location.X / (float)_barBounds.Width * (_minimum + _maximum);
           break;
+
         default:
-          value = this.Minimum + location.Y / (float)this.BarBounds.Height * (this.Minimum + this.Maximum);
+          value = _minimum + location.Y / (float)_barBounds.Height * (_minimum + _maximum);
           break;
       }
 
-      if (value < this.Minimum)
-      {
-        value = this.Minimum;
-      }
-
-      if (value > this.Maximum)
-      {
-        value = this.Maximum;
-      }
-
-      this.Value = value;
+      this.Value = this.ClampValue(value);
     }
 
     /// <summary>
@@ -1485,27 +1441,116 @@ namespace Cyotek.Windows.Forms
     /// <returns>A <see cref="Point"/> that represents the converted <see cref="Point"/>, value, in client coordinates.</returns>
     protected virtual Point ValueToPoint(float value)
     {
+      Padding padding;
       double x;
       double y;
-      Padding padding;
 
-      padding = this.BarPadding + this.Padding;
+      padding = _barPadding + this.Padding;
       x = 0;
       y = 0;
 
-      switch (this.Orientation)
+      switch (_orientation)
       {
         case Orientation.Horizontal:
-          x = this.BarBounds.Width / this.Maximum * value;
+          x = _barBounds.Width / _maximum * value;
           break;
+
         default:
-          y = this.BarBounds.Height / this.Maximum * value;
+          y = _barBounds.Height / _maximum * value;
           break;
       }
 
       return new Point((int)x + padding.Left, (int)y + padding.Top);
     }
 
-    #endregion
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private static bool IsNavigationKey(Keys keyData)
+    {
+      return (keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up ||
+             (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right ||
+             (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown ||
+             (keyData & Keys.Home) == Keys.Home || (keyData & Keys.End) == Keys.End;
+    }
+
+    private float ClampValue(float value)
+    {
+      if (value < _minimum)
+      {
+        value = _minimum;
+      }
+
+      if (value > _maximum)
+      {
+        value = _maximum;
+      }
+
+      return value;
+    }
+
+    private void DrawNub(Graphics g, int x, int y)
+    {
+      Point[] outer;
+      Point firstCorner;
+      Point lastCorner;
+      Point tipCorner;
+
+      // TODO: Cache points and use graphics rotation to render
+
+      if (_nubStyle == ColorSliderNubStyle.BottomRight)
+      {
+        lastCorner = new Point(x + _nubSize.Width, y + _nubSize.Height);
+
+        if (_orientation == Orientation.Horizontal)
+        {
+          firstCorner = new Point(x, y + _nubSize.Height);
+          tipCorner = new Point(x + _nubSize.Width / 2, y);
+        }
+        else
+        {
+          firstCorner = new Point(x + _nubSize.Width, y);
+          tipCorner = new Point(x, y + _nubSize.Height / 2);
+        }
+      }
+      else
+      {
+        firstCorner = new Point(x, y);
+
+        if (_orientation == Orientation.Horizontal)
+        {
+          lastCorner = new Point(x + _nubSize.Width, y);
+          tipCorner = new Point(x + _nubSize.Width / 2, y + _nubSize.Height);
+        }
+        else
+        {
+          lastCorner = new Point(x, y + _nubSize.Height);
+          tipCorner = new Point(x + _nubSize.Width, y + _nubSize.Height / 2);
+        }
+      }
+
+      // draw the shape
+      outer = new[]
+      {
+        firstCorner,
+        lastCorner,
+        tipCorner
+      };
+
+      g.SmoothingMode = SmoothingMode.AntiAlias;
+
+      using (Brush brush = new SolidBrush(_nubColor))
+      {
+        g.FillPolygon(brush, outer);
+      }
+
+      using (Pen pen = new Pen(_nubOutlineColor))
+      {
+        g.DrawPolygon(pen, outer);
+      }
+    }
+
+    #endregion Private Methods
   }
 }

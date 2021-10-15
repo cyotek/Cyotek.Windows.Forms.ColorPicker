@@ -2,7 +2,6 @@
 
 [![Build status][cibadge]][ci]
 [![NuGet][nugetbadge]][nuget]
-[![NuGet (Pre-release)][nugetprbadge]][nuget]
 
 The **Cyotek.Windows.Forms.ColorPickers** library contains a
 series of custom controls and utility classes for Windows Forms
@@ -68,7 +67,9 @@ customisation for this control!
 A bunch of controls (inheriting from a single base) that allow
 selection of values via a colourful bar. Similar to the
 `TrackBar` control you have a few options for specifying the
-drag handle's position and bar orientation.
+drag handle's position and bar orientation. You can also
+customise the fill and outline colour, or replace it completely
+with a custom image.
 
 ### ColorEditor Control
 
@@ -219,8 +220,7 @@ some time, donations are welcome.
 [colordialogscreen]: res/cp-colorpickerdialog.png
 
 [nuget]: https://www.nuget.org/packages/Cyotek.Windows.Forms.ColorPicker/
-[nugetbadge]: https://img.shields.io/nuget/v/Cyotek.Windows.Forms.ColorPicker
-[nugetprbadge]: https://img.shields.io/nuget/vpre/Cyotek.Windows.Forms.ColorPicker
+[nugetbadge]: https://img.shields.io/nuget/vpre/Cyotek.Windows.Forms.ColorPicker
 
 [ci]: https://ci.appveyor.com/project/cyotek/cyotek-windows-forms-colorpicker
 [cibadge]: https://img.shields.io/appveyor/build/cyotek/cyotek-windows-forms-colorpicker
