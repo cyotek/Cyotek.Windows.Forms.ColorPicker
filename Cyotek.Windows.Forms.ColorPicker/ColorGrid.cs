@@ -1,10 +1,13 @@
-// Cyotek Color Picker controls library
-// Copyright © 2013-2021 Cyotek Ltd.
+// Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See license.txt for the full text.
+// Copyright (c) 2013-2021 Cyotek Ltd.
 
-// If you use this code in your applications, donations or attribution are welcome
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
 
 using System;
 using System.Collections.Generic;
@@ -98,6 +101,8 @@ namespace Cyotek.Windows.Forms
 
     private ColorEditingMode _editMode;
 
+    private bool _layoutRequired;
+
     private int _hotIndex;
 
     private ColorPalette _palette;
@@ -148,6 +153,9 @@ namespace Cyotek.Windows.Forms
       _cellBorderStyle = ColorCellBorderStyle.FixedSingle;
       _selectedCellStyle = ColorGridSelectedCellStyle.Zoomed;
       _palette = ColorPalette.Named;
+
+      this.AddEventHandlers(_colors);
+      this.AddEventHandlers(_customColors);
 
       this.SetScaledCellSize();
       this.RefreshColors();
@@ -715,7 +723,15 @@ namespace Cyotek.Windows.Forms
 
       if (this.AllowPainting)
       {
-        this.Invalidate();
+        if (_layoutRequired)
+        {
+          this.RefreshColors();
+          _layoutRequired = false;
+        }
+        else
+        {
+          this.Invalidate();
+        }
       }
     }
 
@@ -1943,6 +1959,10 @@ namespace Cyotek.Windows.Forms
 
           this.Invalidate();
         }
+      }
+      else
+      {
+        _layoutRequired = true;
       }
     }
 
