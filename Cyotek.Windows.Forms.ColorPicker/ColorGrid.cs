@@ -98,6 +98,8 @@ namespace Cyotek.Windows.Forms
 
     private ColorEditingMode _editMode;
 
+    private bool _layoutRequired;
+
     private int _hotIndex;
 
     private ColorPalette _palette;
@@ -718,7 +720,15 @@ namespace Cyotek.Windows.Forms
 
       if (this.AllowPainting)
       {
-        this.Invalidate();
+        if (_layoutRequired)
+        {
+          this.RefreshColors();
+          _layoutRequired = false;
+        }
+        else
+        {
+          this.Invalidate();
+        }
       }
     }
 
@@ -1946,6 +1956,10 @@ namespace Cyotek.Windows.Forms
 
           this.Invalidate();
         }
+      }
+      else
+      {
+        _layoutRequired = true;
       }
     }
 
