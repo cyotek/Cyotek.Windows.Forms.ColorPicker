@@ -58,6 +58,13 @@
 * The `SaturationColorSlider` and `LightnessColorSlider`
   controls now display a checker box background for non-solid
   colours
+* The `ColorGrid` control wasn't binding events for the default
+  `Colors` and `CustomColors` property values, causing
+  programmatic changes not to be reflected in the control or
+  crashes trying to access values not present
+* Calling `ColorGrid.EndUpdate` didn't perform layout operations
+  if the total number of colours had changed whiles updating was
+  disabled
 
 ### 1.8.0
 
