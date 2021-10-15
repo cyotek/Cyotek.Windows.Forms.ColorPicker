@@ -149,6 +149,9 @@ namespace Cyotek.Windows.Forms
       _selectedCellStyle = ColorGridSelectedCellStyle.Zoomed;
       _palette = ColorPalette.Named;
 
+      this.AddEventHandlers(_colors);
+      this.AddEventHandlers(_customColors);
+
       this.SetScaledCellSize();
       this.RefreshColors();
     }
