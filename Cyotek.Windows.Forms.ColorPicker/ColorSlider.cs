@@ -746,13 +746,13 @@ namespace Cyotek.Windows.Forms
     /// <returns>Rectangle.</returns>
     protected virtual Rectangle GetBarBounds()
     {
-      Rectangle clientRectangle;
+      Size size;
       Padding padding;
 
-      clientRectangle = this.ClientRectangle;
+      size = this.ClientSize;
       padding = _barPadding + this.Padding;
 
-      return new Rectangle(clientRectangle.Left + padding.Left, clientRectangle.Top + padding.Top, clientRectangle.Width - padding.Horizontal, clientRectangle.Height - padding.Vertical);
+      return new Rectangle(padding.Left, padding.Top, size.Width - padding.Horizontal, size.Height - padding.Vertical);
     }
 
     /// <summary>
@@ -765,47 +765,48 @@ namespace Cyotek.Windows.Forms
       int top;
       int right;
       int bottom;
-      int hw;
-      int hh;
 
       left = 0;
       top = 0;
       right = 0;
       bottom = 0;
-      hh = _nubSize.Height / 2;
-      hw = _nubSize.Width / 2;
 
-      switch (_nubStyle)
+      if (_nubStyle != ColorSliderNubStyle.None)
       {
-        case ColorSliderNubStyle.BottomRight:
-          if (_orientation == Orientation.Horizontal)
+        int hw;
+        int hh;
+
+        hw = _nubSize.Width / 2 + 1;
+        hh = _nubSize.Height / 2 + 1;
+
+        if (_orientation == Orientation.Horizontal)
+        {
+          left = hw;
+          right = hw;
+
+          if (_nubStyle == ColorSliderNubStyle.BottomRight)
           {
             bottom = hh;
-            left = hw;
-            right = left;
           }
           else
+          {
+            top = hh;
+          }
+        }
+        else
+        {
+          top = hh;
+          bottom = hh;
+
+          if (_nubStyle == ColorSliderNubStyle.BottomRight)
           {
             right = hw;
-            top = hh;
-            bottom = top;
-          }
-          break;
-
-        case ColorSliderNubStyle.TopLeft:
-          if (_orientation == Orientation.Horizontal)
-          {
-            top = hh;
-            left = hw;
-            right = left;
           }
           else
           {
             left = hw;
-            top = hh;
-            bottom = top;
           }
-          break;
+        }
       }
 
       return new Padding(left, top, right, bottom);
@@ -1301,32 +1302,25 @@ namespace Cyotek.Windows.Forms
       {
         int x;
         int y;
+        int hh;
+        int hw;
+
+        hw = _nubSize.Width / 2 + 1;
+        hh = _nubSize.Height / 2 + 1;
 
         if (_orientation == Orientation.Horizontal)
         {
-          x = point.X - _nubSize.Width / 2;
-
-          if (_nubStyle == ColorSliderNubStyle.BottomRight)
-          {
-            y = _barBounds.Bottom - _nubSize.Height / 2;
-          }
-          else
-          {
-            y = _barBounds.Top - _nubSize.Height / 2;
-          }
+          x = point.X - hw + 1;
+          y = _nubStyle == ColorSliderNubStyle.BottomRight
+            ? _barBounds.Bottom - hh
+            : _barBounds.Top - hh;
         }
         else
         {
-          y = point.Y - _nubSize.Height / 2;
-
-          if (_nubStyle == ColorSliderNubStyle.BottomRight)
-          {
-            x = _barBounds.Right - _nubSize.Width / 2;
-          }
-          else
-          {
-            x = _barBounds.Left - _nubSize.Width / 2;
-          }
+          x = _nubStyle == ColorSliderNubStyle.BottomRight
+            ? _barBounds.Right - hw
+            : _barBounds.Left - hw;
+          y = point.Y - hh + 1;
         }
 
         this.DrawNub(e.Graphics, x, y);
@@ -1442,25 +1436,23 @@ namespace Cyotek.Windows.Forms
     protected virtual Point ValueToPoint(float value)
     {
       Padding padding;
-      double x;
-      double y;
+      int x;
+      int y;
 
       padding = _barPadding + this.Padding;
-      x = 0;
-      y = 0;
 
-      switch (_orientation)
+      if (_orientation == Orientation.Horizontal)
       {
-        case Orientation.Horizontal:
-          x = _barBounds.Width / _maximum * value;
-          break;
-
-        default:
-          y = _barBounds.Height / _maximum * value;
-          break;
+        x = Convert.ToInt32((_barBounds.Width - 1) / _maximum * value);
+        y = 0;
+      }
+      else
+      {
+        x = 0;
+        y = Convert.ToInt32((_barBounds.Height - 1) / _maximum * value);
       }
 
-      return new Point((int)x + padding.Left, (int)y + padding.Top);
+      return new Point(x + padding.Left, y + padding.Top);
     }
 
     #endregion Protected Methods
