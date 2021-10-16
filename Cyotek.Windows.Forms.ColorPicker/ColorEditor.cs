@@ -584,7 +584,7 @@ namespace Cyotek.Windows.Forms
         barHorizontalOffset = innerMargin + (_showAlphaChannel
           ? aLabel.Width
           : hLabel.Width);
-        nubOffset = rColorBar.NubSize.Width >> 1;
+        nubOffset = (rColorBar.NubSize.Width >> 1) + 1;
 
         columnWidth = _orientation == Orientation.Horizontal
           ? (size.Width - (padding.Horizontal + innerMargin)) >> 1
