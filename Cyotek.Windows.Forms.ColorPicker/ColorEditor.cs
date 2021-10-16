@@ -1,21 +1,21 @@
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright (c) 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   /// <summary>
   /// Represents a control that allows the editing of a color in a variety of ways.
   /// </summary>
@@ -23,35 +23,37 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent("ColorChanged")]
   public partial class ColorEditor : UserControl, IColorEditor
   {
-    #region Constants
+    #region Private Fields
+
+    private const int _minimumBarWidth = 30;
 
     private static readonly object _eventColorChanged = new object();
 
     private static readonly object _eventOrientationChanged = new object();
 
+    private static readonly object _eventPreserveAlphaChannelChanged = new object();
+
     private static readonly object _eventShowAlphaChannelChanged = new object();
 
     private static readonly object _eventShowColorSpaceLabelsChanged = new object();
-
-    private const int _minimumBarWidth = 30;
-
-    #endregion
-
-    #region Fields
 
     private Color _color;
 
     private HslColor _hslColor;
 
+    private bool _lockUpdates;
+
     private Orientation _orientation;
+
+    private bool _preserveAlphaChannel;
 
     private bool _showAlphaChannel;
 
     private bool _showColorSpaceLabels;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorEditor"/> class.
@@ -62,27 +64,45 @@ namespace Cyotek.Windows.Forms
 
       _color = Color.Black;
       _orientation = Orientation.Vertical;
-      this.Size = new Size(200, 260);
       _showAlphaChannel = true;
       _showColorSpaceLabels = true;
+
+      this.ResizeComponents();
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Events
+    #region Public Events
+
+    [Category("Property Changed")]
+    public event EventHandler ColorChanged
+    {
+      add => this.Events.AddHandler(_eventColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventColorChanged, value);
+    }
 
     [Category("Property Changed")]
     public event EventHandler OrientationChanged
     {
-      add { this.Events.AddHandler(_eventOrientationChanged, value); }
-      remove { this.Events.RemoveHandler(_eventOrientationChanged, value); }
+      add => this.Events.AddHandler(_eventOrientationChanged, value);
+      remove => this.Events.RemoveHandler(_eventOrientationChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the PreserveAlphaChannel property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler PreserveAlphaChannelChanged
+    {
+      add => this.Events.AddHandler(_eventPreserveAlphaChannelChanged, value);
+      remove => this.Events.RemoveHandler(_eventPreserveAlphaChannelChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler ShowAlphaChannelChanged
     {
-      add { this.Events.AddHandler(_eventShowAlphaChannelChanged, value); }
-      remove { this.Events.RemoveHandler(_eventShowAlphaChannelChanged, value); }
+      add => this.Events.AddHandler(_eventShowAlphaChannelChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowAlphaChannelChanged, value);
     }
 
     /// <summary>
@@ -91,13 +111,48 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler ShowColorSpaceLabelsChanged
     {
-      add { this.Events.AddHandler(_eventShowColorSpaceLabelsChanged, value); }
-      remove { this.Events.RemoveHandler(_eventShowColorSpaceLabelsChanged, value); }
+      add => this.Events.AddHandler(_eventShowColorSpaceLabelsChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowColorSpaceLabelsChanged, value);
     }
 
-    #endregion
+    #endregion Public Events
 
-    #region Properties
+    #region Public Properties
+
+    /// <summary>
+    /// Gets or sets the component color.
+    /// </summary>
+    /// <value>The component color.</value>
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "0, 0, 0")]
+    public virtual Color Color
+    {
+      get => _color;
+      set
+      {
+        if (value.A != 255 && !_showAlphaChannel && !_preserveAlphaChannel)
+        {
+          value = Color.FromArgb(255, value);
+        }
+
+        if (_color != value)
+        {
+          _color = value;
+
+          if (!_lockUpdates)
+          {
+            _lockUpdates = true;
+            this.HslColor = new HslColor(value);
+            _lockUpdates = false;
+            this.UpdateFields(false);
+          }
+          else
+          {
+            this.OnColorChanged(EventArgs.Empty);
+          }
+        }
+      }
+    }
 
     /// <summary>
     /// Gets or sets the component color as a HSL structure.
@@ -107,18 +162,18 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual HslColor HslColor
     {
-      get { return _hslColor; }
+      get => _hslColor;
       set
       {
-        if (this.HslColor != value)
+        if (_hslColor != value)
         {
           _hslColor = value;
 
-          if (!this.LockUpdates)
+          if (!_lockUpdates)
           {
-            this.LockUpdates = true;
+            _lockUpdates = true;
             this.Color = value.ToRgbColor();
-            this.LockUpdates = false;
+            _lockUpdates = false;
             this.UpdateFields(false);
           }
           else
@@ -137,10 +192,10 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Orientation), "Vertical")]
     public virtual Orientation Orientation
     {
-      get { return _orientation; }
+      get => _orientation;
       set
       {
-        if (this.Orientation != value)
+        if (_orientation != value)
         {
           _orientation = value;
 
@@ -150,10 +205,26 @@ namespace Cyotek.Windows.Forms
     }
 
     [Category("Behavior")]
+    [DefaultValue(false)]
+    public bool PreserveAlphaChannel
+    {
+      get => _preserveAlphaChannel;
+      set
+      {
+        if (_preserveAlphaChannel != value)
+        {
+          _preserveAlphaChannel = value;
+
+          this.OnPreserveAlphaChannelChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
     [DefaultValue(true)]
     public virtual bool ShowAlphaChannel
     {
-      get { return _showAlphaChannel; }
+      get => _showAlphaChannel;
       set
       {
         if (_showAlphaChannel != value)
@@ -169,7 +240,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(true)]
     public bool ShowColorSpaceLabels
     {
-      get { return _showColorSpaceLabels; }
+      get => _showColorSpaceLabels;
       set
       {
         if (_showColorSpaceLabels != value)
@@ -181,15 +252,25 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    #endregion Public Properties
+
+    #region Protected Properties
+
+    protected override Size DefaultSize => new Size(200, 260);
+
     /// <summary>
     /// Gets or sets a value indicating whether input changes should be processed.
     /// </summary>
     /// <value><c>true</c> if input changes should be processed; otherwise, <c>false</c>.</value>
-    protected bool LockUpdates { get; set; }
+    protected bool LockUpdates
+    {
+      get => _lockUpdates;
+      set => _lockUpdates = value;
+    }
 
-    #endregion
+    #endregion Protected Properties
 
-    #region Methods
+    #region Protected Methods
 
     /// <summary>
     /// Raises the <see cref="ColorChanged" /> event.
@@ -215,13 +296,6 @@ namespace Cyotek.Windows.Forms
       base.OnDockChanged(e);
 
       this.ResizeComponents();
-    }
-
-    protected override void OnFontChanged(EventArgs e)
-    {
-      base.OnFontChanged(e);
-
-      this.SetDropDownWidth();
     }
 
     /// <summary>
@@ -259,6 +333,19 @@ namespace Cyotek.Windows.Forms
       base.OnPaddingChanged(e);
 
       this.ResizeComponents();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="PreserveAlphaChannelChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnPreserveAlphaChannelChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventPreserveAlphaChannelChanged];
+
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -305,12 +392,168 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Updates the editing field values.
+    /// </summary>
+    /// <param name="userAction">if set to <c>true</c> the update is due to user interaction.</param>
+    protected virtual void UpdateFields(bool userAction)
+    {
+      if (!_lockUpdates)
+      {
+        try
+        {
+          _lockUpdates = true;
+
+          // RGB
+          if (!(userAction && rNumericUpDown.Focused))
+          {
+            rNumericUpDown.Value = _color.R;
+          }
+          if (!(userAction && gNumericUpDown.Focused))
+          {
+            gNumericUpDown.Value = _color.G;
+          }
+          if (!(userAction && bNumericUpDown.Focused))
+          {
+            bNumericUpDown.Value = _color.B;
+          }
+          rColorBar.Value = _color.R;
+          rColorBar.Color = _color;
+          gColorBar.Value = _color.G;
+          gColorBar.Color = _color;
+          bColorBar.Value = _color.B;
+          bColorBar.Color = _color;
+
+          // HTML
+          if (!(userAction && hexTextBox.Focused))
+          {
+            hexTextBox.Text = _color.IsNamedColor
+              ? _color.Name
+              : string.Format("{0:X2}{1:X2}{2:X2}", _color.R, _color.G, _color.B);
+          }
+
+          // HSL
+          if (!(userAction && hNumericUpDown.Focused))
+          {
+            hNumericUpDown.Value = (int)_hslColor.H;
+          }
+          if (!(userAction && sNumericUpDown.Focused))
+          {
+            sNumericUpDown.Value = (int)(_hslColor.S * 100);
+          }
+          if (!(userAction && lNumericUpDown.Focused))
+          {
+            lNumericUpDown.Value = (int)(_hslColor.L * 100);
+          }
+          hColorBar.Value = (int)_hslColor.H;
+          sColorBar.Color = _color;
+          sColorBar.Value = (int)(_hslColor.S * 100);
+          lColorBar.Color = _color;
+          lColorBar.Value = (int)(_hslColor.L * 100);
+
+          // Alpha
+          if (!(userAction && aNumericUpDown.Focused))
+          {
+            aNumericUpDown.Value = _color.A;
+          }
+          aColorBar.Color = _color;
+          aColorBar.Value = _color.A;
+        }
+        finally
+        {
+          _lockUpdates = false;
+        }
+      }
+    }
+
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private void hexTextBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (hexTextBox.SelectedIndex != -1)
+      {
+        _lockUpdates = true;
+        this.Color = Color.FromName((string)hexTextBox.SelectedItem);
+        _lockUpdates = false;
+      }
+    }
+
+    private void ProcessHexStringUpdate(ref bool useRgb, ref bool useNamed)
+    {
+      string text;
+
+      text = hexTextBox.Text;
+
+      if (!string.IsNullOrEmpty(text))
+      {
+        int namedIndex;
+
+        if (text[0] == '#')
+        {
+          text = text.Substring(1);
+        }
+
+        if (hexTextBox.Items.Count == 0)
+        {
+          hexTextBox.FillNamedColors();
+        }
+
+        namedIndex = hexTextBox.FindStringExact(text);
+
+        if (namedIndex != -1 || text.Length == 6 || text.Length == 8)
+        {
+          try
+          {
+            Color color;
+
+            color = namedIndex != -1
+              ? Color.FromName(text)
+              : ColorTranslator.FromHtml("#" + text);
+            aNumericUpDown.Value = color.A;
+            rNumericUpDown.Value = color.R;
+            bNumericUpDown.Value = color.B;
+            gNumericUpDown.Value = color.G;
+
+            useRgb = true;
+          }
+          // ReSharper disable EmptyGeneralCatchClause
+          catch
+          {
+          }
+          // ReSharper restore EmptyGeneralCatchClause
+        }
+        else
+        {
+          useNamed = true;
+        }
+      }
+    }
+
+    private void ProcessHslSliderUpdate()
+    {
+      hNumericUpDown.Value = (int)hColorBar.Value;
+      sNumericUpDown.Value = (int)sColorBar.Value;
+      lNumericUpDown.Value = (int)lColorBar.Value;
+    }
+
+    private void ProcessRgbSliderUpdate()
+    {
+      aNumericUpDown.Value = (int)aColorBar.Value;
+      rNumericUpDown.Value = (int)rColorBar.Value;
+      gNumericUpDown.Value = (int)gColorBar.Value;
+      bNumericUpDown.Value = (int)bColorBar.Value;
+    }
+
+    /// <summary>
     /// Resizes the editing components.
     /// </summary>
-    protected virtual void ResizeComponents()
+    private void ResizeComponents()
     {
       try
       {
+        Size size;
+        Padding padding;
         int group1HeaderLeft;
         int group1BarLeft;
         int group1EditLeft;
@@ -327,34 +570,34 @@ namespace Cyotek.Windows.Forms
         int colorBarOffset;
         int editOffset;
         int barHorizontalOffset;
+        int nubOffset;
 
-        top = this.Padding.Top;
+        size = this.ClientSize;
+        padding = this.Padding;
+        top = padding.Top;
         innerMargin = 3;
         editWidth = TextRenderer.MeasureText("0000W", this.Font).Width + 6; // magic 6 for interior spacing+borders
         rowHeight = Math.Max(Math.Max(rLabel.Height, rColorBar.Height), rNumericUpDown.Height);
         labelOffset = (rowHeight - rLabel.Height) >> 1;
         colorBarOffset = (rowHeight - rColorBar.Height) >> 1;
         editOffset = (rowHeight - rNumericUpDown.Height) >> 1;
-        barHorizontalOffset = _showAlphaChannel ? aLabel.Width : hLabel.Width;
+        barHorizontalOffset = innerMargin + (_showAlphaChannel
+          ? aLabel.Width
+          : hLabel.Width);
+        nubOffset = (rColorBar.NubSize.Width >> 1) + 1;
 
-        switch (this.Orientation)
-        {
-          case Orientation.Horizontal:
-            columnWidth = (this.ClientSize.Width - (this.Padding.Horizontal + innerMargin)) >> 1;
-            break;
-          default:
-            columnWidth = this.ClientSize.Width - this.Padding.Horizontal;
-            break;
-        }
+        columnWidth = _orientation == Orientation.Horizontal
+          ? (size.Width - (padding.Horizontal + innerMargin)) >> 1
+          : size.Width - padding.Horizontal;
 
-        group1HeaderLeft = this.Padding.Left;
+        group1HeaderLeft = padding.Left;
         group1EditLeft = columnWidth - editWidth;
         group1BarLeft = group1HeaderLeft + barHorizontalOffset + innerMargin;
 
-        if (this.Orientation == Orientation.Horizontal)
+        if (_orientation == Orientation.Horizontal)
         {
-          group2HeaderLeft = this.Padding.Left + columnWidth + innerMargin;
-          group2EditLeft = this.ClientSize.Width - (this.Padding.Right + editWidth);
+          group2HeaderLeft = padding.Left + columnWidth + innerMargin;
+          group2EditLeft = size.Width - (padding.Right + editWidth);
           group2BarLeft = group2HeaderLeft + barHorizontalOffset + innerMargin;
         }
         else
@@ -395,13 +638,13 @@ namespace Cyotek.Windows.Forms
 
         // Hex row
         hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        hexTextBox.SetBounds(hexLabel.Right + innerMargin, top + colorBarOffset, barWidth + editOffset + editWidth - (hexLabel.Right - group1BarLeft), 0, BoundsSpecified.Location | BoundsSpecified.Width);
+        hexTextBox.SetBounds(group1BarLeft + nubOffset, top + colorBarOffset, barWidth + innerMargin + editWidth - nubOffset, 0, BoundsSpecified.Location | BoundsSpecified.Width);
         top += rowHeight + innerMargin;
 
         // reset top
-        if (this.Orientation == Orientation.Horizontal)
+        if (_orientation == Orientation.Horizontal)
         {
-          top = this.Padding.Top;
+          top = padding.Top;
         }
 
         // HSL header
@@ -442,203 +685,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    /// <summary>
-    /// Updates the editing field values.
-    /// </summary>
-    /// <param name="userAction">if set to <c>true</c> the update is due to user interaction.</param>
-    protected virtual void UpdateFields(bool userAction)
-    {
-      if (!this.LockUpdates)
-      {
-        try
-        {
-          this.LockUpdates = true;
-
-          // RGB
-          if (!(userAction && rNumericUpDown.Focused))
-          {
-            rNumericUpDown.Value = this.Color.R;
-          }
-          if (!(userAction && gNumericUpDown.Focused))
-          {
-            gNumericUpDown.Value = this.Color.G;
-          }
-          if (!(userAction && bNumericUpDown.Focused))
-          {
-            bNumericUpDown.Value = this.Color.B;
-          }
-          rColorBar.Value = this.Color.R;
-          rColorBar.Color = this.Color;
-          gColorBar.Value = this.Color.G;
-          gColorBar.Color = this.Color;
-          bColorBar.Value = this.Color.B;
-          bColorBar.Color = this.Color;
-
-          // HTML
-          if (!(userAction && hexTextBox.Focused))
-          {
-            hexTextBox.Text = this.Color.IsNamedColor ? this.Color.Name : string.Format("{0:X2}{1:X2}{2:X2}", this.Color.R, this.Color.G, this.Color.B);
-          }
-
-          // HSL
-          if (!(userAction && hNumericUpDown.Focused))
-          {
-            hNumericUpDown.Value = (int)this.HslColor.H;
-          }
-          if (!(userAction && sNumericUpDown.Focused))
-          {
-            sNumericUpDown.Value = (int)(this.HslColor.S * 100);
-          }
-          if (!(userAction && lNumericUpDown.Focused))
-          {
-            lNumericUpDown.Value = (int)(this.HslColor.L * 100);
-          }
-          hColorBar.Value = (int)this.HslColor.H;
-          sColorBar.Color = this.Color;
-          sColorBar.Value = (int)(this.HslColor.S * 100);
-          lColorBar.Color = this.Color;
-          lColorBar.Value = (int)(this.HslColor.L * 100);
-
-          // Alpha
-          if (!(userAction && aNumericUpDown.Focused))
-          {
-            aNumericUpDown.Value = this.Color.A;
-          }
-          aColorBar.Color = this.Color;
-          aColorBar.Value = this.Color.A;
-        }
-        finally
-        {
-          this.LockUpdates = false;
-        }
-      }
-    }
-
-    private void AddColorProperties(Type type)
-    {
-      Type colorType;
-
-      colorType = typeof(Color);
-
-      // ReSharper disable once LoopCanBePartlyConvertedToQuery
-      foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static))
-      {
-        if (property.PropertyType == colorType)
-        {
-          Color color;
-
-          color = (Color)property.GetValue(type, null);
-          if (!color.IsEmpty)
-          {
-            hexTextBox.Items.Add(color.Name);
-          }
-        }
-      }
-    }
-
-    private string AddSpaces(string text)
-    {
-      string result;
-
-      //http://stackoverflow.com/a/272929/148962
-
-      if (!string.IsNullOrEmpty(text))
-      {
-        StringBuilder newText;
-
-        newText = new StringBuilder(text.Length * 2);
-        newText.Append(text[0]);
-        for (int i = 1; i < text.Length; i++)
-        {
-          if (char.IsUpper(text[i]) && text[i - 1] != ' ')
-          {
-            newText.Append(' ');
-          }
-          newText.Append(text[i]);
-        }
-
-        result = newText.ToString();
-      }
-      else
-      {
-        result = null;
-      }
-
-      return result;
-    }
-
-    private void FillNamedColors()
-    {
-      this.AddColorProperties(typeof(SystemColors));
-      this.AddColorProperties(typeof(Color));
-      this.SetDropDownWidth();
-    }
-
-    private void hexTextBox_DrawItem(object sender, DrawItemEventArgs e)
-    {
-      // TODO: Really, this should be another control - ColorComboBox or ColorListBox etc.
-
-      if (e.Index != -1)
-      {
-        Rectangle colorBox;
-        string name;
-        Color color;
-
-        e.DrawBackground();
-
-        name = (string)hexTextBox.Items[e.Index];
-        color = Color.FromName(name);
-        colorBox = new Rectangle(e.Bounds.Left + 1, e.Bounds.Top + 1, e.Bounds.Height - 3, e.Bounds.Height - 3);
-
-        using (Brush brush = new SolidBrush(color))
-        {
-          e.Graphics.FillRectangle(brush, colorBox);
-        }
-        e.Graphics.DrawRectangle(SystemPens.ControlText, colorBox);
-
-        TextRenderer.DrawText(e.Graphics, this.AddSpaces(name), this.Font, new Point(colorBox.Right + 3, colorBox.Top), e.ForeColor);
-
-        //if (color == Color.Transparent && (e.State & DrawItemState.Selected) != DrawItemState.Selected)
-        //  e.Graphics.DrawLine(SystemPens.ControlText, e.Bounds.Left, e.Bounds.Top, e.Bounds.Right, e.Bounds.Top);
-
-        e.DrawFocusRectangle();
-      }
-    }
-
-    private void hexTextBox_DropDown(object sender, EventArgs e)
-    {
-      if (hexTextBox.Items.Count == 0)
-      {
-        this.FillNamedColors();
-      }
-    }
-
-    private void hexTextBox_KeyDown(object sender, KeyEventArgs e)
-    {
-      switch (e.KeyCode)
-      {
-        case Keys.Up:
-        case Keys.Down:
-        case Keys.PageUp:
-        case Keys.PageDown:
-          if (hexTextBox.Items.Count == 0)
-          {
-            this.FillNamedColors();
-          }
-          break;
-      }
-    }
-
-    private void hexTextBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (hexTextBox.SelectedIndex != -1)
-      {
-        this.LockUpdates = true;
-        this.Color = Color.FromName((string)hexTextBox.SelectedItem);
-        this.LockUpdates = false;
-      }
-    }
-
     private void SetBarStates(bool visible)
     {
       rColorBar.Visible = visible;
@@ -660,14 +706,6 @@ namespace Cyotek.Windows.Forms
       hslLabel.Visible = _showColorSpaceLabels;
     }
 
-    private void SetDropDownWidth()
-    {
-      if (hexTextBox.Items.Count != 0)
-      {
-        hexTextBox.DropDownWidth = hexTextBox.ItemHeight * 2 + hexTextBox.Items.Cast<string>().Max(s => TextRenderer.MeasureText(s, this.Font).Width);
-      }
-    }
-
     /// <summary>
     /// Change handler for editing components.
     /// </summary>
@@ -675,7 +713,7 @@ namespace Cyotek.Windows.Forms
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ValueChangedHandler(object sender, EventArgs e)
     {
-      if (!this.LockUpdates)
+      if (!_lockUpdates)
       {
         bool useHsl;
         bool useRgb;
@@ -685,57 +723,15 @@ namespace Cyotek.Windows.Forms
         useRgb = false;
         useNamed = false;
 
-        this.LockUpdates = true;
+        _lockUpdates = true;
 
         if (sender == hexTextBox)
         {
-          string text;
-          int namedIndex;
-
-          text = hexTextBox.Text;
-          if (text.StartsWith("#"))
-          {
-            text = text.Substring(1);
-          }
-
-          if (hexTextBox.Items.Count == 0)
-          {
-            this.FillNamedColors();
-          }
-
-          namedIndex = hexTextBox.FindStringExact(text);
-
-          if (namedIndex != -1 || text.Length == 6 || text.Length == 8)
-          {
-            try
-            {
-              Color color;
-
-              color = namedIndex != -1 ? Color.FromName(text) : ColorTranslator.FromHtml("#" + text);
-              aNumericUpDown.Value = color.A;
-              rNumericUpDown.Value = color.R;
-              bNumericUpDown.Value = color.B;
-              gNumericUpDown.Value = color.G;
-
-              useRgb = true;
-            }
-            // ReSharper disable EmptyGeneralCatchClause
-            catch
-            { }
-            // ReSharper restore EmptyGeneralCatchClause
-          }
-          else
-          {
-            useNamed = true;
-          }
+          this.ProcessHexStringUpdate(ref useRgb, ref useNamed);
         }
         else if (sender == aColorBar || sender == rColorBar || sender == gColorBar || sender == bColorBar)
         {
-          aNumericUpDown.Value = (int)aColorBar.Value;
-          rNumericUpDown.Value = (int)rColorBar.Value;
-          gNumericUpDown.Value = (int)gColorBar.Value;
-          bNumericUpDown.Value = (int)bColorBar.Value;
-
+          this.ProcessRgbSliderUpdate();
           useRgb = true;
         }
         else if (sender == aNumericUpDown || sender == rNumericUpDown || sender == gNumericUpDown || sender == bNumericUpDown)
@@ -744,10 +740,7 @@ namespace Cyotek.Windows.Forms
         }
         else if (sender == hColorBar || sender == lColorBar || sender == sColorBar)
         {
-          hNumericUpDown.Value = (int)hColorBar.Value;
-          sNumericUpDown.Value = (int)sColorBar.Value;
-          lNumericUpDown.Value = (int)lColorBar.Value;
-
+          this.ProcessHslSliderUpdate();
           useHsl = true;
         }
         else if (sender == hNumericUpDown || sender == sNumericUpDown || sender == lNumericUpDown)
@@ -759,7 +752,9 @@ namespace Cyotek.Windows.Forms
         {
           Color color;
 
-          color = useNamed ? Color.FromName(hexTextBox.Text) : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
+          color = useNamed
+            ? Color.FromName(hexTextBox.Text)
+            : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
 
           this.Color = color;
           this.HslColor = new HslColor(color);
@@ -773,62 +768,12 @@ namespace Cyotek.Windows.Forms
           this.Color = color.ToRgbColor();
         }
 
-        this.LockUpdates = false;
+        _lockUpdates = false;
+
         this.UpdateFields(true);
       }
     }
 
-    #endregion
-
-    #region IColorEditor Interface
-
-    [Category("Property Changed")]
-    public event EventHandler ColorChanged
-    {
-      add { this.Events.AddHandler(_eventColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
-    }
-
-    /// <summary>
-    /// Gets or sets the component color.
-    /// </summary>
-    /// <value>The component color.</value>
-    [Category("Appearance")]
-    [DefaultValue(typeof(Color), "0, 0, 0")]
-    public virtual Color Color
-    {
-      get { return _color; }
-      set
-      {
-        /*
-         * If the color isn't solid, and ShowAlphaChannel is false
-         * remove the alpha channel. Not sure if this is the best
-         * place to do it, but it is a blanket fix for now
-         */
-        if (value.A != 255 && !_showAlphaChannel)
-        {
-          value = Color.FromArgb(255, value);
-        }
-
-        if (_color != value)
-        {
-          _color = value;
-
-          if (!this.LockUpdates)
-          {
-            this.LockUpdates = true;
-            this.HslColor = new HslColor(value);
-            this.LockUpdates = false;
-            this.UpdateFields(false);
-          }
-          else
-          {
-            this.OnColorChanged(EventArgs.Empty);
-          }
-        }
-      }
-    }
-
-    #endregion
+    #endregion Private Methods
   }
 }

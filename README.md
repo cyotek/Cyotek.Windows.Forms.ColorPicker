@@ -1,7 +1,6 @@
 # Cyotek.Windows.Forms.ColorPickers Control Collection
 
-[![Build status][cibadge]][ci]
-[![NuGet][nugetbadge]][nuget]
+[![Build status][cibadge]][ci] [![NuGet][nugetbadge]][nuget]
 
 The **Cyotek.Windows.Forms.ColorPickers** library contains a
 series of custom controls and utility classes for Windows Forms
@@ -76,7 +75,12 @@ with a custom image.
 ![ColorEditor control demonstration][coloreditorscreen]
 
 This control allows the editing of a RGB or HSL colour via a
-standard interface.
+standard interface. You can also enter colours via 6 or 8
+character hexadecimal notation, or choose from named web and
+system colors.
+
+Use of the alpha channel can be configured via the
+`ShowAlphaChannel` and `PreserveAlphaChannel` properties.
 
 ### ScreenColorPicker Control
 

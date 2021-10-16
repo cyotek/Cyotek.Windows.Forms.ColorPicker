@@ -23,6 +23,10 @@
   allowing you to know when a selection operation starts and
   ends
 * Added `ColorSlider.NubOutlineColor`
+* Added `ColorEditor.PreserveAlphaChannel`. By default, the
+  `ColorEditor` will strip the alpha component from a colour if
+  the `ShowAlphaChannel` property is not set. This new property
+  allows the component to be preserved
 
 #### Changed
 
@@ -35,7 +39,8 @@
 
 #### Deprecated
 
-* The `IPaletteSerializer` interface has been marked as obsolete
+* The `IPaletteSerializer` and `IColorEditor` interfaces have
+  been marked as obsolete
 * The `PaletteSerializer`, `AdobeColorTablePaletteSerializer`,
   `AdobePhotoShopColorSwatchSerializer`,
   `GimpPaletteSerializer`, `InterleavedBitmapPaletteSerializer`,
@@ -44,6 +49,11 @@
 * The `AdobePhotoshopColorSwatchColorSpace` and
   `AdobePhotoshopColorSwatchFileVersion` enums have been marked
   as obsolete
+
+#### Removed
+
+* The method `ColorEditor.ResizeComponents` is no longer
+  accessible
 
 #### Fixed
 

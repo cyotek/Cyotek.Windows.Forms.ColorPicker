@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 
 namespace Cyotek.Windows.Forms
@@ -14,6 +14,7 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Provides functionality required by color editors that are bindable
   /// </summary>
+  [Obsolete("This interface will be removed in a future update.")]
   public interface IColorEditor
   {
     #region Events
