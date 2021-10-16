@@ -61,6 +61,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #region Private Methods
 
+    private void BackgroundFillToolStripColorPickerSplitButton_ColorChanged(object sender, EventArgs e)
+    {
+      tableLayoutPanel.BackColor = backgroundFillToolStripColorPickerSplitButton.Color;
+    }
+
     private void BackgroundToolStripColorPickerSplitButton_ColorChanged(object sender, EventArgs e)
     {
       Color color;
@@ -142,6 +147,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
                                                                   "Value", ((ColorSlider)sender).Value
                                                                 }
                                                               });
+
+      propertyGrid.Refresh();
     }
 
     #endregion Private Methods
