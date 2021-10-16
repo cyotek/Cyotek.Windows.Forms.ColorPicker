@@ -689,7 +689,7 @@ namespace Cyotek.Windows.Forms
 
         // Hex row
         hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        hexTextBox.SetBounds(hexLabel.Right + innerMargin, top + colorBarOffset, barWidth + editOffset + editWidth - (hexLabel.Right - group1BarLeft), 0, BoundsSpecified.Location | BoundsSpecified.Width);
+        hexTextBox.SetBounds(group1BarLeft, top + colorBarOffset, barWidth + innerMargin + editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
         top += rowHeight + innerMargin;
 
         // reset top
