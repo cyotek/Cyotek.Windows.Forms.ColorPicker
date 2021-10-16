@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
@@ -38,7 +38,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void colorEditor_ColorChanged(object sender, EventArgs e)
     {
-      optionsSplitContainer.Panel2.BackColor = colorEditor.Color;
+      colorPreviewBox1.Color = colorEditor.Color;
+
+      propertyGrid.Refresh();
     }
 
     #endregion
