@@ -301,12 +301,7 @@ namespace Cyotek.Windows.Forms
       this.ResizeComponents();
     }
 
-    protected override void OnFontChanged(EventArgs e)
-    {
-      base.OnFontChanged(e);
 
-      this.SetDropDownWidth();
-    }
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
@@ -479,120 +474,14 @@ namespace Cyotek.Windows.Forms
 
     #region Private Methods
 
-    private void AddColorProperties(Type type)
-    {
-      Type colorType;
+   
 
-      colorType = typeof(Color);
+ 
 
-      // ReSharper disable once LoopCanBePartlyConvertedToQuery
-      foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Static))
-      {
-        if (property.PropertyType == colorType)
-        {
-          Color color;
 
-          color = (Color)property.GetValue(type, null);
-          if (!color.IsEmpty)
-          {
-            hexTextBox.Items.Add(color.Name);
-          }
-        }
-      }
-    }
 
-    private string AddSpaces(string text)
-    {
-      string result;
 
-      //http://stackoverflow.com/a/272929/148962
 
-      if (!string.IsNullOrEmpty(text))
-      {
-        StringBuilder newText;
-
-        newText = new StringBuilder(text.Length * 2);
-        newText.Append(text[0]);
-        for (int i = 1; i < text.Length; i++)
-        {
-          if (char.IsUpper(text[i]) && text[i - 1] != ' ')
-          {
-            newText.Append(' ');
-          }
-          newText.Append(text[i]);
-        }
-
-        result = newText.ToString();
-      }
-      else
-      {
-        result = null;
-      }
-
-      return result;
-    }
-
-    private void FillNamedColors()
-    {
-      this.AddColorProperties(typeof(SystemColors));
-      this.AddColorProperties(typeof(Color));
-      this.SetDropDownWidth();
-    }
-
-    private void hexTextBox_DrawItem(object sender, DrawItemEventArgs e)
-    {
-      // TODO: Really, this should be another control - ColorComboBox or ColorListBox etc.
-
-      if (e.Index != -1)
-      {
-        Rectangle colorBox;
-        string name;
-        Color color;
-
-        e.DrawBackground();
-
-        name = (string)hexTextBox.Items[e.Index];
-        color = Color.FromName(name);
-        colorBox = new Rectangle(e.Bounds.Left + 1, e.Bounds.Top + 1, e.Bounds.Height - 3, e.Bounds.Height - 3);
-
-        using (Brush brush = new SolidBrush(color))
-        {
-          e.Graphics.FillRectangle(brush, colorBox);
-        }
-        e.Graphics.DrawRectangle(SystemPens.ControlText, colorBox);
-
-        TextRenderer.DrawText(e.Graphics, this.AddSpaces(name), this.Font, new Point(colorBox.Right + 3, colorBox.Top), e.ForeColor);
-
-        //if (color == Color.Transparent && (e.State & DrawItemState.Selected) != DrawItemState.Selected)
-        //  e.Graphics.DrawLine(SystemPens.ControlText, e.Bounds.Left, e.Bounds.Top, e.Bounds.Right, e.Bounds.Top);
-
-        e.DrawFocusRectangle();
-      }
-    }
-
-    private void hexTextBox_DropDown(object sender, EventArgs e)
-    {
-      if (hexTextBox.Items.Count == 0)
-      {
-        this.FillNamedColors();
-      }
-    }
-
-    private void hexTextBox_KeyDown(object sender, KeyEventArgs e)
-    {
-      switch (e.KeyCode)
-      {
-        case Keys.Up:
-        case Keys.Down:
-        case Keys.PageUp:
-        case Keys.PageDown:
-          if (hexTextBox.Items.Count == 0)
-          {
-            this.FillNamedColors();
-          }
-          break;
-      }
-    }
 
     private void hexTextBox_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -757,13 +646,7 @@ namespace Cyotek.Windows.Forms
       hslLabel.Visible = _showColorSpaceLabels;
     }
 
-    private void SetDropDownWidth()
-    {
-      if (hexTextBox.Items.Count != 0)
-      {
-        hexTextBox.DropDownWidth = hexTextBox.ItemHeight * 2 + hexTextBox.Items.Cast<string>().Max(s => TextRenderer.MeasureText(s, this.Font).Width);
-      }
-    }
+
 
     /// <summary>
     /// Change handler for editing components.
@@ -797,7 +680,7 @@ namespace Cyotek.Windows.Forms
 
           if (hexTextBox.Items.Count == 0)
           {
-            this.FillNamedColors();
+            hexTextBox.FillNamedColors();
           }
 
           namedIndex = hexTextBox.FindStringExact(text);
@@ -856,7 +739,9 @@ namespace Cyotek.Windows.Forms
         {
           Color color;
 
-          color = useNamed ? Color.FromName(hexTextBox.Text) : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
+          color = useNamed
+            ? Color.FromName(hexTextBox.Text)
+            : Color.FromArgb((int)aNumericUpDown.Value, (int)rNumericUpDown.Value, (int)gNumericUpDown.Value, (int)bNumericUpDown.Value);
 
           this.Color = color;
           this.HslColor = new HslColor(color);
