@@ -34,6 +34,8 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventOrientationChanged = new object();
 
+    private static readonly object _eventPreserveAlphaChannelChanged = new object();
+
     private static readonly object _eventShowAlphaChannelChanged = new object();
 
     private static readonly object _eventShowColorSpaceLabelsChanged = new object();
@@ -45,6 +47,8 @@ namespace Cyotek.Windows.Forms
     private bool _lockUpdates;
 
     private Orientation _orientation;
+
+    private bool _preserveAlphaChannel;
 
     private bool _showAlphaChannel;
 
@@ -87,6 +91,16 @@ namespace Cyotek.Windows.Forms
       remove => this.Events.RemoveHandler(_eventOrientationChanged, value);
     }
 
+    /// <summary>
+    /// Occurs when the PreserveAlphaChannel property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler PreserveAlphaChannelChanged
+    {
+      add => this.Events.AddHandler(_eventPreserveAlphaChannelChanged, value);
+      remove => this.Events.RemoveHandler(_eventPreserveAlphaChannelChanged, value);
+    }
+
     [Category("Property Changed")]
     public event EventHandler ShowAlphaChannelChanged
     {
@@ -119,12 +133,7 @@ namespace Cyotek.Windows.Forms
       get => _color;
       set
       {
-        /*
-         * If the color isn't solid, and ShowAlphaChannel is false
-         * remove the alpha channel. Not sure if this is the best
-         * place to do it, but it is a blanket fix for now
-         */
-        if (value.A != 255 && !_showAlphaChannel)
+        if (value.A != 255 && !_showAlphaChannel && !_preserveAlphaChannel)
         {
           value = Color.FromArgb(255, value);
         }
@@ -199,6 +208,22 @@ namespace Cyotek.Windows.Forms
     }
 
     [Category("Behavior")]
+    [DefaultValue(false)]
+    public bool PreserveAlphaChannel
+    {
+      get => _preserveAlphaChannel;
+      set
+      {
+        if (_preserveAlphaChannel != value)
+        {
+          _preserveAlphaChannel = value;
+
+          this.OnPreserveAlphaChannelChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
     [DefaultValue(true)]
     public virtual bool ShowAlphaChannel
     {
@@ -318,6 +343,19 @@ namespace Cyotek.Windows.Forms
       base.OnPaddingChanged(e);
 
       this.ResizeComponents();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="PreserveAlphaChannelChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnPreserveAlphaChannelChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventPreserveAlphaChannelChanged];
+
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
