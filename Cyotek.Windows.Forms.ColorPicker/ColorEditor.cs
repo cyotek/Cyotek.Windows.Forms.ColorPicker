@@ -12,9 +12,6 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
@@ -301,8 +298,6 @@ namespace Cyotek.Windows.Forms
       this.ResizeComponents();
     }
 
-
-
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
     /// </summary>
@@ -474,15 +469,6 @@ namespace Cyotek.Windows.Forms
 
     #region Private Methods
 
-   
-
- 
-
-
-
-
-
-
     private void hexTextBox_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (hexTextBox.SelectedIndex != -1)
@@ -516,6 +502,7 @@ namespace Cyotek.Windows.Forms
         int colorBarOffset;
         int editOffset;
         int barHorizontalOffset;
+        int nubOffset;
 
         top = this.Padding.Top;
         innerMargin = 3;
@@ -525,6 +512,7 @@ namespace Cyotek.Windows.Forms
         colorBarOffset = (rowHeight - rColorBar.Height) >> 1;
         editOffset = (rowHeight - rNumericUpDown.Height) >> 1;
         barHorizontalOffset = _showAlphaChannel ? aLabel.Width : hLabel.Width;
+        nubOffset = rColorBar.NubSize.Width >> 1;
 
         columnWidth = _orientation == Orientation.Horizontal
           ? (this.ClientSize.Width - (this.Padding.Horizontal + innerMargin)) >> 1
@@ -578,7 +566,7 @@ namespace Cyotek.Windows.Forms
 
         // Hex row
         hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        hexTextBox.SetBounds(group1BarLeft, top + colorBarOffset, barWidth + innerMargin + editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+        hexTextBox.SetBounds(group1BarLeft + nubOffset, top + colorBarOffset, barWidth + innerMargin + editWidth - nubOffset, 0, BoundsSpecified.Location | BoundsSpecified.Width);
         top += rowHeight + innerMargin;
 
         // reset top
@@ -645,8 +633,6 @@ namespace Cyotek.Windows.Forms
       rgbHeaderLabel.Visible = _showColorSpaceLabels;
       hslLabel.Visible = _showColorSpaceLabels;
     }
-
-
 
     /// <summary>
     /// Change handler for editing components.
