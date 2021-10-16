@@ -479,6 +479,72 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private void ProcessHexStringUpdate(ref bool useRgb, ref bool useNamed)
+    {
+      string text;
+
+      text = hexTextBox.Text;
+
+      if (!string.IsNullOrEmpty(text))
+      {
+        int namedIndex;
+
+        if (text[0] == '#')
+        {
+          text = text.Substring(1);
+        }
+
+        if (hexTextBox.Items.Count == 0)
+        {
+          hexTextBox.FillNamedColors();
+        }
+
+        namedIndex = hexTextBox.FindStringExact(text);
+
+        if (namedIndex != -1 || text.Length == 6 || text.Length == 8)
+        {
+          try
+          {
+            Color color;
+
+            color = namedIndex != -1
+              ? Color.FromName(text)
+              : ColorTranslator.FromHtml("#" + text);
+            aNumericUpDown.Value = color.A;
+            rNumericUpDown.Value = color.R;
+            bNumericUpDown.Value = color.B;
+            gNumericUpDown.Value = color.G;
+
+            useRgb = true;
+          }
+          // ReSharper disable EmptyGeneralCatchClause
+          catch
+          {
+          }
+          // ReSharper restore EmptyGeneralCatchClause
+        }
+        else
+        {
+          useNamed = true;
+        }
+      }
+    }
+
+    private void ProcessHslSliderUpdate()
+    {
+      hNumericUpDown.Value = (int)hColorBar.Value;
+      sNumericUpDown.Value = (int)sColorBar.Value;
+      lNumericUpDown.Value = (int)lColorBar.Value;
+    }
+
+    private void ProcessRgbSliderUpdate()
+    {
+      aNumericUpDown.Value = (int)aColorBar.Value;
+      rNumericUpDown.Value = (int)rColorBar.Value;
+      gNumericUpDown.Value = (int)gColorBar.Value;
+      bNumericUpDown.Value = (int)bColorBar.Value;
+    }
+
     /// <summary>
     /// Resizes the editing components.
     /// </summary>
@@ -486,6 +552,8 @@ namespace Cyotek.Windows.Forms
     {
       try
       {
+        Size size;
+        Padding padding;
         int group1HeaderLeft;
         int group1BarLeft;
         int group1EditLeft;
@@ -504,28 +572,32 @@ namespace Cyotek.Windows.Forms
         int barHorizontalOffset;
         int nubOffset;
 
-        top = this.Padding.Top;
+        size = this.ClientSize;
+        padding = this.Padding;
+        top = padding.Top;
         innerMargin = 3;
         editWidth = TextRenderer.MeasureText("0000W", this.Font).Width + 6; // magic 6 for interior spacing+borders
         rowHeight = Math.Max(Math.Max(rLabel.Height, rColorBar.Height), rNumericUpDown.Height);
         labelOffset = (rowHeight - rLabel.Height) >> 1;
         colorBarOffset = (rowHeight - rColorBar.Height) >> 1;
         editOffset = (rowHeight - rNumericUpDown.Height) >> 1;
-        barHorizontalOffset = _showAlphaChannel ? aLabel.Width : hLabel.Width;
+        barHorizontalOffset = innerMargin + (_showAlphaChannel
+          ? aLabel.Width
+          : hLabel.Width);
         nubOffset = rColorBar.NubSize.Width >> 1;
 
         columnWidth = _orientation == Orientation.Horizontal
-          ? (this.ClientSize.Width - (this.Padding.Horizontal + innerMargin)) >> 1
-          : this.ClientSize.Width - this.Padding.Horizontal;
+          ? (size.Width - (padding.Horizontal + innerMargin)) >> 1
+          : size.Width - padding.Horizontal;
 
-        group1HeaderLeft = this.Padding.Left;
+        group1HeaderLeft = padding.Left;
         group1EditLeft = columnWidth - editWidth;
         group1BarLeft = group1HeaderLeft + barHorizontalOffset + innerMargin;
 
         if (_orientation == Orientation.Horizontal)
         {
-          group2HeaderLeft = this.Padding.Left + columnWidth + innerMargin;
-          group2EditLeft = this.ClientSize.Width - (this.Padding.Right + editWidth);
+          group2HeaderLeft = padding.Left + columnWidth + innerMargin;
+          group2EditLeft = size.Width - (padding.Right + editWidth);
           group2BarLeft = group2HeaderLeft + barHorizontalOffset + innerMargin;
         }
         else
@@ -572,7 +644,7 @@ namespace Cyotek.Windows.Forms
         // reset top
         if (_orientation == Orientation.Horizontal)
         {
-          top = this.Padding.Top;
+          top = padding.Top;
         }
 
         // HSL header
@@ -655,53 +727,11 @@ namespace Cyotek.Windows.Forms
 
         if (sender == hexTextBox)
         {
-          string text;
-          int namedIndex;
-
-          text = hexTextBox.Text;
-          if (text.StartsWith("#"))
-          {
-            text = text.Substring(1);
-          }
-
-          if (hexTextBox.Items.Count == 0)
-          {
-            hexTextBox.FillNamedColors();
-          }
-
-          namedIndex = hexTextBox.FindStringExact(text);
-
-          if (namedIndex != -1 || text.Length == 6 || text.Length == 8)
-          {
-            try
-            {
-              Color color;
-
-              color = namedIndex != -1 ? Color.FromName(text) : ColorTranslator.FromHtml("#" + text);
-              aNumericUpDown.Value = color.A;
-              rNumericUpDown.Value = color.R;
-              bNumericUpDown.Value = color.B;
-              gNumericUpDown.Value = color.G;
-
-              useRgb = true;
-            }
-            // ReSharper disable EmptyGeneralCatchClause
-            catch
-            { }
-            // ReSharper restore EmptyGeneralCatchClause
-          }
-          else
-          {
-            useNamed = true;
-          }
+          this.ProcessHexStringUpdate(ref useRgb, ref useNamed);
         }
         else if (sender == aColorBar || sender == rColorBar || sender == gColorBar || sender == bColorBar)
         {
-          aNumericUpDown.Value = (int)aColorBar.Value;
-          rNumericUpDown.Value = (int)rColorBar.Value;
-          gNumericUpDown.Value = (int)gColorBar.Value;
-          bNumericUpDown.Value = (int)bColorBar.Value;
-
+          this.ProcessRgbSliderUpdate();
           useRgb = true;
         }
         else if (sender == aNumericUpDown || sender == rNumericUpDown || sender == gNumericUpDown || sender == bNumericUpDown)
@@ -710,10 +740,7 @@ namespace Cyotek.Windows.Forms
         }
         else if (sender == hColorBar || sender == lColorBar || sender == sColorBar)
         {
-          hNumericUpDown.Value = (int)hColorBar.Value;
-          sNumericUpDown.Value = (int)sColorBar.Value;
-          lNumericUpDown.Value = (int)lColorBar.Value;
-
+          this.ProcessHslSliderUpdate();
           useHsl = true;
         }
         else if (sender == hNumericUpDown || sender == sNumericUpDown || sender == lNumericUpDown)
@@ -742,6 +769,7 @@ namespace Cyotek.Windows.Forms
         }
 
         _lockUpdates = false;
+
         this.UpdateFields(true);
       }
     }
