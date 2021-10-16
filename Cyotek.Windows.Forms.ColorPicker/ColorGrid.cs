@@ -697,7 +697,10 @@ namespace Cyotek.Windows.Forms
           newIndex = this.GetColorIndex(value);
         }
 
-        this.RefreshColors();
+        if (_showCustomColors)
+        {
+          this.RefreshColors();
+        }
       }
 
       return newIndex;
