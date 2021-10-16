@@ -39,7 +39,8 @@
 
 #### Deprecated
 
-* The `IPaletteSerializer` interface has been marked as obsolete
+* The `IPaletteSerializer` and `IColorEditor` interfaces have
+  been marked as obsolete
 * The `PaletteSerializer`, `AdobeColorTablePaletteSerializer`,
   `AdobePhotoShopColorSwatchSerializer`,
   `GimpPaletteSerializer`, `InterleavedBitmapPaletteSerializer`,
