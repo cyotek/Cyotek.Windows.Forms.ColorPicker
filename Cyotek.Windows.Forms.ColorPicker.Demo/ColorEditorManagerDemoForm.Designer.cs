@@ -32,7 +32,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.previewPanel = new System.Windows.Forms.Panel();
+      this.previewPanel = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
       this.lightnessColorSlider = new Cyotek.Windows.Forms.LightnessColorSlider();
       this.screenColorPicker = new Cyotek.Windows.Forms.ScreenColorPicker();
       this.colorWheel = new Cyotek.Windows.Forms.ColorWheel();
@@ -71,7 +71,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
       this.closeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
       this.closeToolStripMenuItem.Text = "&Close";
-      this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+      this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
       // 
       // previewPanel
       // 
@@ -143,7 +143,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.colorEditorManager.ColorWheel = this.colorWheel;
       this.colorEditorManager.LightnessColorSlider = this.lightnessColorSlider;
       this.colorEditorManager.ScreenColorPicker = this.screenColorPicker;
-      this.colorEditorManager.ColorChanged += new System.EventHandler(this.colorEditorManager_ColorChanged);
+      this.colorEditorManager.ColorChanged += new System.EventHandler(this.ColorEditorManager_ColorChanged);
       // 
       // demoLabel
       // 
@@ -225,7 +225,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private ColorEditor colorEditor;
     private ColorGrid colorGrid;
     private ColorEditorManager colorEditorManager;
-    private System.Windows.Forms.Panel previewPanel;
+    private Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox previewPanel;
     private LightnessColorSlider lightnessColorSlider;
     private System.Windows.Forms.Label demoLabel;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
