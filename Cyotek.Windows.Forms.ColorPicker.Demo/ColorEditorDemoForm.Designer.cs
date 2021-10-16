@@ -35,7 +35,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.propertyGrid = new System.Windows.Forms.PropertyGrid();
       this.colorEditor = new Cyotek.Windows.Forms.ColorEditor();
       this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
-      this.colorPreviewBox1 = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
+      this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
       this.demoLabel = new System.Windows.Forms.Label();
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,7 +101,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.colorEditor.Location = new System.Drawing.Point(0, 0);
       this.colorEditor.Name = "colorEditor";
       this.colorEditor.Padding = new System.Windows.Forms.Padding(10);
-      this.colorEditor.Size = new System.Drawing.Size(326, 384);
+      this.colorEditor.Size = new System.Drawing.Size(324, 384);
       this.colorEditor.TabIndex = 0;
       this.colorEditor.ColorChanged += new System.EventHandler(this.colorEditor_ColorChanged);
       // 
@@ -118,35 +118,37 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // optionsSplitContainer.Panel2
       // 
-      this.optionsSplitContainer.Panel2.Controls.Add(this.colorPreviewBox1);
+      this.optionsSplitContainer.Panel2.Controls.Add(this.colorPreviewBox);
       this.optionsSplitContainer.Panel2.Controls.Add(this.demoLabel);
       this.optionsSplitContainer.Size = new System.Drawing.Size(656, 384);
-      this.optionsSplitContainer.SplitterDistance = 326;
+      this.optionsSplitContainer.SplitterDistance = 324;
       this.optionsSplitContainer.SplitterWidth = 6;
       this.optionsSplitContainer.TabIndex = 0;
       // 
-      // colorPreviewBox1
+      // colorPreviewBox
       // 
-      this.colorPreviewBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.colorPreviewBox1.Color = System.Drawing.Color.Empty;
-      this.colorPreviewBox1.Location = new System.Drawing.Point(16, 334);
-      this.colorPreviewBox1.Name = "colorPreviewBox1";
-      this.colorPreviewBox1.Size = new System.Drawing.Size(75, 47);
-      this.colorPreviewBox1.TabIndex = 1;
-      this.colorPreviewBox1.Text = "colorPreviewBox";
+      this.colorPreviewBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.colorPreviewBox.Color = System.Drawing.Color.Empty;
+      this.colorPreviewBox.Location = new System.Drawing.Point(3, 334);
+      this.colorPreviewBox.Name = "colorPreviewBox";
+      this.colorPreviewBox.Size = new System.Drawing.Size(320, 47);
+      this.colorPreviewBox.TabIndex = 1;
+      this.colorPreviewBox.Text = "colorPreviewBox";
       // 
       // demoLabel
       // 
-      this.demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.demoLabel.AutoEllipsis = true;
       this.demoLabel.BackColor = System.Drawing.SystemColors.Info;
       this.demoLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
-      this.demoLabel.Location = new System.Drawing.Point(16, 13);
+      this.demoLabel.Location = new System.Drawing.Point(3, 0);
       this.demoLabel.Name = "demoLabel";
       this.demoLabel.Padding = new System.Windows.Forms.Padding(10);
-      this.demoLabel.Size = new System.Drawing.Size(284, 250);
+      this.demoLabel.Size = new System.Drawing.Size(320, 331);
       this.demoLabel.TabIndex = 0;
       this.demoLabel.Text = resources.GetString("demoLabel.Text");
       // 
@@ -216,6 +218,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     private System.Windows.Forms.Label demoLabel;
-    private ColorPreviewBox colorPreviewBox1;
+    private ColorPreviewBox colorPreviewBox;
   }
 }

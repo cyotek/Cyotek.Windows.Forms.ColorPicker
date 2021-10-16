@@ -38,7 +38,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void colorEditor_ColorChanged(object sender, EventArgs e)
     {
-      colorPreviewBox1.Color = colorEditor.Color;
+      colorPreviewBox.Color = colorEditor.Color;
 
       propertyGrid.Refresh();
     }
