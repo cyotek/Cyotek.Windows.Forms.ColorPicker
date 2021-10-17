@@ -1153,7 +1153,7 @@ namespace Cyotek.Windows.Forms
 
         if (this.Focused && includeFocus)
         {
-          ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 2, y - 2, _selectionSize + 5, _selectionSize + 5));
+          NativeMethods.DrawFocusRectangle(e.Graphics, new Rectangle(x - 2, y - 2, _selectionSize + 5, _selectionSize + 5));
         }
       }
     }
