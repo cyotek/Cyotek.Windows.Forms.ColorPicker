@@ -23,33 +23,51 @@ namespace Cyotek.Windows.Forms
   [DefaultProperty("Color")]
   public partial class ColorPickerDialog : Form
   {
-    #region Private Fields
+    private static readonly object _eventCustomColorsLoading = new object();
+
+    private static readonly object _eventCustomColorsSaving = new object();
 
     private static readonly object _eventPreviewColorChanged = new object();
 
     private Color _color;
 
+    private ColorCollection _customColors;
+
     private bool _preserveAlphaChannel;
 
     private bool _showAlphaChannel;
 
+    private bool _showLoad;
+
+    private bool _showSave;
+
     private Brush _textureBrush;
-
-    #endregion Private Fields
-
-    #region Public Constructors
 
     public ColorPickerDialog()
     {
       this.InitializeComponent();
 
       _showAlphaChannel = true;
+      _showLoad = true;
+      _showSave = true;
+      _customColors = new ColorCollection();
+
       base.Font = SystemFonts.DialogFont;
     }
 
-    #endregion Public Constructors
+    [Category("Action")]
+    public event CancelEventHandler CustomColorsLoading
+    {
+      add => this.Events.AddHandler(_eventCustomColorsLoading, value);
+      remove => this.Events.RemoveHandler(_eventCustomColorsLoading, value);
+    }
 
-    #region Public Events
+    [Category("Action")]
+    public event EventHandler CustomColorsSaving
+    {
+      add => this.Events.AddHandler(_eventCustomColorsSaving, value);
+      remove => this.Events.RemoveHandler(_eventCustomColorsSaving, value);
+    }
 
     [Category("Property Changed")]
     public event EventHandler PreviewColorChanged
@@ -57,10 +75,6 @@ namespace Cyotek.Windows.Forms
       add => this.Events.AddHandler(_eventPreviewColorChanged, value);
       remove => this.Events.RemoveHandler(_eventPreviewColorChanged, value);
     }
-
-    #endregion Public Events
-
-    #region Public Properties
 
     public Color Color
     {
@@ -74,6 +88,12 @@ namespace Cyotek.Windows.Forms
           _color = value;
         }
       }
+    }
+
+    public ColorCollection CustomColors
+    {
+      get => _customColors;
+      set => _customColors = value;
     }
 
     [Browsable(false)]
@@ -92,9 +112,21 @@ namespace Cyotek.Windows.Forms
       set => _showAlphaChannel = value;
     }
 
-    #endregion Public Properties
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool ShowLoad
+    {
+      get => _showLoad;
+      set => _showLoad = value;
+    }
 
-    #region Protected Methods
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool ShowSave
+    {
+      get => _showSave;
+      set => _showSave = value;
+    }
 
     /// <summary>
     /// Clean up any resources being used.
@@ -117,6 +149,50 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="CustomColorsLoading" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="CancelEventArgs" /> instance containing the event data.</param>
+    protected virtual void OnCustomColorsLoading(CancelEventArgs e)
+    {
+      CancelEventHandler handler;
+
+      handler = (CancelEventHandler)this.Events[_eventCustomColorsLoading];
+
+      if (handler != null)
+      {
+        handler.Invoke(this, e);
+      }
+      else
+      {
+        // if no handler is explicitly bound, then
+        // fall back to the built-in behaviour
+        this.LoadCustomColors();
+      }
+    }
+
+    /// <summary>
+    /// Raises the <see cref="CustomColorsSaving" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnCustomColorsSaving(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventCustomColorsSaving];
+
+      if (handler != null)
+      {
+        handler.Invoke(this, e);
+      }
+      else
+      {
+        // if no handler is explicitly bound, then
+        // fall back to the built-in behaviour
+        this.SaveCustomColors();
+      }
+    }
+
+    /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
     /// </summary>
     /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data. </param>
@@ -124,17 +200,14 @@ namespace Cyotek.Windows.Forms
     {
       base.OnLoad(e);
 
-      loadPaletteButton.Image = ResourceManager.LoadPalette;
-      savePaletteButton.Image = ResourceManager.SavePalette;
+      this.UpdateButtonStates();
+
       screenColorPicker.Image = ResourceManager.ScreenPicker;
 
       colorEditor.ShowAlphaChannel = _showAlphaChannel;
       colorEditor.PreserveAlphaChannel = _preserveAlphaChannel;
 
-      if (!_showAlphaChannel && !_preserveAlphaChannel)
-      {
-        this.RemoveAlphaChannel();
-      }
+      this.CopyCustomColors();
     }
 
     /// <summary>
@@ -149,10 +222,6 @@ namespace Cyotek.Windows.Forms
 
       handler?.Invoke(this, e);
     }
-
-    #endregion Protected Methods
-
-    #region Private Methods
 
     private void CancelButton_Click(object sender, EventArgs e)
     {
@@ -186,7 +255,49 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void LoadPaletteButton_Click(object sender, EventArgs e)
+    private void CopyCustomColors()
+    {
+      colorGrid.Palette = ColorPalette.None;
+
+      if (_customColors == null)
+      {
+        _customColors = new ColorCollection();
+      }
+
+      if (_customColors.Count == 0)
+      {
+        _customColors.AddRange(ColorPalettes.PaintPalette);
+      }
+
+      colorGrid.BeginUpdate();
+
+      colorGrid.Colors.Clear();
+
+      // copy a maximum of 96 colours from the custom plaette
+      for (int i = 0; i < Math.Min(96, _customColors.Count); i++)
+      {
+        Color color;
+
+        color = _customColors[i];
+
+        if (color.A != 255 && !_showAlphaChannel && !_preserveAlphaChannel)
+        {
+          color = Color.FromArgb(255, color);
+        }
+
+        colorGrid.Colors.Add(color);
+      }
+
+      // or if we have less, fill in the blanks
+      while (colorGrid.Colors.Count < 96)
+      {
+        colorGrid.Colors.Add(Color.White);
+      }
+
+      colorGrid.EndUpdate();
+    }
+
+    private void LoadCustomColors()
     {
       using (FileDialog dialog = new OpenFileDialog
       {
@@ -218,19 +329,8 @@ namespace Cyotek.Windows.Forms
 
               if (palette != null)
               {
-                // we can only display 96 colors in the color grid due to it's size, so if there's more, bin them
-                while (palette.Count > 96)
-                {
-                  palette.RemoveAt(palette.Count - 1);
-                }
-
-                // or if we have less, fill in the blanks
-                while (palette.Count < 96)
-                {
-                  palette.Add(Color.White);
-                }
-
-                colorGrid.Colors = palette;
+                _customColors.Clear();
+                _customColors.AddRange(palette);
               }
             }
             else
@@ -243,6 +343,20 @@ namespace Cyotek.Windows.Forms
             MessageBox.Show(string.Format("Sorry, unable to open palette. {0}", ex.GetBaseException().Message), "Load Palette", MessageBoxButtons.OK, MessageBoxIcon.Error);
           }
         }
+      }
+    }
+
+    private void LoadPaletteButton_Click(object sender, EventArgs e)
+    {
+      CancelEventArgs args;
+
+      args = new CancelEventArgs();
+
+      this.OnCustomColorsLoading(args);
+
+      if (!args.Cancel)
+      {
+        this.CopyCustomColors();
       }
     }
 
@@ -276,22 +390,7 @@ namespace Cyotek.Windows.Forms
       e.Graphics.DrawRectangle(SystemPens.ControlText, region.Left, region.Top, region.Width - 1, region.Height - 1);
     }
 
-    private void RemoveAlphaChannel()
-    {
-      for (int i = 0; i < colorGrid.Colors.Count; i++)
-      {
-        Color color;
-
-        color = colorGrid.Colors[i];
-
-        if (color.A != 255)
-        {
-          colorGrid.Colors[i] = Color.FromArgb(255, color);
-        }
-      }
-    }
-
-    private void SavePaletteButton_Click(object sender, EventArgs e)
+    private void SaveCustomColors()
     {
       using (FileDialog dialog = new SaveFileDialog
       {
@@ -333,6 +432,37 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion Private Methods
+    private void SavePaletteButton_Click(object sender, EventArgs e)
+    {
+      if (_customColors == null)
+      {
+        _customColors = new ColorCollection();
+      }
+
+      _customColors.Clear();
+      _customColors.AddRange(colorGrid.Colors);
+
+      this.OnCustomColorsSaving(e);
+    }
+
+    private void UpdateButtonStates()
+    {
+      loadPaletteButton.Enabled = _showLoad;
+      savePaletteButton.Enabled = _showSave;
+
+      if (_showLoad || _showSave)
+      {
+        loadPaletteButton.Image = ResourceManager.LoadPalette;
+        loadPaletteButton.Visible = true;
+
+        savePaletteButton.Image = ResourceManager.SavePalette;
+        savePaletteButton.Visible = true;
+      }
+      else
+      {
+        loadPaletteButton.Visible = false;
+        savePaletteButton.Visible = false;
+      }
+    }
   }
 }

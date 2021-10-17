@@ -10,6 +10,7 @@
 // https://www.cyotek.com/contribute
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -45,9 +46,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       {
         Color = colorPreviewPanel.Color,
         ShowAlphaChannel = showAlphaChannelCheckBox.Checked,
-        PreserveAlphaChannel = preserveAlphaChannelCheckBox.Checked
+        PreserveAlphaChannel = preserveAlphaChannelCheckBox.Checked,
+        ShowLoad = showLoadCheckBox.Checked,
+        ShowSave = showSaveCheckBox.Checked
       })
       {
+        //dialog.CustomColorsLoading += this.DialogCustomColorsLoadingHandler;
         dialog.PreviewColorChanged += this.DialogColorChangedHandler;
 
         if (dialog.ShowDialog(this) == DialogResult.OK)
@@ -67,6 +71,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void DialogColorChangedHandler(object sender, EventArgs e)
     {
       dialogColorPreviewPanel.Color = ((ColorPickerDialog)sender).Color;
+    }
+
+    private void DialogCustomColorsLoadingHandler(object sender, CancelEventArgs e)
+    {
+      ((ColorPickerDialog)sender).CustomColors = ColorPalettes.Office2010Standard;
     }
 
     #endregion Private Methods
