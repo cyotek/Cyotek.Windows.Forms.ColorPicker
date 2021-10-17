@@ -44,6 +44,9 @@
   painting operation
 * Drag handles in the slider controls are no longer fully
   outside the bar, but are half inside and half out
+* The `Up`, `Down`, `Home` and `End` keys are now used to
+  manipulate the saturation value when a `ColorWheel` control
+  has focus
 
 #### Deprecated
 
