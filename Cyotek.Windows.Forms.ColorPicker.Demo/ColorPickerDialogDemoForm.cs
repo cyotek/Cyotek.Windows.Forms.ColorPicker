@@ -1,44 +1,53 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright (c) 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   internal partial class ColorPickerDialogDemoForm : BaseForm
   {
-    #region Constructors
+    #region Public Constructors
 
     public ColorPickerDialogDemoForm()
     {
       this.InitializeComponent();
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Methods
+    #region Protected Methods
 
     protected override void OnLoad(EventArgs e)
     {
       base.OnLoad(e);
 
-      colorPreviewPanel.Color = Color.SeaGreen;
+      colorPreviewPanel.Color = Color.CornflowerBlue;
     }
 
-    private void browseColorButton_Click(object sender, EventArgs e)
-    {
-      using (ColorPickerDialog dialog = new ColorPickerDialog())
-      {
-        dialog.Color = colorPreviewPanel.Color;
-        dialog.ShowAlphaChannel = showAlphaChannelCheckBox.Checked;
+    #endregion Protected Methods
 
+    #region Private Methods
+
+    private void BrowseColorButton_Click(object sender, EventArgs e)
+    {
+      using (ColorPickerDialog dialog = new ColorPickerDialog
+      {
+        Color = colorPreviewPanel.Color,
+        ShowAlphaChannel = showAlphaChannelCheckBox.Checked,
+        PreserveAlphaChannel = preserveAlphaChannelCheckBox.Checked
+      })
+      {
         dialog.PreviewColorChanged += this.DialogColorChangedHandler;
 
         if (dialog.ShowDialog(this) == DialogResult.OK)
@@ -50,7 +59,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       }
     }
 
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
     }
@@ -60,6 +69,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       dialogColorPreviewPanel.Color = ((ColorPickerDialog)sender).Color;
     }
 
-    #endregion
+    #endregion Private Methods
   }
 }

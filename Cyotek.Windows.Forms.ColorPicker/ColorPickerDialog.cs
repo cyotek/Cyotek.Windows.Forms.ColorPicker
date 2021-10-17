@@ -27,6 +27,10 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventPreviewColorChanged = new object();
 
+    private Color _color;
+
+    private bool _preserveAlphaChannel;
+
     private bool _showAlphaChannel;
 
     private Brush _textureBrush;
@@ -60,8 +64,24 @@ namespace Cyotek.Windows.Forms
 
     public Color Color
     {
-      get => colorEditorManager.Color;
-      set => colorEditorManager.Color = value;
+      get => _color;
+      set
+      {
+        if (_color != value)
+        {
+          colorEditorManager.Color = value;
+
+          _color = value;
+        }
+      }
+    }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool PreserveAlphaChannel
+    {
+      get => _preserveAlphaChannel;
+      set => _preserveAlphaChannel = value;
     }
 
     [Browsable(false)]
@@ -109,19 +129,11 @@ namespace Cyotek.Windows.Forms
       screenColorPicker.Image = ResourceManager.ScreenPicker;
 
       colorEditor.ShowAlphaChannel = _showAlphaChannel;
+      colorEditor.PreserveAlphaChannel = _preserveAlphaChannel;
 
-      if (!_showAlphaChannel)
+      if (!_showAlphaChannel && !_preserveAlphaChannel)
       {
-        for (int i = 0; i < colorGrid.Colors.Count; i++)
-        {
-          Color color;
-
-          color = colorGrid.Colors[i];
-          if (color.A != 255)
-          {
-            colorGrid.Colors[i] = Color.FromArgb(255, color);
-          }
-        }
+        this.RemoveAlphaChannel();
       }
     }
 
@@ -150,6 +162,8 @@ namespace Cyotek.Windows.Forms
 
     private void ColorEditorManager_ColorChanged(object sender, EventArgs e)
     {
+      _color = colorEditorManager.Color;
+
       previewPanel.Invalidate();
 
       this.OnPreviewColorChanged(e);
@@ -260,6 +274,21 @@ namespace Cyotek.Windows.Forms
       }
 
       e.Graphics.DrawRectangle(SystemPens.ControlText, region.Left, region.Top, region.Width - 1, region.Height - 1);
+    }
+
+    private void RemoveAlphaChannel()
+    {
+      for (int i = 0; i < colorGrid.Colors.Count; i++)
+      {
+        Color color;
+
+        color = colorGrid.Colors[i];
+
+        if (color.A != 255)
+        {
+          colorGrid.Colors[i] = Color.FromArgb(255, color);
+        }
+      }
     }
 
     private void SavePaletteButton_Click(object sender, EventArgs e)
