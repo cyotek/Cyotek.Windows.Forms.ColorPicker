@@ -1,10 +1,13 @@
-// Cyotek Color Picker controls library
-// Copyright © 2013-2021 Cyotek Ltd.
+// Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
-// Licensed under the MIT License. See license.txt for the full text.
+// Copyright (c) 2013-2021 Cyotek Ltd.
 
-// If you use this code in your applications, donations or attribution are welcome
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
 
 using System;
 using System.ComponentModel;
@@ -16,60 +19,62 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
 {
-
   [DefaultEvent("PreviewColorChanged")]
   [DefaultProperty("Color")]
   public partial class ColorPickerDialog : Form
   {
-    #region Constants
+    #region Private Fields
 
     private static readonly object _eventPreviewColorChanged = new object();
 
-    #endregion
-
-    #region Fields
+    private bool _showAlphaChannel;
 
     private Brush _textureBrush;
 
-    #endregion
+    #endregion Private Fields
 
-    #region Constructors
+    #region Public Constructors
 
     public ColorPickerDialog()
     {
       this.InitializeComponent();
-      this.ShowAlphaChannel = true;
-      this.Font = SystemFonts.DialogFont;
+
+      _showAlphaChannel = true;
+      base.Font = SystemFonts.DialogFont;
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Events
+    #region Public Events
 
     [Category("Property Changed")]
     public event EventHandler PreviewColorChanged
     {
-      add { this.Events.AddHandler(_eventPreviewColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventPreviewColorChanged, value); }
+      add => this.Events.AddHandler(_eventPreviewColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventPreviewColorChanged, value);
     }
 
-    #endregion
+    #endregion Public Events
 
-    #region Properties
+    #region Public Properties
 
     public Color Color
     {
-      get { return colorEditorManager.Color; }
-      set { colorEditorManager.Color = value; }
+      get => colorEditorManager.Color;
+      set => colorEditorManager.Color = value;
     }
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool ShowAlphaChannel { get; set; }
+    public bool ShowAlphaChannel
+    {
+      get => _showAlphaChannel;
+      set => _showAlphaChannel = value;
+    }
 
-    #endregion
+    #endregion Public Properties
 
-    #region Methods
+    #region Protected Methods
 
     /// <summary>
     /// Clean up any resources being used.
@@ -79,10 +84,7 @@ namespace Cyotek.Windows.Forms
     {
       if (disposing)
       {
-        if (components != null)
-        {
-          components.Dispose();
-        }
+        components?.Dispose();
 
         if (_textureBrush != null)
         {
@@ -106,9 +108,9 @@ namespace Cyotek.Windows.Forms
       savePaletteButton.Image = ResourceManager.SavePalette;
       screenColorPicker.Image = ResourceManager.ScreenPicker;
 
-      colorEditor.ShowAlphaChannel = this.ShowAlphaChannel;
+      colorEditor.ShowAlphaChannel = _showAlphaChannel;
 
-      if (!this.ShowAlphaChannel)
+      if (!_showAlphaChannel)
       {
         for (int i = 0; i < colorGrid.Colors.Count; i++)
         {
@@ -136,20 +138,24 @@ namespace Cyotek.Windows.Forms
       handler?.Invoke(this, e);
     }
 
-    private void cancelButton_Click(object sender, EventArgs e)
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private void CancelButton_Click(object sender, EventArgs e)
     {
       this.DialogResult = DialogResult.Cancel;
       this.Close();
     }
 
-    private void colorEditorManager_ColorChanged(object sender, EventArgs e)
+    private void ColorEditorManager_ColorChanged(object sender, EventArgs e)
     {
       previewPanel.Invalidate();
 
       this.OnPreviewColorChanged(e);
     }
 
-    private void colorGrid_EditingColor(object sender, EditColorCancelEventArgs e)
+    private void ColorGrid_EditingColor(object sender, EditColorCancelEventArgs e)
     {
       e.Cancel = true;
 
@@ -166,7 +172,7 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void loadPaletteButton_Click(object sender, EventArgs e)
+    private void LoadPaletteButton_Click(object sender, EventArgs e)
     {
       using (FileDialog dialog = new OpenFileDialog
       {
@@ -226,13 +232,13 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void okButton_Click(object sender, EventArgs e)
+    private void OkButton_Click(object sender, EventArgs e)
     {
       this.DialogResult = DialogResult.OK;
       this.Close();
     }
 
-    private void previewPanel_Paint(object sender, PaintEventArgs e)
+    private void PreviewPanel_Paint(object sender, PaintEventArgs e)
     {
       Rectangle region;
 
@@ -256,7 +262,7 @@ namespace Cyotek.Windows.Forms
       e.Graphics.DrawRectangle(SystemPens.ControlText, region.Left, region.Top, region.Width - 1, region.Height - 1);
     }
 
-    private void savePaletteButton_Click(object sender, EventArgs e)
+    private void SavePaletteButton_Click(object sender, EventArgs e)
     {
       using (FileDialog dialog = new SaveFileDialog
       {
@@ -270,6 +276,7 @@ namespace Cyotek.Windows.Forms
           IPaletteSerializer serializer;
 
           serializer = PaletteSerializer.AllSerializers.Where(s => s.CanWrite).ElementAt(dialog.FilterIndex - 1);
+
           if (serializer != null)
           {
             if (!serializer.CanWrite)
@@ -297,6 +304,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    #endregion
+    #endregion Private Methods
   }
 }
