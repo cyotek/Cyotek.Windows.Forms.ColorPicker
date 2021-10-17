@@ -556,24 +556,25 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     protected virtual void CalculateWheel()
     {
-      int count;
       PointF[] points;
       Color[] colors;
       Size size;
-      double angle;
 
-      count = 360 / _colorStep;
-      points = new PointF[count];
-      colors = new Color[count];
       size = this.ClientSize;
-      angle = 0;
 
       // Only define the points if the control is above a minimum size, otherwise if it's too small, you get an "out of memory" exceptions (of all things) when creating the brush
-      if (size.Width > 16 && size.Height > 16)
+      if (size.Width > 16 && size.Height > 16 && _colorStep > 0)
       {
+        int count;
         int w;
         int h;
         double l;
+        double angle;
+
+        count = 360 / _colorStep;
+        points = new PointF[count];
+        colors = new Color[count];
+        angle = 0;
 
         w = size.Width;
         h = size.Height;
@@ -598,6 +599,11 @@ namespace Cyotek.Windows.Forms
           angle += _colorStep;
         }
       }
+      else
+      {
+        points = null;
+        colors = null;
+      }
 
       _points = points;
       _colors = colors;
@@ -610,7 +616,7 @@ namespace Cyotek.Windows.Forms
     {
       Brush result;
 
-      if (_points.Length != 0 && _points.Length == _colors.Length)
+      if (_points != null && _points.Length != 0 && _points.Length == _colors.Length)
       {
         result = new PathGradientBrush(_points, WrapMode.Clamp)
         {
