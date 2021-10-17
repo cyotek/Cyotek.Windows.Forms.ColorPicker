@@ -320,6 +320,7 @@ namespace Cyotek.Windows.Forms
 
         _lockUpdates = true;
         this.HslColor = color;
+        this.Color = color.ToRgbColor(Convert.ToInt32(_colorWheel.Alpha * 255));
         _lockUpdates = false;
         this.Synchronize((IColorEditor)sender);
       }
@@ -480,11 +481,7 @@ namespace Cyotek.Windows.Forms
           }
           else if (object.ReferenceEquals(sender, _colorEditor))
           {
-            if (_colorWheel != null)
-            {
-              _colorWheel.Lightness = _colorEditor.HslColor.L;
-              _colorWheel.Alpha = _colorEditor.Color.A * _rgbMultiplier;
-            }
+            this.SyncWheel(_colorEditor.Color.A, _colorEditor.HslColor.L);
 
             if (_lightnessColorSlider != null)
             {
@@ -507,6 +504,10 @@ namespace Cyotek.Windows.Forms
               _colorEditor.HslColor = color;
             }
           }
+          else if (object.ReferenceEquals(sender, _colorGrid))
+          {
+            this.SyncWheel(_colorGrid.Color.A, _colorGrid.Color.GetBrightness());
+          }
 
           this.SetColor(_colorGrid, sender);
           this.SetColor(_colorWheel, sender);
@@ -522,6 +523,15 @@ namespace Cyotek.Windows.Forms
         {
           _lockUpdates = false;
         }
+      }
+    }
+
+    private void SyncWheel(byte alpha, double lightness)
+    {
+      if (_colorWheel != null)
+      {
+        _colorWheel.Lightness = lightness;
+        _colorWheel.Alpha = alpha * _rgbMultiplier;
       }
     }
 
