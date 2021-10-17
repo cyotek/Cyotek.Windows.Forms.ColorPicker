@@ -41,6 +41,8 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventSelectionSizeChanged = new object();
 
+    private static readonly object _eventShowAngleArrowChanged = new object();
+
     private static readonly object _eventShowCenterLinesChanged = new object();
 
     private static readonly object _eventShowSaturationRingChanged = new object();
@@ -48,6 +50,8 @@ namespace Cyotek.Windows.Forms
     private static readonly object _eventSmallChangeChanged = new object();
 
     private double _alpha;
+
+    private Point[] _arrowHead;
 
     private Brush _brush;
 
@@ -83,6 +87,8 @@ namespace Cyotek.Windows.Forms
 
     private int _selectionSize;
 
+    private bool _showAngleArrow;
+
     private bool _showCenterLines;
 
     private bool _showSaturationRing;
@@ -112,7 +118,7 @@ namespace Cyotek.Windows.Forms
       _largeChange = 5;
       _lightness = 0.5;
       _alpha = 1;
-      _lineColor = Color.Black;
+      _lineColor = Color.DimGray;
 
       this.CreateLinePen();
     }
@@ -194,6 +200,16 @@ namespace Cyotek.Windows.Forms
     {
       add => this.Events.AddHandler(_eventSelectionSizeChanged, value);
       remove => this.Events.RemoveHandler(_eventSelectionSizeChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the ShowAngleArrow property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowAngleArrowChanged
+    {
+      add => this.Events.AddHandler(_eventShowAngleArrowChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowAngleArrowChanged, value);
     }
 
     /// <summary>
@@ -392,7 +408,7 @@ namespace Cyotek.Windows.Forms
     }
 
     [Category("Appearance")]
-    [DefaultValue(typeof(Color), "Black")]
+    [DefaultValue(typeof(Color), "DimGray")]
     public Color LineColor
     {
       get => _lineColor;
@@ -425,6 +441,22 @@ namespace Cyotek.Windows.Forms
           _selectionSize = value;
 
           this.OnSelectionSizeChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public bool ShowAngleArrow
+    {
+      get => _showAngleArrow;
+      set
+      {
+        if (_showAngleArrow != value)
+        {
+          _showAngleArrow = value;
+
+          this.OnShowAngleArrowChanged(EventArgs.Empty);
         }
       }
     }
@@ -686,7 +718,7 @@ namespace Cyotek.Windows.Forms
       double angle;
       double radius;
 
-      angle = color.H * Math.PI / 180;
+      angle = this.GetHueAngle(color.H);
       radius = _radius * color.S;
 
       return this.GetColorLocation(angle, radius);
@@ -708,10 +740,14 @@ namespace Cyotek.Windows.Forms
     protected float GetRadius(PointF centerPoint)
     {
       Padding padding;
+      int offset;
 
       padding = this.Padding;
+      offset = _showAngleArrow
+        ? _selectionSize
+        : _selectionSize / 2;
 
-      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(padding.Horizontal, padding.Vertical) + _selectionSize / 2);
+      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(padding.Horizontal, padding.Vertical) + offset);
     }
 
     /// <summary>
@@ -1062,6 +1098,7 @@ namespace Cyotek.Windows.Forms
         {
           this.PaintSaturationRing(e);
           this.PaintCenterLine(e);
+          this.PaintArrowHead(e);
           this.PaintCurrentColor(e);
         }
       }
@@ -1091,6 +1128,21 @@ namespace Cyotek.Windows.Forms
       this.RefreshWheel();
 
       handler = (EventHandler)this.Events[_eventSelectionSizeChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowAngleArrowChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowAngleArrowChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.RefreshWheel();
+
+      handler = (EventHandler)this.Events[_eventShowAngleArrowChanged];
 
       handler?.Invoke(this, e);
     }
@@ -1232,6 +1284,16 @@ namespace Cyotek.Windows.Forms
       _linePen = new Pen(_lineColor);
     }
 
+    private void DefineArrowHead()
+    {
+      _arrowHead = new[]
+      {
+        new Point(0,0),
+        new Point(_selectionSize,0),
+        new Point(0,_selectionSize)
+      };
+    }
+
     private void DisposeOfSelectionGlyph()
     {
       if (_selectionGlyph != null)
@@ -1250,16 +1312,46 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void PaintCenterLine(PaintEventArgs e, HslColor color)
+    private double GetHueAngle(double hue)
     {
-      e.Graphics.DrawLine(_linePen, _centerPoint, this.GetColorLocation(color));
+      return hue * Math.PI / 180;
+    }
+
+    private void PaintArrowHead(PaintEventArgs e)
+    {
+      if (_showAngleArrow)
+      {
+        Graphics g;
+        PointF l;
+
+        g = e.Graphics;
+        l = this.GetColorLocation(this.GetHueAngle(_hslColor.H), _radius);
+
+        g.TranslateTransform(l.X, l.Y);
+        g.RotateTransform(-(float)(_hslColor.H + 45));
+        g.FillPolygon(Brushes.White, _arrowHead);
+        g.DrawPolygon(_linePen, _arrowHead);
+
+        g.ResetTransform();
+      }
+    }
+
+    private void PaintCenterLine(PaintEventArgs e, HslColor color, bool fullRadius)
+    {
+      PointF start;
+
+      start = fullRadius
+        ? this.GetColorLocation(this.GetHueAngle(color.H), _radius)
+        : this.GetColorLocation(color);
+
+      e.Graphics.DrawLine(_linePen, start, _centerPoint);
     }
 
     private void PaintCenterLine(PaintEventArgs e)
     {
       if (_showCenterLines)
       {
-        this.PaintCenterLine(e, _hslColor);
+        this.PaintCenterLine(e, _hslColor, _showAngleArrow);
       }
     }
 
@@ -1292,6 +1384,8 @@ namespace Cyotek.Windows.Forms
       {
         _selectionGlyph = this.CreateSelectionGlyph();
       }
+
+      this.DefineArrowHead();
 
       this.Invalidate();
     }
