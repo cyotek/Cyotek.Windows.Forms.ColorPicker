@@ -40,6 +40,8 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventSelectionSizeChanged = new object();
 
+    private static readonly object _eventShowSaturationRingChanged = new object();
+
     private static readonly object _eventSmallChangeChanged = new object();
 
     private double _alpha;
@@ -73,6 +75,8 @@ namespace Cyotek.Windows.Forms
     private Image _selectionGlyph;
 
     private int _selectionSize;
+
+    private bool _showSaturationRing;
 
     private int _smallChange;
 
@@ -186,6 +190,16 @@ namespace Cyotek.Windows.Forms
     {
       add { this.Events.AddHandler(_eventSelectionSizeChanged, value); }
       remove { this.Events.RemoveHandler(_eventSelectionSizeChanged, value); }
+    }
+
+    /// <summary>
+    /// Occurs when the ShowSaturationRing property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowSaturationRingChanged
+    {
+      add => this.Events.AddHandler(_eventShowSaturationRingChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowSaturationRingChanged, value);
     }
 
     [Category("Property Changed")]
@@ -367,6 +381,22 @@ namespace Cyotek.Windows.Forms
           _selectionSize = value;
 
           this.OnSelectionSizeChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public bool ShowSaturationRing
+    {
+      get => _showSaturationRing;
+      set
+      {
+        if (_showSaturationRing != value)
+        {
+          _showSaturationRing = value;
+
+          this.OnShowSaturationRingChanged(EventArgs.Empty);
         }
       }
     }
@@ -985,6 +1015,7 @@ namespace Cyotek.Windows.Forms
 
         if (!_color.IsEmpty)
         {
+          this.PaintSaturationRing(e);
           this.PaintCurrentColor(e);
         }
       }
@@ -1014,6 +1045,21 @@ namespace Cyotek.Windows.Forms
       this.RefreshWheel();
 
       handler = (EventHandler)this.Events[_eventSelectionSizeChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowSaturationRingChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowSaturationRingChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventShowSaturationRingChanged];
 
       handler?.Invoke(this, e);
     }
@@ -1128,6 +1174,21 @@ namespace Cyotek.Windows.Forms
       {
         _brush.Dispose();
         _brush = null;
+      }
+    }
+
+    private void PaintSaturationRing(PaintEventArgs e)
+    {
+      if (_showSaturationRing)
+      {
+        float radius;
+
+        radius = (float)(_radius * _hslColor.S);
+
+        using (Pen pen = new Pen(new HslColor(0, 0, _hslColor.S).ToRgbColor()))
+        {
+          e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - radius, _centerPoint.Y - radius, radius * 2, radius * 2));
+        }
       }
     }
 
