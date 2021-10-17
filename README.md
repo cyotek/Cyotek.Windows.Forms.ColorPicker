@@ -101,6 +101,13 @@ preview.
 This form puts together the previous controls in a ready to use
 dialog.
 
+Custom colours are supported via the `CustomColors` property,
+and users can also load or save external palette files into
+these. You can use the `ShowLoad` and `ShowSave` properties to
+enable or disable this, and the `CustomColorsLoading` and
+`CustomColorsSaving`events to override the built-in behaviour
+and provide your own logic.
+
 ### ColorEditorManager
 
 This is a non-GUI component that you can drop onto a form, and
@@ -108,6 +115,8 @@ bind to other controls in this library. When the `Color`
 property of one control changes, it is reflected in the others
 without having to lift a finger. Useful if you're creating
 composite displays from multiple controls.
+
+![ColorEditorManager compnent demonstration][coloreditormanagerscreen]
 
 ## Color Palettes and External Palette Files
 
@@ -222,6 +231,7 @@ some time, donations are welcome.
 [coloreditorscreen]: res/cp-coloreditorcontrol.png
 [screenpickerscreen]: res/cp-screencolorpickercontrol.png
 [colordialogscreen]: res/cp-colorpickerdialog.png
+[coloreditormanagerscreen]: res/cp-coloreditormanager.gif
 
 [nuget]: https://www.nuget.org/packages/Cyotek.Windows.Forms.ColorPicker/
 [nugetbadge]: https://img.shields.io/nuget/vpre/Cyotek.Windows.Forms.ColorPicker
