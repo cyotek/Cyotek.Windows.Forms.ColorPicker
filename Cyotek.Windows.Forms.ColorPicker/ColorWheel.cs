@@ -13,7 +13,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
@@ -631,47 +630,7 @@ namespace Cyotek.Windows.Forms
     /// <summary>
     /// Creates the selection glyph.
     /// </summary>
-    protected virtual Image CreateSelectionGlyph()
-    {
-      Image image;
-      int halfSize;
-
-      halfSize = _selectionSize / 2;
-      image = new Bitmap(_selectionSize + 1, _selectionSize + 1, PixelFormat.Format32bppArgb);
-
-      using (Graphics g = Graphics.FromImage(image))
-      {
-        Point[] diamondOuter;
-
-        diamondOuter = new[]
-                       {
-                         new Point(halfSize, 0),
-                         new Point(_selectionSize, halfSize),
-                         new Point(halfSize, _selectionSize),
-                         new Point(0, halfSize)
-                       };
-
-        g.FillPolygon(SystemBrushes.Control, diamondOuter);
-        g.DrawPolygon(SystemPens.ControlDark, diamondOuter);
-
-        using (Pen pen = new Pen(Color.FromArgb(128, SystemColors.ControlDark)))
-        {
-          g.DrawLine(pen, halfSize, 1, _selectionSize - 1, halfSize);
-          g.DrawLine(pen, halfSize, 2, _selectionSize - 2, halfSize);
-          g.DrawLine(pen, halfSize, _selectionSize - 1, _selectionSize - 2, halfSize + 1);
-          g.DrawLine(pen, halfSize, _selectionSize - 2, _selectionSize - 3, halfSize + 1);
-        }
-
-        using (Pen pen = new Pen(Color.FromArgb(196, SystemColors.ControlLightLight)))
-        {
-          g.DrawLine(pen, halfSize, _selectionSize - 1, 1, halfSize);
-        }
-
-        g.DrawLine(SystemPens.ControlLightLight, 1, halfSize, halfSize, 1);
-      }
-
-      return image;
-    }
+    protected virtual Image CreateSelectionGlyph() => null;
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
@@ -1180,7 +1139,12 @@ namespace Cyotek.Windows.Forms
 
         if (_selectionGlyph == null)
         {
-          e.Graphics.DrawRectangle(Pens.Black, x, y, _selectionSize, _selectionSize);
+          using (Brush brush = new SolidBrush(_hslColor.ToRgbColor()))
+          {
+            e.Graphics.FillEllipse(brush, x, y, _selectionSize, _selectionSize);
+          }
+
+          e.Graphics.DrawEllipse(_linePen, x, y, _selectionSize, _selectionSize);
         }
         else
         {
@@ -1189,7 +1153,7 @@ namespace Cyotek.Windows.Forms
 
         if (this.Focused && includeFocus)
         {
-          ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 1, y - 1, _selectionSize + 2, _selectionSize + 2));
+          ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 2, y - 2, _selectionSize + 5, _selectionSize + 5));
         }
       }
     }
@@ -1245,9 +1209,7 @@ namespace Cyotek.Windows.Forms
     {
       _linePen?.Dispose();
 
-      _linePen = _showCenterLines
-        ? new Pen(_lineColor)
-        : null;
+      _linePen = new Pen(_lineColor);
     }
 
     private void DisposeOfSelectionGlyph()
