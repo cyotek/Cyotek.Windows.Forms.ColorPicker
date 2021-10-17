@@ -21,6 +21,10 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent("ColorChanged")]
   public class ColorWheel : Control, IColorEditor
   {
+#if !NET46_OR_GREATER
+    private static readonly HslColor[] _empty = new HslColor[0];
+#endif
+
     #region Private Fields
 
     private static readonly object _eventAlphaChanged = new object();
@@ -83,6 +87,8 @@ namespace Cyotek.Windows.Forms
 
     private float _radius;
 
+    private HslColor[] _secondaryColors;
+
     private Image _selectionGlyph;
 
     private int _selectionSize;
@@ -119,9 +125,58 @@ namespace Cyotek.Windows.Forms
       _lightness = 0.5;
       _alpha = 1;
       _lineColor = Color.DimGray;
+      _secondaryColors = ColorWheel.GetEmptyColorArray();
+      _secondarySelectionSize = 8;
 
       this.CreateLinePen();
     }
+
+    private int _secondarySelectionSize;
+
+    [Category("Appearance")]
+    [DefaultValue(8)]
+    public int SecondarySelectionSize
+    {
+      get => _secondarySelectionSize;
+      set
+      {
+        if (_secondarySelectionSize != value)
+        {
+          _secondarySelectionSize = value;
+
+          this.OnSecondarySelectionSizeChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    private static readonly object _eventSecondarySelectionSizeChanged = new object();
+
+    /// <summary>
+    /// Occurs when the SecondarySelectionSize property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler SecondarySelectionSizeChanged
+    {
+      add => this.Events.AddHandler(_eventSecondarySelectionSizeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSecondarySelectionSizeChanged, value);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="SecondarySelectionSizeChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnSecondarySelectionSizeChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventSecondarySelectionSizeChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+
 
     #endregion Public Constructors
 
@@ -422,6 +477,19 @@ namespace Cyotek.Windows.Forms
 
           this.OnLineColorChanged(EventArgs.Empty);
         }
+      }
+    }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public HslColor[] SecondaryColors
+    {
+      get => _secondaryColors;
+      set
+      {
+        _secondaryColors = value ?? ColorWheel.GetEmptyColorArray();
+
+        this.Invalidate();
       }
     }
 
@@ -1094,11 +1162,13 @@ namespace Cyotek.Windows.Forms
           e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
         }
 
+        this.PaintCenterLines(e);
+
         if (!_color.IsEmpty)
         {
           this.PaintSaturationRing(e);
-          this.PaintCenterLine(e);
           this.PaintArrowHead(e);
+          this.PaintCustomColors(e);
           this.PaintCurrentColor(e);
         }
       }
@@ -1203,20 +1273,25 @@ namespace Cyotek.Windows.Forms
 
       if (!float.IsNaN(location.X) && !float.IsNaN(location.Y))
       {
+        int size;
         int x;
         int y;
 
-        x = (int)location.X - _selectionSize / 2;
-        y = (int)location.Y - _selectionSize / 2;
+        size = includeFocus
+          ? _selectionSize
+          : _secondarySelectionSize;
+
+        x = (int)location.X - size / 2;
+        y = (int)location.Y - size / 2;
 
         if (_selectionGlyph == null)
         {
-          using (Brush brush = new SolidBrush(_hslColor.ToRgbColor()))
+          using (Brush brush = new SolidBrush(color.ToRgbColor()))
           {
-            e.Graphics.FillEllipse(brush, x, y, _selectionSize, _selectionSize);
+            e.Graphics.FillEllipse(brush, x, y, size, size);
           }
 
-          e.Graphics.DrawEllipse(_linePen, x, y, _selectionSize, _selectionSize);
+          e.Graphics.DrawEllipse(_linePen, x, y, size, size);
         }
         else
         {
@@ -1225,7 +1300,7 @@ namespace Cyotek.Windows.Forms
 
         if (this.Focused && includeFocus)
         {
-          NativeMethods.DrawFocusRectangle(e.Graphics, new Rectangle(x - 2, y - 2, _selectionSize + 5, _selectionSize + 5));
+          NativeMethods.DrawFocusRectangle(e.Graphics, new Rectangle(x - 2, y - 2, size + 5, size + 5));
         }
       }
     }
@@ -1276,6 +1351,15 @@ namespace Cyotek.Windows.Forms
     #endregion Protected Methods
 
     #region Private Methods
+
+    private static HslColor[] GetEmptyColorArray()
+    {
+#if NET46_OR_GREATER
+      return Array.Empty<HslColor>();
+#else
+      return _empty;
+#endif
+    }
 
     private void CreateLinePen()
     {
@@ -1347,11 +1431,33 @@ namespace Cyotek.Windows.Forms
       e.Graphics.DrawLine(_linePen, start, _centerPoint);
     }
 
-    private void PaintCenterLine(PaintEventArgs e)
+    private void PaintCenterLines(PaintEventArgs e)
     {
       if (_showCenterLines)
       {
-        this.PaintCenterLine(e, _hslColor, _showAngleArrow);
+        if (!_hslColor.IsEmpty)
+        {
+          this.PaintCenterLine(e, _hslColor, _showAngleArrow);
+        }
+
+        if (_secondaryColors != null && _secondaryColors.Length > 0)
+        {
+          for (int i = 0; i < _secondaryColors.Length; i++)
+          {
+            this.PaintCenterLine(e, _secondaryColors[i], false);
+          }
+        }
+      }
+    }
+
+    private void PaintCustomColors(PaintEventArgs e)
+    {
+      if (_secondaryColors != null && _secondaryColors.Length > 0)
+      {
+        for (int i = 0; i < _secondaryColors.Length; i++)
+        {
+          this.PaintColor(e, _secondaryColors[i], false);
+        }
       }
     }
 
