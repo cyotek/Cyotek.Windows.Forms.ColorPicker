@@ -31,6 +31,10 @@
   `CustomColors` properties to the `ColorPickerDialog` component
 * Added `CustomColorsLoading` and `CustomColorsSaving` events to
   the `ColorPickerDialog` component
+* Added `ShowSaturationRing`, `ShowCenterLines`, `LineColor`,
+  `ShowAngleArrow`, `SecondaryColors` and
+  `SecondarySelectionSize` properties to the `ColorWheel`
+  control
 
 #### Changed
 
