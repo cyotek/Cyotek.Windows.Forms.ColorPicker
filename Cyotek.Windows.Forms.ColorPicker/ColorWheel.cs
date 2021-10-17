@@ -368,7 +368,7 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    [Category("Behavior")]
+    [Category("Appearance")]
     [DefaultValue(0.5)]
     public double Lightness
     {
@@ -383,6 +383,8 @@ namespace Cyotek.Windows.Forms
         if (Math.Abs(_lightness - value) > double.Epsilon)
         {
           _lightness = value;
+
+          _hslColor = new HslColor(_hslColor.H, _hslColor.S, value);
 
           this.OnLightnessChanged(EventArgs.Empty);
         }
@@ -931,6 +933,8 @@ namespace Cyotek.Windows.Forms
       {
         this.RefreshWheel();
       }
+
+      this.Invalidate();
 
       handler = (EventHandler)this.Events[_eventLightnessChanged];
 
