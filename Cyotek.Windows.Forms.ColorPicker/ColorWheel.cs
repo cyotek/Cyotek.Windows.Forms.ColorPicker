@@ -128,28 +128,22 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler AlphaChanged
     {
-      add
-      {
-        this.Events.AddHandler(_eventAlphaChanged, value);
-      }
-      remove
-      {
-        this.Events.RemoveHandler(_eventAlphaChanged, value);
-      }
+      add => this.Events.AddHandler(_eventAlphaChanged, value);
+      remove => this.Events.RemoveHandler(_eventAlphaChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler ColorChanged
     {
-      add { this.Events.AddHandler(_eventColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+      add => this.Events.AddHandler(_eventColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventColorChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler ColorStepChanged
     {
-      add { this.Events.AddHandler(_eventColorStepChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorStepChanged, value); }
+      add => this.Events.AddHandler(_eventColorStepChanged, value);
+      remove => this.Events.RemoveHandler(_eventColorStepChanged, value);
     }
 
     /// <summary>
@@ -158,28 +152,22 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler DisplayLightnessChanged
     {
-      add
-      {
-        this.Events.AddHandler(_eventDisplayLightnessChanged, value);
-      }
-      remove
-      {
-        this.Events.RemoveHandler(_eventDisplayLightnessChanged, value);
-      }
+      add => this.Events.AddHandler(_eventDisplayLightnessChanged, value);
+      remove => this.Events.RemoveHandler(_eventDisplayLightnessChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler HslColorChanged
     {
-      add { this.Events.AddHandler(_eventHslColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventHslColorChanged, value); }
+      add => this.Events.AddHandler(_eventHslColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventHslColorChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler LargeChangeChanged
     {
-      add { this.Events.AddHandler(_eventLargeChangeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventLargeChangeChanged, value); }
+      add => this.Events.AddHandler(_eventLargeChangeChanged, value);
+      remove => this.Events.RemoveHandler(_eventLargeChangeChanged, value);
     }
 
     /// <summary>
@@ -188,14 +176,8 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler LightnessChanged
     {
-      add
-      {
-        this.Events.AddHandler(_eventLightnessChanged, value);
-      }
-      remove
-      {
-        this.Events.RemoveHandler(_eventLightnessChanged, value);
-      }
+      add => this.Events.AddHandler(_eventLightnessChanged, value);
+      remove => this.Events.RemoveHandler(_eventLightnessChanged, value);
     }
 
     /// <summary>
@@ -211,8 +193,8 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler SelectionSizeChanged
     {
-      add { this.Events.AddHandler(_eventSelectionSizeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventSelectionSizeChanged, value); }
+      add => this.Events.AddHandler(_eventSelectionSizeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSelectionSizeChanged, value);
     }
 
     /// <summary>
@@ -238,8 +220,8 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler SmallChangeChanged
     {
-      add { this.Events.AddHandler(_eventSmallChangeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventSmallChangeChanged, value); }
+      add => this.Events.AddHandler(_eventSmallChangeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSmallChangeChanged, value);
     }
 
     #endregion Public Events
@@ -250,7 +232,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(1)]
     public double Alpha
     {
-      get { return _alpha; }
+      get => _alpha;
       set
       {
         if (Math.Abs(_alpha - value) > double.Epsilon)
@@ -270,7 +252,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Color), "Black")]
     public virtual Color Color
     {
-      get { return _color; }
+      get => _color;
       set
       {
         if (_color != value)
@@ -291,7 +273,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(4)]
     public virtual int ColorStep
     {
-      get { return _colorStep; }
+      get => _colorStep;
       set
       {
         if (value < 1 || value > 359)
@@ -312,7 +294,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(false)]
     public bool DisplayLightness
     {
-      get { return _displayLightness; }
+      get => _displayLightness;
       set
       {
         if (_displayLightness != value)
@@ -328,16 +310,16 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Font Font
     {
-      get { return base.Font; }
-      set { base.Font = value; }
+      get => base.Font;
+      set => base.Font = value;
     }
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Color ForeColor
     {
-      get { return base.ForeColor; }
-      set { base.ForeColor = value; }
+      get => base.ForeColor;
+      set => base.ForeColor = value;
     }
 
     /// <summary>
@@ -350,7 +332,7 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual HslColor HslColor
     {
-      get { return _hslColor; }
+      get => _hslColor;
       set
       {
         if (_hslColor != value)
@@ -370,7 +352,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(5)]
     public virtual int LargeChange
     {
-      get { return _largeChange; }
+      get => _largeChange;
       set
       {
         if (_largeChange != value)
@@ -386,7 +368,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(0.5)]
     public double Lightness
     {
-      get { return _lightness; }
+      get => _lightness;
       set
       {
         if (Math.Abs(_lightness - value) > double.Epsilon)
@@ -424,7 +406,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(10)]
     public virtual int SelectionSize
     {
-      get { return _selectionSize; }
+      get => _selectionSize;
       set
       {
         if (_selectionSize != value)
@@ -478,7 +460,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(1)]
     public virtual int SmallChange
     {
-      get { return _smallChange; }
+      get => _smallChange;
       set
       {
         if (_smallChange != value)
@@ -494,8 +476,8 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text
     {
-      get { return base.Text; }
-      set { base.Text = value; }
+      get => base.Text;
+      set => base.Text = value;
     }
 
     #endregion Public Properties
@@ -508,37 +490,34 @@ namespace Cyotek.Windows.Forms
     /// <value>
     ///   <c>true</c> if painting of the control is allowed; otherwise, <c>false</c>.
     /// </value>
-    protected virtual bool AllowPainting
-    {
-      get { return _updateCount == 0; }
-    }
+    protected virtual bool AllowPainting => _updateCount == 0;
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected Color[] Colors
     {
-      get { return _colors; }
-      set { _colors = value; }
+      get => _colors;
+      set => _colors = value;
     }
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected bool LockUpdates
     {
-      get { return _lockUpdates; }
-      set { _lockUpdates = value; }
+      get => _lockUpdates;
+      set => _lockUpdates = value;
     }
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected PointF[] Points
     {
-      get { return _points; }
-      set { _points = value; }
+      get => _points;
+      set => _points = value;
     }
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected Image SelectionGlyph
     {
-      get { return _selectionGlyph; }
-      set { _selectionGlyph = value; }
+      get => _selectionGlyph;
+      set => _selectionGlyph = value;
     }
 
     #endregion Protected Properties
