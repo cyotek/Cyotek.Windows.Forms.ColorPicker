@@ -28,23 +28,112 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     /// </summary>
     private void InitializeComponent()
     {
+      System.Windows.Forms.Label demoLabel;
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ColorWheelDemoForm));
+      Cyotek.Windows.Forms.GroupBox customColorsGroupBox;
+      System.Windows.Forms.Button tetradicButton;
+      System.Windows.Forms.Button randomButton;
+      System.Windows.Forms.Button analogousButton;
+      System.Windows.Forms.Button noneButton;
       this.colorToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
       this.statusStrip = new System.Windows.Forms.StatusStrip();
       this.propertiesSplitContainer = new System.Windows.Forms.SplitContainer();
       this.propertyGrid = new System.Windows.Forms.PropertyGrid();
       this.colorWheel = new Cyotek.Windows.Forms.ColorWheel();
       this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
+      this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      demoLabel = new System.Windows.Forms.Label();
+      customColorsGroupBox = new Cyotek.Windows.Forms.GroupBox();
+      tetradicButton = new System.Windows.Forms.Button();
+      randomButton = new System.Windows.Forms.Button();
+      analogousButton = new System.Windows.Forms.Button();
+      noneButton = new System.Windows.Forms.Button();
+      customColorsGroupBox.SuspendLayout();
       this.statusStrip.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).BeginInit();
       this.propertiesSplitContainer.Panel1.SuspendLayout();
       this.propertiesSplitContainer.Panel2.SuspendLayout();
       this.propertiesSplitContainer.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).BeginInit();
       this.optionsSplitContainer.Panel1.SuspendLayout();
+      this.optionsSplitContainer.Panel2.SuspendLayout();
       this.optionsSplitContainer.SuspendLayout();
       this.menuStrip.SuspendLayout();
       this.SuspendLayout();
+      // 
+      // demoLabel
+      // 
+      demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      demoLabel.AutoEllipsis = true;
+      demoLabel.BackColor = System.Drawing.SystemColors.Info;
+      demoLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
+      demoLabel.Location = new System.Drawing.Point(3, 0);
+      demoLabel.Name = "demoLabel";
+      demoLabel.Padding = new System.Windows.Forms.Padding(10);
+      demoLabel.Size = new System.Drawing.Size(334, 351);
+      demoLabel.TabIndex = 2;
+      demoLabel.Text = resources.GetString("demoLabel.Text");
+      // 
+      // customColorsGroupBox
+      // 
+      customColorsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      customColorsGroupBox.Controls.Add(tetradicButton);
+      customColorsGroupBox.Controls.Add(randomButton);
+      customColorsGroupBox.Controls.Add(analogousButton);
+      customColorsGroupBox.Controls.Add(noneButton);
+      customColorsGroupBox.Location = new System.Drawing.Point(3, 354);
+      customColorsGroupBox.Name = "customColorsGroupBox";
+      customColorsGroupBox.Size = new System.Drawing.Size(334, 57);
+      customColorsGroupBox.TabIndex = 4;
+      customColorsGroupBox.TabStop = false;
+      customColorsGroupBox.Text = "SecondaryColors";
+      // 
+      // tetradicButton
+      // 
+      tetradicButton.Location = new System.Drawing.Point(168, 22);
+      tetradicButton.Name = "tetradicButton";
+      tetradicButton.Size = new System.Drawing.Size(75, 23);
+      tetradicButton.TabIndex = 3;
+      tetradicButton.Text = "Tetradic";
+      tetradicButton.UseVisualStyleBackColor = true;
+      tetradicButton.Click += new System.EventHandler(this.TetradicButton_Click);
+      // 
+      // randomButton
+      // 
+      randomButton.Location = new System.Drawing.Point(249, 22);
+      randomButton.Name = "randomButton";
+      randomButton.Size = new System.Drawing.Size(75, 23);
+      randomButton.TabIndex = 2;
+      randomButton.Text = "Random";
+      randomButton.UseVisualStyleBackColor = true;
+      randomButton.Click += new System.EventHandler(this.RandomButton_Click);
+      // 
+      // analogousButton
+      // 
+      analogousButton.Location = new System.Drawing.Point(87, 22);
+      analogousButton.Name = "analogousButton";
+      analogousButton.Size = new System.Drawing.Size(75, 23);
+      analogousButton.TabIndex = 1;
+      analogousButton.Text = "Analogous";
+      analogousButton.UseVisualStyleBackColor = true;
+      analogousButton.Click += new System.EventHandler(this.AnalogousButton_Click);
+      // 
+      // noneButton
+      // 
+      noneButton.Location = new System.Drawing.Point(6, 22);
+      noneButton.Name = "noneButton";
+      noneButton.Size = new System.Drawing.Size(75, 23);
+      noneButton.TabIndex = 0;
+      noneButton.Text = "None";
+      noneButton.UseVisualStyleBackColor = true;
+      noneButton.Click += new System.EventHandler(this.NoneButton_Click);
       // 
       // colorToolStripStatusLabel
       // 
@@ -55,15 +144,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.colorToolStripStatusLabel});
-      this.statusStrip.Location = new System.Drawing.Point(0, 423);
+      this.statusStrip.Location = new System.Drawing.Point(0, 491);
       this.statusStrip.Name = "statusStrip";
-      this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-      this.statusStrip.Size = new System.Drawing.Size(940, 22);
+      this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
+      this.statusStrip.Size = new System.Drawing.Size(992, 22);
       this.statusStrip.TabIndex = 2;
       // 
       // propertiesSplitContainer
       // 
       this.propertiesSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.propertiesSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
       this.propertiesSplitContainer.Location = new System.Drawing.Point(0, 24);
       this.propertiesSplitContainer.Name = "propertiesSplitContainer";
       // 
@@ -74,9 +164,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // propertiesSplitContainer.Panel2
       // 
       this.propertiesSplitContainer.Panel2.Controls.Add(this.optionsSplitContainer);
-      this.propertiesSplitContainer.Size = new System.Drawing.Size(940, 399);
-      this.propertiesSplitContainer.SplitterDistance = 311;
-      this.propertiesSplitContainer.SplitterWidth = 5;
+      this.propertiesSplitContainer.Size = new System.Drawing.Size(992, 467);
+      this.propertiesSplitContainer.SplitterDistance = 248;
+      this.propertiesSplitContainer.SplitterWidth = 6;
       this.propertiesSplitContainer.TabIndex = 1;
       // 
       // propertyGrid
@@ -85,34 +175,51 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.propertyGrid.Location = new System.Drawing.Point(0, 0);
       this.propertyGrid.Name = "propertyGrid";
       this.propertyGrid.SelectedObject = this.colorWheel;
-      this.propertyGrid.Size = new System.Drawing.Size(311, 399);
+      this.propertyGrid.Size = new System.Drawing.Size(248, 467);
       this.propertyGrid.TabIndex = 0;
       // 
       // colorWheel
       // 
-      this.colorWheel.Color = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(64)))), ((int)(((byte)(48)))));
+      this.colorWheel.Alpha = 1D;
+      this.colorWheel.Color = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(209)))), ((int)(((byte)(202)))));
       this.colorWheel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.colorWheel.Location = new System.Drawing.Point(0, 0);
       this.colorWheel.Name = "colorWheel";
-      this.colorWheel.Size = new System.Drawing.Size(624, 224);
+      this.colorWheel.Size = new System.Drawing.Size(390, 467);
       this.colorWheel.TabIndex = 0;
-      this.colorWheel.ColorChanged += new System.EventHandler(this.colorWheel_ColorChanged);
+      this.colorWheel.ColorChanged += new System.EventHandler(this.ColorWheel_ColorChanged);
       // 
       // optionsSplitContainer
       // 
       this.optionsSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.optionsSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+      this.optionsSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
       this.optionsSplitContainer.Location = new System.Drawing.Point(0, 0);
       this.optionsSplitContainer.Name = "optionsSplitContainer";
-      this.optionsSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
       // 
       // optionsSplitContainer.Panel1
       // 
       this.optionsSplitContainer.Panel1.Controls.Add(this.colorWheel);
-      this.optionsSplitContainer.Size = new System.Drawing.Size(624, 399);
-      this.optionsSplitContainer.SplitterDistance = 224;
-      this.optionsSplitContainer.SplitterWidth = 5;
+      // 
+      // optionsSplitContainer.Panel2
+      // 
+      this.optionsSplitContainer.Panel2.Controls.Add(customColorsGroupBox);
+      this.optionsSplitContainer.Panel2.Controls.Add(this.colorPreviewBox);
+      this.optionsSplitContainer.Panel2.Controls.Add(demoLabel);
+      this.optionsSplitContainer.Size = new System.Drawing.Size(738, 467);
+      this.optionsSplitContainer.SplitterDistance = 390;
+      this.optionsSplitContainer.SplitterWidth = 6;
       this.optionsSplitContainer.TabIndex = 0;
+      // 
+      // colorPreviewBox
+      // 
+      this.colorPreviewBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.colorPreviewBox.Color = System.Drawing.Color.Empty;
+      this.colorPreviewBox.Location = new System.Drawing.Point(3, 417);
+      this.colorPreviewBox.Name = "colorPreviewBox";
+      this.colorPreviewBox.Size = new System.Drawing.Size(334, 47);
+      this.colorPreviewBox.TabIndex = 3;
+      this.colorPreviewBox.Text = "colorPreviewBox";
       // 
       // menuStrip
       // 
@@ -120,7 +227,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.fileToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
-      this.menuStrip.Size = new System.Drawing.Size(940, 24);
+      this.menuStrip.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+      this.menuStrip.Size = new System.Drawing.Size(992, 24);
       this.menuStrip.TabIndex = 0;
       // 
       // fileToolStripMenuItem
@@ -137,24 +245,29 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
       this.closeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
       this.closeToolStripMenuItem.Text = "&Close";
-      this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+      this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
       // 
       // ColorWheelDemoForm
       // 
+      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.ClientSize = new System.Drawing.Size(940, 445);
+      this.ClientSize = new System.Drawing.Size(992, 513);
       this.Controls.Add(this.propertiesSplitContainer);
       this.Controls.Add(this.menuStrip);
       this.Controls.Add(this.statusStrip);
+      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.Name = "ColorWheelDemoForm";
       this.Text = "ColorWheel Control Demonstration";
+      customColorsGroupBox.ResumeLayout(false);
       this.statusStrip.ResumeLayout(false);
       this.statusStrip.PerformLayout();
       this.propertiesSplitContainer.Panel1.ResumeLayout(false);
       this.propertiesSplitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).EndInit();
       this.propertiesSplitContainer.ResumeLayout(false);
       this.optionsSplitContainer.Panel1.ResumeLayout(false);
+      this.optionsSplitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).EndInit();
       this.optionsSplitContainer.ResumeLayout(false);
       this.menuStrip.ResumeLayout(false);
       this.menuStrip.PerformLayout();
@@ -174,5 +287,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private System.Windows.Forms.MenuStrip menuStrip;
     private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+    private ColorPreviewBox colorPreviewBox;
   }
 }
