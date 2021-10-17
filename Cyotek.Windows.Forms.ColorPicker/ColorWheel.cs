@@ -38,7 +38,11 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventLightnessChanged = new object();
 
+    private static readonly object _eventLineColorChanged = new object();
+
     private static readonly object _eventSelectionSizeChanged = new object();
+
+    private static readonly object _eventShowCenterLinesChanged = new object();
 
     private static readonly object _eventShowSaturationRingChanged = new object();
 
@@ -66,6 +70,10 @@ namespace Cyotek.Windows.Forms
 
     private double _lightness;
 
+    private Color _lineColor;
+
+    private Pen _linePen;
+
     private bool _lockUpdates;
 
     private PointF[] _points;
@@ -75,6 +83,8 @@ namespace Cyotek.Windows.Forms
     private Image _selectionGlyph;
 
     private int _selectionSize;
+
+    private bool _showCenterLines;
 
     private bool _showSaturationRing;
 
@@ -103,6 +113,9 @@ namespace Cyotek.Windows.Forms
       _largeChange = 5;
       _lightness = 0.5;
       _alpha = 1;
+      _lineColor = Color.Black;
+
+      this.CreateLinePen();
     }
 
     #endregion Public Constructors
@@ -185,11 +198,31 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    /// <summary>
+    /// Occurs when the LineColor property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler LineColorChanged
+    {
+      add => this.Events.AddHandler(_eventLineColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventLineColorChanged, value);
+    }
+
     [Category("Property Changed")]
     public event EventHandler SelectionSizeChanged
     {
       add { this.Events.AddHandler(_eventSelectionSizeChanged, value); }
       remove { this.Events.RemoveHandler(_eventSelectionSizeChanged, value); }
+    }
+
+    /// <summary>
+    /// Occurs when the ShowCenterLines property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowCenterLinesChanged
+    {
+      add => this.Events.AddHandler(_eventShowCenterLinesChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowCenterLinesChanged, value);
     }
 
     /// <summary>
@@ -365,6 +398,24 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public Color LineColor
+    {
+      get => _lineColor;
+      set
+      {
+        if (_lineColor != value)
+        {
+          _lineColor = value;
+
+          this.CreateLinePen();
+
+          this.OnLineColorChanged(EventArgs.Empty);
+        }
+      }
+    }
+
     /// <summary>
     /// Gets or sets the size of the selection handle.
     /// </summary>
@@ -381,6 +432,24 @@ namespace Cyotek.Windows.Forms
           _selectionSize = value;
 
           this.OnSelectionSizeChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public bool ShowCenterLines
+    {
+      get => _showCenterLines;
+      set
+      {
+        if (_showCenterLines != value)
+        {
+          _showCenterLines = value;
+
+          this.CreateLinePen();
+
+          this.OnShowCenterLinesChanged(EventArgs.Empty);
         }
       }
     }
@@ -633,6 +702,9 @@ namespace Cyotek.Windows.Forms
     {
       if (disposing)
       {
+        _linePen?.Dispose();
+        _linePen = null;
+
         this.DisposeOfWheelBrush();
         this.DisposeOfSelectionGlyph();
       }
@@ -912,6 +984,21 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="LineColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnLineColorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventLineColorChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Control.LostFocus" /> event.
     /// </summary>
     /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -1016,6 +1103,7 @@ namespace Cyotek.Windows.Forms
         if (!_color.IsEmpty)
         {
           this.PaintSaturationRing(e);
+          this.PaintCenterLine(e);
           this.PaintCurrentColor(e);
         }
       }
@@ -1045,6 +1133,21 @@ namespace Cyotek.Windows.Forms
       this.RefreshWheel();
 
       handler = (EventHandler)this.Events[_eventSelectionSizeChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowCenterLinesChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowCenterLinesChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventShowCenterLinesChanged];
 
       handler?.Invoke(this, e);
     }
@@ -1159,6 +1262,15 @@ namespace Cyotek.Windows.Forms
 
     #region Private Methods
 
+    private void CreateLinePen()
+    {
+      _linePen?.Dispose();
+
+      _linePen = _showCenterLines
+        ? new Pen(_lineColor)
+        : null;
+    }
+
     private void DisposeOfSelectionGlyph()
     {
       if (_selectionGlyph != null)
@@ -1174,6 +1286,19 @@ namespace Cyotek.Windows.Forms
       {
         _brush.Dispose();
         _brush = null;
+      }
+    }
+
+    private void PaintCenterLine(PaintEventArgs e, HslColor color)
+    {
+      e.Graphics.DrawLine(_linePen, _centerPoint, this.GetColorLocation(color));
+    }
+
+    private void PaintCenterLine(PaintEventArgs e)
+    {
+      if (_showCenterLines)
+      {
+        this.PaintCenterLine(e, _hslColor);
       }
     }
 
