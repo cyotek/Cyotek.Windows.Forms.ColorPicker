@@ -40,7 +40,7 @@ namespace Cyotek.Windows.Forms
       this.okButton.TabIndex = 1;
       this.okButton.Text = "OK";
       this.okButton.UseVisualStyleBackColor = true;
-      this.okButton.Click += new System.EventHandler(this.okButton_Click);
+      this.okButton.Click += new System.EventHandler(this.OkButton_Click);
       // 
       // cancelButton
       // 
@@ -52,7 +52,7 @@ namespace Cyotek.Windows.Forms
       this.cancelButton.TabIndex = 2;
       this.cancelButton.Text = "Cancel";
       this.cancelButton.UseVisualStyleBackColor = true;
-      this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+      this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
       // 
       // previewPanel
       // 
@@ -61,7 +61,7 @@ namespace Cyotek.Windows.Forms
       this.previewPanel.Name = "previewPanel";
       this.previewPanel.Size = new System.Drawing.Size(75, 47);
       this.previewPanel.TabIndex = 3;
-      this.previewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.previewPanel_Paint);
+      this.previewPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.PreviewPanel_Paint);
       // 
       // loadPaletteButton
       // 
@@ -72,7 +72,7 @@ namespace Cyotek.Windows.Forms
       this.loadPaletteButton.TabIndex = 5;
       this.toolTip.SetToolTip(this.loadPaletteButton, "Load Palette");
       this.loadPaletteButton.UseVisualStyleBackColor = false;
-      this.loadPaletteButton.Click += new System.EventHandler(this.loadPaletteButton_Click);
+      this.loadPaletteButton.Click += new System.EventHandler(this.LoadPaletteButton_Click);
       // 
       // savePaletteButton
       // 
@@ -83,7 +83,7 @@ namespace Cyotek.Windows.Forms
       this.savePaletteButton.TabIndex = 6;
       this.toolTip.SetToolTip(this.savePaletteButton, "Save Palette");
       this.savePaletteButton.UseVisualStyleBackColor = false;
-      this.savePaletteButton.Click += new System.EventHandler(this.savePaletteButton_Click);
+      this.savePaletteButton.Click += new System.EventHandler(this.SavePaletteButton_Click);
       // 
       // screenColorPicker
       // 
@@ -128,7 +128,7 @@ namespace Cyotek.Windows.Forms
       this.colorGrid.Size = new System.Drawing.Size(192, 72);
       this.colorGrid.Spacing = new System.Drawing.Size(0, 0);
       this.colorGrid.TabIndex = 7;
-      this.colorGrid.EditingColor += new System.EventHandler<Cyotek.Windows.Forms.EditColorCancelEventArgs>(this.colorGrid_EditingColor);
+      this.colorGrid.EditingColor += new System.EventHandler<Cyotek.Windows.Forms.EditColorCancelEventArgs>(this.ColorGrid_EditingColor);
       // 
       // colorEditorManager
       // 
@@ -136,7 +136,7 @@ namespace Cyotek.Windows.Forms
       this.colorEditorManager.ColorGrid = this.colorGrid;
       this.colorEditorManager.ColorWheel = this.colorWheel;
       this.colorEditorManager.ScreenColorPicker = this.screenColorPicker;
-      this.colorEditorManager.ColorChanged += new System.EventHandler(this.colorEditorManager_ColorChanged);
+      this.colorEditorManager.ColorChanged += new System.EventHandler(this.ColorEditorManager_ColorChanged);
       // 
       // ColorPickerDialog
       // 

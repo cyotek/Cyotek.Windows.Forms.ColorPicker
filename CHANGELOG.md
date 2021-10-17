@@ -27,6 +27,10 @@
   `ColorEditor` will strip the alpha component from a colour if
   the `ShowAlphaChannel` property is not set. This new property
   allows the component to be preserved
+* Added `PreserveAlphaChannel`, `ShowLoad`, `ShowSave` and
+  `CustomColors` properties to the `ColorPickerDialog` component
+* Added `CustomColorsLoading` and `CustomColorsSaving` events to
+  the `ColorPickerDialog` component
 
 #### Changed
 
