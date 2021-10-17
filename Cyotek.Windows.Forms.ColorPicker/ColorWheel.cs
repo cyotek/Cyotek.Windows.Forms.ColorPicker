@@ -234,6 +234,11 @@ namespace Cyotek.Windows.Forms
       get => _alpha;
       set
       {
+        if (value < 0 || value > 1)
+        {
+          throw new ArgumentOutOfRangeException(nameof(value), value, "Value must be between 0 and 1.");
+        }
+
         if (Math.Abs(_alpha - value) > double.Epsilon)
         {
           _alpha = value;
@@ -370,6 +375,11 @@ namespace Cyotek.Windows.Forms
       get => _lightness;
       set
       {
+        if (value < 0 || value > 1)
+        {
+          throw new ArgumentOutOfRangeException(nameof(value), value, "Value must be between 0 and 1.");
+        }
+
         if (Math.Abs(_lightness - value) > double.Epsilon)
         {
           _lightness = value;
