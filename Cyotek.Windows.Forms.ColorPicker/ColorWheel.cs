@@ -13,7 +13,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
@@ -22,6 +21,10 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent("ColorChanged")]
   public class ColorWheel : Control, IColorEditor
   {
+#if !NET46_OR_GREATER
+    private static readonly HslColor[] _empty = new HslColor[0];
+#endif
+
     #region Private Fields
 
     private static readonly object _eventAlphaChanged = new object();
@@ -38,11 +41,23 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventLightnessChanged = new object();
 
+    private static readonly object _eventLineColorChanged = new object();
+
+    private static readonly object _eventSecondarySelectionSizeChanged = new object();
+
     private static readonly object _eventSelectionSizeChanged = new object();
+
+    private static readonly object _eventShowAngleArrowChanged = new object();
+
+    private static readonly object _eventShowCenterLinesChanged = new object();
+
+    private static readonly object _eventShowSaturationRingChanged = new object();
 
     private static readonly object _eventSmallChangeChanged = new object();
 
     private double _alpha;
+
+    private Point[] _arrowHead;
 
     private Brush _brush;
 
@@ -64,15 +79,29 @@ namespace Cyotek.Windows.Forms
 
     private double _lightness;
 
+    private Color _lineColor;
+
+    private Pen _linePen;
+
     private bool _lockUpdates;
 
     private PointF[] _points;
 
     private float _radius;
 
+    private HslColor[] _secondaryColors;
+
+    private int _secondarySelectionSize;
+
     private Image _selectionGlyph;
 
     private int _selectionSize;
+
+    private bool _showAngleArrow;
+
+    private bool _showCenterLines;
+
+    private bool _showSaturationRing;
 
     private int _smallChange;
 
@@ -99,6 +128,11 @@ namespace Cyotek.Windows.Forms
       _largeChange = 5;
       _lightness = 0.5;
       _alpha = 1;
+      _lineColor = Color.DimGray;
+      _secondaryColors = ColorWheel.GetEmptyColorArray();
+      _secondarySelectionSize = 8;
+
+      this.CreateLinePen();
     }
 
     #endregion Public Constructors
@@ -111,28 +145,22 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler AlphaChanged
     {
-      add
-      {
-        this.Events.AddHandler(_eventAlphaChanged, value);
-      }
-      remove
-      {
-        this.Events.RemoveHandler(_eventAlphaChanged, value);
-      }
+      add => this.Events.AddHandler(_eventAlphaChanged, value);
+      remove => this.Events.RemoveHandler(_eventAlphaChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler ColorChanged
     {
-      add { this.Events.AddHandler(_eventColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorChanged, value); }
+      add => this.Events.AddHandler(_eventColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventColorChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler ColorStepChanged
     {
-      add { this.Events.AddHandler(_eventColorStepChanged, value); }
-      remove { this.Events.RemoveHandler(_eventColorStepChanged, value); }
+      add => this.Events.AddHandler(_eventColorStepChanged, value);
+      remove => this.Events.RemoveHandler(_eventColorStepChanged, value);
     }
 
     /// <summary>
@@ -141,28 +169,22 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler DisplayLightnessChanged
     {
-      add
-      {
-        this.Events.AddHandler(_eventDisplayLightnessChanged, value);
-      }
-      remove
-      {
-        this.Events.RemoveHandler(_eventDisplayLightnessChanged, value);
-      }
+      add => this.Events.AddHandler(_eventDisplayLightnessChanged, value);
+      remove => this.Events.RemoveHandler(_eventDisplayLightnessChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler HslColorChanged
     {
-      add { this.Events.AddHandler(_eventHslColorChanged, value); }
-      remove { this.Events.RemoveHandler(_eventHslColorChanged, value); }
+      add => this.Events.AddHandler(_eventHslColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventHslColorChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler LargeChangeChanged
     {
-      add { this.Events.AddHandler(_eventLargeChangeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventLargeChangeChanged, value); }
+      add => this.Events.AddHandler(_eventLargeChangeChanged, value);
+      remove => this.Events.RemoveHandler(_eventLargeChangeChanged, value);
     }
 
     /// <summary>
@@ -171,28 +193,72 @@ namespace Cyotek.Windows.Forms
     [Category("Property Changed")]
     public event EventHandler LightnessChanged
     {
-      add
-      {
-        this.Events.AddHandler(_eventLightnessChanged, value);
-      }
-      remove
-      {
-        this.Events.RemoveHandler(_eventLightnessChanged, value);
-      }
+      add => this.Events.AddHandler(_eventLightnessChanged, value);
+      remove => this.Events.RemoveHandler(_eventLightnessChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the LineColor property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler LineColorChanged
+    {
+      add => this.Events.AddHandler(_eventLineColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventLineColorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the SecondarySelectionSize property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler SecondarySelectionSizeChanged
+    {
+      add => this.Events.AddHandler(_eventSecondarySelectionSizeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSecondarySelectionSizeChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler SelectionSizeChanged
     {
-      add { this.Events.AddHandler(_eventSelectionSizeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventSelectionSizeChanged, value); }
+      add => this.Events.AddHandler(_eventSelectionSizeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSelectionSizeChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the ShowAngleArrow property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowAngleArrowChanged
+    {
+      add => this.Events.AddHandler(_eventShowAngleArrowChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowAngleArrowChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the ShowCenterLines property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowCenterLinesChanged
+    {
+      add => this.Events.AddHandler(_eventShowCenterLinesChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowCenterLinesChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the ShowSaturationRing property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowSaturationRingChanged
+    {
+      add => this.Events.AddHandler(_eventShowSaturationRingChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowSaturationRingChanged, value);
     }
 
     [Category("Property Changed")]
     public event EventHandler SmallChangeChanged
     {
-      add { this.Events.AddHandler(_eventSmallChangeChanged, value); }
-      remove { this.Events.RemoveHandler(_eventSmallChangeChanged, value); }
+      add => this.Events.AddHandler(_eventSmallChangeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSmallChangeChanged, value);
     }
 
     #endregion Public Events
@@ -203,9 +269,14 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(1)]
     public double Alpha
     {
-      get { return _alpha; }
+      get => _alpha;
       set
       {
+        if (value < 0 || value > 1)
+        {
+          throw new ArgumentOutOfRangeException(nameof(value), value, "Value must be between 0 and 1.");
+        }
+
         if (Math.Abs(_alpha - value) > double.Epsilon)
         {
           _alpha = value;
@@ -223,7 +294,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(typeof(Color), "Black")]
     public virtual Color Color
     {
-      get { return _color; }
+      get => _color;
       set
       {
         if (_color != value)
@@ -244,7 +315,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(4)]
     public virtual int ColorStep
     {
-      get { return _colorStep; }
+      get => _colorStep;
       set
       {
         if (value < 1 || value > 359)
@@ -265,7 +336,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(false)]
     public bool DisplayLightness
     {
-      get { return _displayLightness; }
+      get => _displayLightness;
       set
       {
         if (_displayLightness != value)
@@ -281,16 +352,16 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Font Font
     {
-      get { return base.Font; }
-      set { base.Font = value; }
+      get => base.Font;
+      set => base.Font = value;
     }
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Color ForeColor
     {
-      get { return base.ForeColor; }
-      set { base.ForeColor = value; }
+      get => base.ForeColor;
+      set => base.ForeColor = value;
     }
 
     /// <summary>
@@ -303,7 +374,7 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public virtual HslColor HslColor
     {
-      get { return _hslColor; }
+      get => _hslColor;
       set
       {
         if (_hslColor != value)
@@ -323,7 +394,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(5)]
     public virtual int LargeChange
     {
-      get { return _largeChange; }
+      get => _largeChange;
       set
       {
         if (_largeChange != value)
@@ -335,18 +406,72 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    [Category("Behavior")]
+    [Category("Appearance")]
     [DefaultValue(0.5)]
     public double Lightness
     {
-      get { return _lightness; }
+      get => _lightness;
       set
       {
+        if (value < 0 || value > 1)
+        {
+          throw new ArgumentOutOfRangeException(nameof(value), value, "Value must be between 0 and 1.");
+        }
+
         if (Math.Abs(_lightness - value) > double.Epsilon)
         {
           _lightness = value;
 
+          _hslColor = new HslColor(_hslColor.H, _hslColor.S, value);
+
           this.OnLightnessChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "DimGray")]
+    public Color LineColor
+    {
+      get => _lineColor;
+      set
+      {
+        if (_lineColor != value)
+        {
+          _lineColor = value;
+
+          this.CreateLinePen();
+
+          this.OnLineColorChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public HslColor[] SecondaryColors
+    {
+      get => _secondaryColors;
+      set
+      {
+        _secondaryColors = value ?? ColorWheel.GetEmptyColorArray();
+
+        this.Invalidate();
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(8)]
+    public int SecondarySelectionSize
+    {
+      get => _secondarySelectionSize;
+      set
+      {
+        if (_secondarySelectionSize != value)
+        {
+          _secondarySelectionSize = value;
+
+          this.OnSecondarySelectionSizeChanged(EventArgs.Empty);
         }
       }
     }
@@ -359,7 +484,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(10)]
     public virtual int SelectionSize
     {
-      get { return _selectionSize; }
+      get => _selectionSize;
       set
       {
         if (_selectionSize != value)
@@ -367,6 +492,56 @@ namespace Cyotek.Windows.Forms
           _selectionSize = value;
 
           this.OnSelectionSizeChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public bool ShowAngleArrow
+    {
+      get => _showAngleArrow;
+      set
+      {
+        if (_showAngleArrow != value)
+        {
+          _showAngleArrow = value;
+
+          this.OnShowAngleArrowChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public bool ShowCenterLines
+    {
+      get => _showCenterLines;
+      set
+      {
+        if (_showCenterLines != value)
+        {
+          _showCenterLines = value;
+
+          this.CreateLinePen();
+
+          this.OnShowCenterLinesChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(false)]
+    public bool ShowSaturationRing
+    {
+      get => _showSaturationRing;
+      set
+      {
+        if (_showSaturationRing != value)
+        {
+          _showSaturationRing = value;
+
+          this.OnShowSaturationRingChanged(EventArgs.Empty);
         }
       }
     }
@@ -379,7 +554,7 @@ namespace Cyotek.Windows.Forms
     [DefaultValue(1)]
     public virtual int SmallChange
     {
-      get { return _smallChange; }
+      get => _smallChange;
       set
       {
         if (_smallChange != value)
@@ -395,8 +570,8 @@ namespace Cyotek.Windows.Forms
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text
     {
-      get { return base.Text; }
-      set { base.Text = value; }
+      get => base.Text;
+      set => base.Text = value;
     }
 
     #endregion Public Properties
@@ -409,37 +584,34 @@ namespace Cyotek.Windows.Forms
     /// <value>
     ///   <c>true</c> if painting of the control is allowed; otherwise, <c>false</c>.
     /// </value>
-    protected virtual bool AllowPainting
-    {
-      get { return _updateCount == 0; }
-    }
+    protected virtual bool AllowPainting => _updateCount == 0;
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected Color[] Colors
     {
-      get { return _colors; }
-      set { _colors = value; }
+      get => _colors;
+      set => _colors = value;
     }
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected bool LockUpdates
     {
-      get { return _lockUpdates; }
-      set { _lockUpdates = value; }
+      get => _lockUpdates;
+      set => _lockUpdates = value;
     }
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected PointF[] Points
     {
-      get { return _points; }
-      set { _points = value; }
+      get => _points;
+      set => _points = value;
     }
 
-    [Obsolete("Do not use. This property will be removed in a fture update.")]
+    [Obsolete("Do not use. This property will be removed in a future update.")]
     protected Image SelectionGlyph
     {
-      get { return _selectionGlyph; }
-      set { _selectionGlyph = value; }
+      get => _selectionGlyph;
+      set => _selectionGlyph = value;
     }
 
     #endregion Protected Properties
@@ -479,24 +651,25 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     protected virtual void CalculateWheel()
     {
-      int count;
       PointF[] points;
       Color[] colors;
       Size size;
-      double angle;
 
-      count = 360 / _colorStep;
-      points = new PointF[count];
-      colors = new Color[count];
       size = this.ClientSize;
-      angle = 0;
 
       // Only define the points if the control is above a minimum size, otherwise if it's too small, you get an "out of memory" exceptions (of all things) when creating the brush
-      if (size.Width > 16 && size.Height > 16)
+      if (size.Width > 16 && size.Height > 16 && _colorStep > 0)
       {
+        int count;
         int w;
         int h;
         double l;
+        double angle;
+
+        count = 360 / _colorStep;
+        points = new PointF[count];
+        colors = new Color[count];
+        angle = 0;
 
         w = size.Width;
         h = size.Height;
@@ -516,10 +689,15 @@ namespace Cyotek.Windows.Forms
           location = this.GetColorLocation(angleR, _radius);
 
           points[i] = location;
-          colors[i] = new HslColor(angle, 1, l).ToRgbColor();
+          colors[i] = HslColor.HslToRgb(angle, 1, l);
 
           angle += _colorStep;
         }
+      }
+      else
+      {
+        points = null;
+        colors = null;
       }
 
       _points = points;
@@ -533,7 +711,7 @@ namespace Cyotek.Windows.Forms
     {
       Brush result;
 
-      if (_points.Length != 0 && _points.Length == _colors.Length)
+      if (_points != null && _points.Length != 0 && _points.Length == _colors.Length)
       {
         result = new PathGradientBrush(_points, WrapMode.Clamp)
         {
@@ -553,47 +731,7 @@ namespace Cyotek.Windows.Forms
     /// <summary>
     /// Creates the selection glyph.
     /// </summary>
-    protected virtual Image CreateSelectionGlyph()
-    {
-      Image image;
-      int halfSize;
-
-      halfSize = _selectionSize / 2;
-      image = new Bitmap(_selectionSize + 1, _selectionSize + 1, PixelFormat.Format32bppArgb);
-
-      using (Graphics g = Graphics.FromImage(image))
-      {
-        Point[] diamondOuter;
-
-        diamondOuter = new[]
-                       {
-                         new Point(halfSize, 0),
-                         new Point(_selectionSize, halfSize),
-                         new Point(halfSize, _selectionSize),
-                         new Point(0, halfSize)
-                       };
-
-        g.FillPolygon(SystemBrushes.Control, diamondOuter);
-        g.DrawPolygon(SystemPens.ControlDark, diamondOuter);
-
-        using (Pen pen = new Pen(Color.FromArgb(128, SystemColors.ControlDark)))
-        {
-          g.DrawLine(pen, halfSize, 1, _selectionSize - 1, halfSize);
-          g.DrawLine(pen, halfSize, 2, _selectionSize - 2, halfSize);
-          g.DrawLine(pen, halfSize, _selectionSize - 1, _selectionSize - 2, halfSize + 1);
-          g.DrawLine(pen, halfSize, _selectionSize - 2, _selectionSize - 3, halfSize + 1);
-        }
-
-        using (Pen pen = new Pen(Color.FromArgb(196, SystemColors.ControlLightLight)))
-        {
-          g.DrawLine(pen, halfSize, _selectionSize - 1, 1, halfSize);
-        }
-
-        g.DrawLine(SystemPens.ControlLightLight, 1, halfSize, halfSize, 1);
-      }
-
-      return image;
-    }
+    protected virtual Image CreateSelectionGlyph() => null;
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.
@@ -603,6 +741,9 @@ namespace Cyotek.Windows.Forms
     {
       if (disposing)
       {
+        _linePen?.Dispose();
+        _linePen = null;
+
         this.DisposeOfWheelBrush();
         this.DisposeOfSelectionGlyph();
       }
@@ -628,7 +769,7 @@ namespace Cyotek.Windows.Forms
       double angle;
       double radius;
 
-      angle = color.H * Math.PI / 180;
+      angle = this.GetHueAngle(color.H);
       radius = _radius * color.S;
 
       return this.GetColorLocation(angle, radius);
@@ -650,10 +791,14 @@ namespace Cyotek.Windows.Forms
     protected float GetRadius(PointF centerPoint)
     {
       Padding padding;
+      int offset;
 
       padding = this.Padding;
+      offset = _showAngleArrow
+        ? _selectionSize
+        : _selectionSize / 2;
 
-      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(padding.Horizontal, padding.Vertical) + _selectionSize / 2);
+      return Math.Min(centerPoint.X, centerPoint.Y) - (Math.Max(padding.Horizontal, padding.Vertical) + offset);
     }
 
     /// <summary>
@@ -665,7 +810,9 @@ namespace Cyotek.Windows.Forms
     {
       bool result;
 
-      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown)
+      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down ||
+          (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp ||
+          (keyData & Keys.PageDown) == Keys.PageDown || (keyData & Keys.Home) == Keys.Home || (keyData & Keys.End) == Keys.End)
       {
         result = true;
       }
@@ -793,58 +940,88 @@ namespace Cyotek.Windows.Forms
     /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
     protected override void OnKeyDown(KeyEventArgs e)
     {
-      HslColor color;
-      double hue;
-      int step;
-
-      color = _hslColor;
-      hue = color.H;
-
-      step = e.Shift ? _largeChange : _smallChange;
-
-      switch (e.KeyCode)
+      if (this.IsNavigationKey(e.KeyCode))
       {
-        case Keys.Right:
-        case Keys.Up:
-          hue += step;
-          break;
-
-        case Keys.Left:
-        case Keys.Down:
-          hue -= step;
-          break;
-
-        case Keys.PageUp:
-          hue += _largeChange;
-          break;
-
-        case Keys.PageDown:
-          hue -= _largeChange;
-          break;
-      }
-
-      if (hue >= 360)
-      {
-        hue = 0;
-      }
-
-      if (hue < 0)
-      {
-        hue = 359;
-      }
-
-      if (Math.Abs(hue - color.H) > double.Epsilon)
-      {
-        color.H = hue;
-
-        // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
-        // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
-        _lockUpdates = true;
-        this.SetRgbColor(color);
-        this.HslColor = color;
-        _lockUpdates = false;
+        HslColor color;
+        double hue;
+        double saturation;
+        int step;
 
         e.Handled = true;
+
+        color = _hslColor;
+        hue = color.H;
+        saturation = color.S;
+
+        step = e.Shift
+          ? _largeChange
+          : _smallChange;
+
+        switch (e.KeyCode)
+        {
+          case Keys.Right:
+            hue += step;
+            break;
+
+          case Keys.Up:
+            saturation += step / 100F;
+            break;
+
+          case Keys.Left:
+            hue -= step;
+            break;
+
+          case Keys.Down:
+            saturation -= step / 100F;
+            break;
+
+          case Keys.PageUp:
+            hue += _largeChange;
+            break;
+
+          case Keys.PageDown:
+            hue -= _largeChange;
+            break;
+
+          case Keys.Home:
+            saturation = 1;
+            break;
+
+          case Keys.End:
+            saturation = 0;
+            break;
+        }
+
+        if (hue >= 360)
+        {
+          hue = 0;
+        }
+        else if (hue < 0)
+        {
+          hue = 359;
+        }
+
+        if (saturation > 1)
+        {
+          saturation = 1;
+        }
+        else if (saturation < 0)
+        {
+          saturation = 0;
+        }
+
+        if (Math.Abs(hue - color.H) > double.Epsilon || Math.Abs(saturation - color.S) > double.Epsilon)
+        {
+          color.H = hue;
+          color.S = saturation;
+
+          // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
+          // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
+          _lockUpdates = true;
+          this.SetRgbColor(color);
+          this.HslColor = color;
+          _lockUpdates = false;
+        }
       }
 
       base.OnKeyDown(e);
@@ -876,7 +1053,24 @@ namespace Cyotek.Windows.Forms
         this.RefreshWheel();
       }
 
+      this.Invalidate();
+
       handler = (EventHandler)this.Events[_eventLightnessChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="LineColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnLineColorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventLineColorChanged];
 
       handler?.Invoke(this, e);
     }
@@ -983,8 +1177,13 @@ namespace Cyotek.Windows.Forms
           e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
         }
 
+        this.PaintCenterLines(e);
+
         if (!_color.IsEmpty)
         {
+          this.PaintSaturationRing(e);
+          this.PaintArrowHead(e);
+          this.PaintCustomColors(e);
           this.PaintCurrentColor(e);
         }
       }
@@ -1002,6 +1201,21 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="SecondarySelectionSizeChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnSecondarySelectionSizeChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventSecondarySelectionSizeChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
     /// Raises the <see cref="SelectionSizeChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -1014,6 +1228,51 @@ namespace Cyotek.Windows.Forms
       this.RefreshWheel();
 
       handler = (EventHandler)this.Events[_eventSelectionSizeChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowAngleArrowChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowAngleArrowChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.RefreshWheel();
+
+      handler = (EventHandler)this.Events[_eventShowAngleArrowChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowCenterLinesChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowCenterLinesChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventShowCenterLinesChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowSaturationRingChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowSaturationRingChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventShowSaturationRingChanged];
 
       handler?.Invoke(this, e);
     }
@@ -1044,15 +1303,25 @@ namespace Cyotek.Windows.Forms
 
       if (!float.IsNaN(location.X) && !float.IsNaN(location.Y))
       {
+        int size;
         int x;
         int y;
 
-        x = (int)location.X - _selectionSize / 2;
-        y = (int)location.Y - _selectionSize / 2;
+        size = includeFocus
+          ? _selectionSize
+          : _secondarySelectionSize;
+
+        x = (int)location.X - size / 2;
+        y = (int)location.Y - size / 2;
 
         if (_selectionGlyph == null)
         {
-          e.Graphics.DrawRectangle(Pens.Black, x, y, _selectionSize, _selectionSize);
+          using (Brush brush = new SolidBrush(color.ToRgbColor()))
+          {
+            e.Graphics.FillEllipse(brush, x, y, size, size);
+          }
+
+          e.Graphics.DrawEllipse(_linePen, x, y, size, size);
         }
         else
         {
@@ -1061,7 +1330,7 @@ namespace Cyotek.Windows.Forms
 
         if (this.Focused && includeFocus)
         {
-          ControlPaint.DrawFocusRectangle(e.Graphics, new Rectangle(x - 1, y - 1, _selectionSize + 2, _selectionSize + 2));
+          NativeMethods.DrawFocusRectangle(e.Graphics, new Rectangle(x - 2, y - 2, size + 5, size + 5));
         }
       }
     }
@@ -1113,6 +1382,32 @@ namespace Cyotek.Windows.Forms
 
     #region Private Methods
 
+    private static HslColor[] GetEmptyColorArray()
+    {
+#if NET46_OR_GREATER
+      return Array.Empty<HslColor>();
+#else
+      return _empty;
+#endif
+    }
+
+    private void CreateLinePen()
+    {
+      _linePen?.Dispose();
+
+      _linePen = new Pen(_lineColor);
+    }
+
+    private void DefineArrowHead()
+    {
+      _arrowHead = new[]
+      {
+        new Point(0,0),
+        new Point(_selectionSize,0),
+        new Point(0,_selectionSize)
+      };
+    }
+
     private void DisposeOfSelectionGlyph()
     {
       if (_selectionGlyph != null)
@@ -1131,6 +1426,98 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private double GetHueAngle(double hue)
+    {
+      return hue * Math.PI / 180;
+    }
+
+    private bool IsNavigationKey(Keys keyCode)
+    {
+      return keyCode == Keys.Up
+             || keyCode == Keys.Down
+             || keyCode == Keys.Left
+             || keyCode == Keys.Right
+             || keyCode == Keys.PageUp
+             || keyCode == Keys.PageDown
+             || keyCode == Keys.Home
+             || keyCode == Keys.End;
+    }
+
+    private void PaintArrowHead(PaintEventArgs e)
+    {
+      if (_showAngleArrow)
+      {
+        Graphics g;
+        PointF l;
+
+        g = e.Graphics;
+        l = this.GetColorLocation(this.GetHueAngle(_hslColor.H), _radius);
+
+        g.TranslateTransform(l.X, l.Y);
+        g.RotateTransform(-(float)(_hslColor.H + 45));
+        g.FillPolygon(Brushes.White, _arrowHead);
+        g.DrawPolygon(_linePen, _arrowHead);
+
+        g.ResetTransform();
+      }
+    }
+
+    private void PaintCenterLine(PaintEventArgs e, HslColor color, bool fullRadius)
+    {
+      PointF start;
+
+      start = fullRadius
+        ? this.GetColorLocation(this.GetHueAngle(color.H), _radius)
+        : this.GetColorLocation(color);
+
+      e.Graphics.DrawLine(_linePen, start, _centerPoint);
+    }
+
+    private void PaintCenterLines(PaintEventArgs e)
+    {
+      if (_showCenterLines)
+      {
+        if (!_hslColor.IsEmpty)
+        {
+          this.PaintCenterLine(e, _hslColor, _showAngleArrow);
+        }
+
+        if (_secondaryColors != null && _secondaryColors.Length > 0)
+        {
+          for (int i = 0; i < _secondaryColors.Length; i++)
+          {
+            this.PaintCenterLine(e, _secondaryColors[i], false);
+          }
+        }
+      }
+    }
+
+    private void PaintCustomColors(PaintEventArgs e)
+    {
+      if (_secondaryColors != null && _secondaryColors.Length > 0)
+      {
+        for (int i = 0; i < _secondaryColors.Length; i++)
+        {
+          this.PaintColor(e, _secondaryColors[i], false);
+        }
+      }
+    }
+
+    private void PaintSaturationRing(PaintEventArgs e)
+    {
+      if (_showSaturationRing)
+      {
+        float radius;
+
+        radius = (float)(_radius * _hslColor.S);
+
+        using (Pen pen = new Pen(HslColor.HslToRgb(0, 0, _hslColor.S)))
+        {
+          e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - radius, _centerPoint.Y - radius, radius * 2, radius * 2));
+        }
+      }
+    }
+
     /// <summary>
     /// Refreshes the wheel attributes and then repaints the control
     /// </summary>
@@ -1145,6 +1532,8 @@ namespace Cyotek.Windows.Forms
       {
         _selectionGlyph = this.CreateSelectionGlyph();
       }
+
+      this.DefineArrowHead();
 
       this.Invalidate();
     }

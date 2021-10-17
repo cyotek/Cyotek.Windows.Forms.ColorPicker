@@ -31,6 +31,10 @@
   `CustomColors` properties to the `ColorPickerDialog` component
 * Added `CustomColorsLoading` and `CustomColorsSaving` events to
   the `ColorPickerDialog` component
+* Added `ShowSaturationRing`, `ShowCenterLines`, `LineColor`,
+  `ShowAngleArrow`, `SecondaryColors` and
+  `SecondarySelectionSize` properties to the `ColorWheel`
+  control
 
 #### Changed
 
@@ -40,6 +44,9 @@
   painting operation
 * Drag handles in the slider controls are no longer fully
   outside the bar, but are half inside and half out
+* The `Up`, `Down`, `Home` and `End` keys are now used to
+  manipulate the saturation value when a `ColorWheel` control
+  has focus
 
 #### Deprecated
 

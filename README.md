@@ -56,8 +56,15 @@ the primary palette.
 ![ColorWheel control demonstration][colorwheelscreen]
 
 This control displays a radial wheel of RGB colours and allows
-selection from any point in the wheel. Not much in the way of
-customisation for this control!
+selection from any point in the wheel. The `ShowAngleArrow`,
+`ShowCenterLines` and `ShowSaturationRing` properties can be
+used to display useful adornments, while the `Lightness` and
+`Alpha` properties can be used to compose the final colour while
+not being directly editable on the wheel.
+
+The `SecondaryColors` and `SecondarySelectionSize` properties
+allow you to display additional colours on the wheel, for
+example for showing relationships.
 
 ### ColorSlider Controls
 

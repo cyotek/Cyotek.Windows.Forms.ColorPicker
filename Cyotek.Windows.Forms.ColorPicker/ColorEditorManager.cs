@@ -23,7 +23,7 @@ namespace Cyotek.Windows.Forms
   {
     #region Private Fields
 
-    private const double _rgbMultiplier = 0.003921568627451;
+    private const double _rgbMultiplier = 0.00392156862745098;
 
     private static readonly object _eventColorChanged = new object();
 

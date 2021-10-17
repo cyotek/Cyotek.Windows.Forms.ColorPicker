@@ -236,7 +236,7 @@ namespace Cyotek.Windows.Forms
             saturation = value2 / 655.35;
             brightness = value3 / 655.35;
 
-            results.Add(new HslColor(hue, saturation, brightness).ToRgbColor());
+            results.Add(HslColor.HslToRgb(hue, saturation, brightness));
             break;
 
           case AdobePhotoshopColorSwatchColorSpace.Grayscale:

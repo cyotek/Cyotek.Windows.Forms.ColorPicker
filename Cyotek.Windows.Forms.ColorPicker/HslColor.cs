@@ -175,35 +175,7 @@ namespace Cyotek.Windows.Forms
 
     public Color ToRgbColor(int alpha)
     {
-      byte r;
-      byte g;
-      byte b;
-
-      // https://www.programmingalgorithms.com/algorithm/hsl-to-rgb
-
-      if (Math.Abs(_saturation) < double.Epsilon)
-      {
-        r = g = b = Convert.ToByte(_lightness * 255F);
-      }
-      else
-      {
-        double v1;
-        double v2;
-        double hue;
-
-        hue = _hue / 360;
-
-        v2 = _lightness < 0.5
-          ? _lightness * (1 + _saturation)
-          : _lightness + _saturation - _lightness * _saturation;
-        v1 = 2 * _lightness - v2;
-
-        r = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue + 1.0f / 3));
-        g = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue));
-        b = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue - 1.0f / 3));
-      }
-
-      return Color.FromArgb(alpha, r, g, b);
+      return HslColor.HslToRgb(alpha, _hue, _saturation, _lightness);
     }
 
     public override string ToString()
@@ -225,6 +197,48 @@ namespace Cyotek.Windows.Forms
     }
 
     #endregion Public Methods
+
+    #region Internal Methods
+
+    internal static Color HslToRgb(double h, double s, double l)
+    {
+      return HslColor.HslToRgb(255, h, s, l);
+    }
+
+    internal static Color HslToRgb(int alpha, double h, double s, double l)
+    {
+      byte r;
+      byte g;
+      byte b;
+
+      // https://www.programmingalgorithms.com/algorithm/hsl-to-rgb
+
+      if (Math.Abs(s) < double.Epsilon)
+      {
+        r = g = b = Convert.ToByte(l * 255F);
+      }
+      else
+      {
+        double v1;
+        double v2;
+        double hue;
+
+        hue = h / 360;
+
+        v2 = l < 0.5
+          ? l * (1 + s)
+          : l + s - l * s;
+        v1 = 2 * l - v2;
+
+        r = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue + 1.0f / 3));
+        g = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue));
+        b = HslColor.Clamp(255 * HslColor.HueToRgb(v1, v2, hue - 1.0f / 3));
+      }
+
+      return Color.FromArgb(alpha, r, g, b);
+    }
+
+    #endregion Internal Methods
 
     #region Private Methods
 
