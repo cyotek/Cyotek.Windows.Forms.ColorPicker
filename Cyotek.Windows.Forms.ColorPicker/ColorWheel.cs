@@ -43,6 +43,8 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventLineColorChanged = new object();
 
+    private static readonly object _eventSecondarySelectionSizeChanged = new object();
+
     private static readonly object _eventSelectionSizeChanged = new object();
 
     private static readonly object _eventShowAngleArrowChanged = new object();
@@ -89,6 +91,8 @@ namespace Cyotek.Windows.Forms
 
     private HslColor[] _secondaryColors;
 
+    private int _secondarySelectionSize;
+
     private Image _selectionGlyph;
 
     private int _selectionSize;
@@ -130,53 +134,6 @@ namespace Cyotek.Windows.Forms
 
       this.CreateLinePen();
     }
-
-    private int _secondarySelectionSize;
-
-    [Category("Appearance")]
-    [DefaultValue(8)]
-    public int SecondarySelectionSize
-    {
-      get => _secondarySelectionSize;
-      set
-      {
-        if (_secondarySelectionSize != value)
-        {
-          _secondarySelectionSize = value;
-
-          this.OnSecondarySelectionSizeChanged(EventArgs.Empty);
-        }
-      }
-    }
-
-    private static readonly object _eventSecondarySelectionSizeChanged = new object();
-
-    /// <summary>
-    /// Occurs when the SecondarySelectionSize property value changes
-    /// </summary>
-    [Category("Property Changed")]
-    public event EventHandler SecondarySelectionSizeChanged
-    {
-      add => this.Events.AddHandler(_eventSecondarySelectionSizeChanged, value);
-      remove => this.Events.RemoveHandler(_eventSecondarySelectionSizeChanged, value);
-    }
-
-    /// <summary>
-    /// Raises the <see cref="SecondarySelectionSizeChanged" /> event.
-    /// </summary>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected virtual void OnSecondarySelectionSizeChanged(EventArgs e)
-    {
-      EventHandler handler;
-
-      this.Invalidate();
-
-      handler = (EventHandler)this.Events[_eventSecondarySelectionSizeChanged];
-
-      handler?.Invoke(this, e);
-    }
-
-
 
     #endregion Public Constructors
 
@@ -248,6 +205,16 @@ namespace Cyotek.Windows.Forms
     {
       add => this.Events.AddHandler(_eventLineColorChanged, value);
       remove => this.Events.RemoveHandler(_eventLineColorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the SecondarySelectionSize property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler SecondarySelectionSizeChanged
+    {
+      add => this.Events.AddHandler(_eventSecondarySelectionSizeChanged, value);
+      remove => this.Events.RemoveHandler(_eventSecondarySelectionSizeChanged, value);
     }
 
     [Category("Property Changed")]
@@ -490,6 +457,22 @@ namespace Cyotek.Windows.Forms
         _secondaryColors = value ?? ColorWheel.GetEmptyColorArray();
 
         this.Invalidate();
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(8)]
+    public int SecondarySelectionSize
+    {
+      get => _secondarySelectionSize;
+      set
+      {
+        if (_secondarySelectionSize != value)
+        {
+          _secondarySelectionSize = value;
+
+          this.OnSecondarySelectionSizeChanged(EventArgs.Empty);
+        }
       }
     }
 
@@ -827,7 +810,9 @@ namespace Cyotek.Windows.Forms
     {
       bool result;
 
-      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down || (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp || (keyData & Keys.PageDown) == Keys.PageDown)
+      if ((keyData & Keys.Left) == Keys.Left || (keyData & Keys.Up) == Keys.Up || (keyData & Keys.Down) == Keys.Down ||
+          (keyData & Keys.Right) == Keys.Right || (keyData & Keys.PageUp) == Keys.PageUp ||
+          (keyData & Keys.PageDown) == Keys.PageDown || (keyData & Keys.Home) == Keys.Home || (keyData & Keys.End) == Keys.End)
       {
         result = true;
       }
@@ -955,58 +940,88 @@ namespace Cyotek.Windows.Forms
     /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
     protected override void OnKeyDown(KeyEventArgs e)
     {
-      HslColor color;
-      double hue;
-      int step;
-
-      color = _hslColor;
-      hue = color.H;
-
-      step = e.Shift ? _largeChange : _smallChange;
-
-      switch (e.KeyCode)
+      if (this.IsNavigationKey(e.KeyCode))
       {
-        case Keys.Right:
-        case Keys.Up:
-          hue += step;
-          break;
-
-        case Keys.Left:
-        case Keys.Down:
-          hue -= step;
-          break;
-
-        case Keys.PageUp:
-          hue += _largeChange;
-          break;
-
-        case Keys.PageDown:
-          hue -= _largeChange;
-          break;
-      }
-
-      if (hue >= 360)
-      {
-        hue = 0;
-      }
-
-      if (hue < 0)
-      {
-        hue = 359;
-      }
-
-      if (Math.Abs(hue - color.H) > double.Epsilon)
-      {
-        color.H = hue;
-
-        // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
-        // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
-        _lockUpdates = true;
-        this.SetRgbColor(color);
-        this.HslColor = color;
-        _lockUpdates = false;
+        HslColor color;
+        double hue;
+        double saturation;
+        int step;
 
         e.Handled = true;
+
+        color = _hslColor;
+        hue = color.H;
+        saturation = color.S;
+
+        step = e.Shift
+          ? _largeChange
+          : _smallChange;
+
+        switch (e.KeyCode)
+        {
+          case Keys.Right:
+            hue += step;
+            break;
+
+          case Keys.Up:
+            saturation += step / 100F;
+            break;
+
+          case Keys.Left:
+            hue -= step;
+            break;
+
+          case Keys.Down:
+            saturation -= step / 100F;
+            break;
+
+          case Keys.PageUp:
+            hue += _largeChange;
+            break;
+
+          case Keys.PageDown:
+            hue -= _largeChange;
+            break;
+
+          case Keys.Home:
+            saturation = 1;
+            break;
+
+          case Keys.End:
+            saturation = 0;
+            break;
+        }
+
+        if (hue >= 360)
+        {
+          hue = 0;
+        }
+        else if (hue < 0)
+        {
+          hue = 359;
+        }
+
+        if (saturation > 1)
+        {
+          saturation = 1;
+        }
+        else if (saturation < 0)
+        {
+          saturation = 0;
+        }
+
+        if (Math.Abs(hue - color.H) > double.Epsilon || Math.Abs(saturation - color.S) > double.Epsilon)
+        {
+          color.H = hue;
+          color.S = saturation;
+
+          // As the Color and HslColor properties update each other, need to temporarily disable this and manually set both
+          // otherwise the wheel "sticks" due to imprecise conversion from RGB to HSL
+          _lockUpdates = true;
+          this.SetRgbColor(color);
+          this.HslColor = color;
+          _lockUpdates = false;
+        }
       }
 
       base.OnKeyDown(e);
@@ -1183,6 +1198,21 @@ namespace Cyotek.Windows.Forms
       base.OnResize(e);
 
       this.RefreshWheel();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="SecondarySelectionSizeChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnSecondarySelectionSizeChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.Invalidate();
+
+      handler = (EventHandler)this.Events[_eventSecondarySelectionSizeChanged];
+
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -1399,6 +1429,18 @@ namespace Cyotek.Windows.Forms
     private double GetHueAngle(double hue)
     {
       return hue * Math.PI / 180;
+    }
+
+    private bool IsNavigationKey(Keys keyCode)
+    {
+      return keyCode == Keys.Up
+             || keyCode == Keys.Down
+             || keyCode == Keys.Left
+             || keyCode == Keys.Right
+             || keyCode == Keys.PageUp
+             || keyCode == Keys.PageDown
+             || keyCode == Keys.Home
+             || keyCode == Keys.End;
     }
 
     private void PaintArrowHead(PaintEventArgs e)
