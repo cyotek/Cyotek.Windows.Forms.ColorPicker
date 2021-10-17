@@ -606,7 +606,7 @@ namespace Cyotek.Windows.Forms
           location = this.GetColorLocation(angleR, _radius);
 
           points[i] = location;
-          colors[i] = new HslColor(angle, 1, l).ToRgbColor();
+          colors[i] = HslColor.HslToRgb(angle, 1, l);
 
           angle += _colorStep;
         }
@@ -1271,7 +1271,7 @@ namespace Cyotek.Windows.Forms
 
         radius = (float)(_radius * _hslColor.S);
 
-        using (Pen pen = new Pen(new HslColor(0, 0, _hslColor.S).ToRgbColor()))
+        using (Pen pen = new Pen(HslColor.HslToRgb(0, 0, _hslColor.S)))
         {
           e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - radius, _centerPoint.Y - radius, radius * 2, radius * 2));
         }
