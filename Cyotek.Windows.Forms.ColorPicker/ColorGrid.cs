@@ -12,7 +12,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -1305,8 +1304,6 @@ namespace Cyotek.Windows.Forms
       {
         _scaledCellSize = _cellSize;
       }
-
-      Debug.WriteLine(_scaledCellSize);
     }
 
     /// <summary>
@@ -1613,8 +1610,6 @@ namespace Cyotek.Windows.Forms
         int colorCount;
 
         colorCount = this.Colors.Count;
-
-        Debug.Print(e.ClipRectangle.Size == this.ClientSize ? "Performing full paint!" : "Performing partial paint!");
 
         this.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc as the PaintBackground event is no longer being called
 
@@ -1931,8 +1926,6 @@ namespace Cyotek.Windows.Forms
     {
       if (this.AllowPainting)
       {
-        Debug.Print("Calculating colors...");
-
         this.CalculateGridSize();
         if (this.AutoFit)
         {
@@ -2020,8 +2013,6 @@ namespace Cyotek.Windows.Forms
 
       if (index >= 0 && index < collection.Count && collection[index] != this.Color)
       {
-        Debug.Print("Replacing index {0} with {1}", index, collection[index]);
-
         _previousColorIndex = index;
         _colorIndex = -1;
         this.ColorIndex = index;
