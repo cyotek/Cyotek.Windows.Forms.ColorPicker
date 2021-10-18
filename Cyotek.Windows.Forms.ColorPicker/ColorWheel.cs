@@ -1153,6 +1153,7 @@ namespace Cyotek.Windows.Forms
       if (this.AllowPainting)
       {
         Control parent;
+        Graphics g;
 
         this.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc
 
@@ -1164,25 +1165,28 @@ namespace Cyotek.Windows.Forms
           ButtonRenderer.DrawParentBackground(e.Graphics, this.DisplayRectangle, this);
         }
 
+        g = e.Graphics;
+
         if (_brush != null)
         {
-          e.Graphics.FillPie(_brush, this.ClientRectangle, 0, 360);
+          g.FillEllipse(_brush, this.ClientRectangle);
         }
+
+        g.SmoothingMode = SmoothingMode.AntiAlias;
 
         // HACK: smooth out the edge of the wheel.
         // https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker/issues/1 - the linked source doesn't do this hack yet draws with a smoother edge
-        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        using (Pen pen = new Pen(this.BackColor, 2))
+        using (Pen pen = this.CreateSmoothingPen())
         {
-          e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
+          g.DrawEllipse(pen, new RectangleF(_centerPoint.X - _radius, _centerPoint.Y - _radius, _radius * 2, _radius * 2));
         }
 
-        this.PaintCenterLines(e);
+        this.PaintCenterLines(g);
 
         if (!_color.IsEmpty)
         {
-          this.PaintSaturationRing(e);
-          this.PaintArrowHead(e);
+          this.PaintSaturationRing(g);
+          this.PaintArrowHead(g);
           this.PaintCustomColors(e);
           this.PaintCurrentColor(e);
         }
@@ -1398,6 +1402,26 @@ namespace Cyotek.Windows.Forms
       _linePen = new Pen(_lineColor);
     }
 
+    private Pen CreateSmoothingPen()
+    {
+      Color color;
+
+      color = this.BackColor;
+
+      if (this.Parent is TabPage)
+      {
+        // HACK: Should probably try to get the
+        // actual theme colour but perhaps Window
+        // or White will do fine
+        color = SystemColors.Window;
+      }
+
+      return new Pen(color, 2)
+      {
+        Alignment = PenAlignment.Outset
+      };
+    }
+
     private void DefineArrowHead()
     {
       _arrowHead = new[]
@@ -1443,17 +1467,15 @@ namespace Cyotek.Windows.Forms
              || keyCode == Keys.End;
     }
 
-    private void PaintArrowHead(PaintEventArgs e)
+    private void PaintArrowHead(Graphics g)
     {
       if (_showAngleArrow)
       {
-        Graphics g;
-        PointF l;
+        PointF head;
 
-        g = e.Graphics;
-        l = this.GetColorLocation(this.GetHueAngle(_hslColor.H), _radius);
+        head = this.GetColorLocation(this.GetHueAngle(_hslColor.H), _radius);
 
-        g.TranslateTransform(l.X, l.Y);
+        g.TranslateTransform(head.X, head.Y);
         g.RotateTransform(-(float)(_hslColor.H + 45));
         g.FillPolygon(Brushes.White, _arrowHead);
         g.DrawPolygon(_linePen, _arrowHead);
@@ -1462,7 +1484,7 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void PaintCenterLine(PaintEventArgs e, HslColor color, bool fullRadius)
+    private void PaintCenterLine(Graphics g, HslColor color, bool fullRadius)
     {
       PointF start;
 
@@ -1470,23 +1492,23 @@ namespace Cyotek.Windows.Forms
         ? this.GetColorLocation(this.GetHueAngle(color.H), _radius)
         : this.GetColorLocation(color);
 
-      e.Graphics.DrawLine(_linePen, start, _centerPoint);
+      g.DrawLine(_linePen, start, _centerPoint);
     }
 
-    private void PaintCenterLines(PaintEventArgs e)
+    private void PaintCenterLines(Graphics g)
     {
       if (_showCenterLines)
       {
         if (!_hslColor.IsEmpty)
         {
-          this.PaintCenterLine(e, _hslColor, _showAngleArrow);
+          this.PaintCenterLine(g, _hslColor, _showAngleArrow);
         }
 
         if (_secondaryColors != null && _secondaryColors.Length > 0)
         {
           for (int i = 0; i < _secondaryColors.Length; i++)
           {
-            this.PaintCenterLine(e, _secondaryColors[i], false);
+            this.PaintCenterLine(g, _secondaryColors[i], false);
           }
         }
       }
@@ -1503,7 +1525,7 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void PaintSaturationRing(PaintEventArgs e)
+    private void PaintSaturationRing(Graphics g)
     {
       if (_showSaturationRing)
       {
@@ -1513,7 +1535,7 @@ namespace Cyotek.Windows.Forms
 
         using (Pen pen = new Pen(HslColor.HslToRgb(0, 0, _hslColor.S)))
         {
-          e.Graphics.DrawEllipse(pen, new RectangleF(_centerPoint.X - radius, _centerPoint.Y - radius, radius * 2, radius * 2));
+          g.DrawEllipse(pen, new RectangleF(_centerPoint.X - radius, _centerPoint.Y - radius, radius * 2, radius * 2));
         }
       }
     }
