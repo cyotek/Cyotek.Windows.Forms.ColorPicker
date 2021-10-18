@@ -1,4 +1,15 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright (c) 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -7,14 +18,6 @@ using System.Linq;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   /// <summary>
   /// Represents a collection of colors
   /// </summary>
@@ -39,9 +42,7 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     public ColorCollection()
     {
-#if USENAMEHACK
-      this.SwatchNames = new List<string>();
-#endif
+
     }
 
     /// <summary>
@@ -64,9 +65,6 @@ namespace Cyotek.Windows.Forms
       for (int i = 0; i < collection.Count; i++)
       {
         this.Add(collection[i]);
-#if USENAMEHACK
-        this.SetName(i, collection.GetName(i));
-#endif
       }
     }
 
@@ -159,10 +157,6 @@ namespace Cyotek.Windows.Forms
 
       _indexedLookup = null;
 
-#if USENAMEHACK
-      this.SwatchNames.Clear();
-#endif
-
       e = new ColorCollectionEventArgs(-1, Color.Empty);
       this.OnItemInserted(e);
       this.OnCollectionChanged(e);
@@ -180,9 +174,6 @@ namespace Cyotek.Windows.Forms
 
       base.InsertItem(index, item);
 
-#if USENAMEHACK
-      this.SwatchNames.Insert(index, string.Empty);
-#endif
       key = item.ToArgb();
 
       if (_indexedLookup != null && index == this.Count - 1 && !_indexedLookup.ContainsKey(key))
@@ -214,10 +205,6 @@ namespace Cyotek.Windows.Forms
       Color item;
       ColorCollectionEventArgs e;
       int key;
-
-#if USENAMEHACK
-      this.SwatchNames.RemoveAt(index);
-#endif
 
       item = this[index];
       key = item.ToArgb();
@@ -422,6 +409,7 @@ namespace Cyotek.Windows.Forms
       if (this.Count > 0)
       {
         Comparison<Color> sortDelegate;
+        List<Color> orderedItems;
 
         // HACK: This is a bit nasty
 
@@ -440,16 +428,10 @@ namespace Cyotek.Windows.Forms
             throw new ArgumentException("Invalid sort order", nameof(sortOrder));
         }
 
-#if USENAMEHACK
-        this.SortWithNames(sortDelegate);
-#else
-        List<Color> orderedItems;
-
         orderedItems = new List<Color>(this);
         orderedItems.Sort(sortDelegate);
         this.ClearItems();
         this.AddRange(orderedItems);
-#endif
       }
     }
 
@@ -580,97 +562,6 @@ namespace Cyotek.Windows.Forms
     }
 
     #endregion
-
-#if USENAMEHACK
-    protected IList<string> SwatchNames { get; set; }
-
-    public string GetName(int index)
-    {
-      return this.SwatchNames[index];
-    }
-
-    public void SetName(int index, string name)
-    {
-      if (!string.Equals(this.SwatchNames[index], name))
-      {
-        this.SwatchNames[index] = name;
-        this.OnCollectionChanged(new ColorCollectionEventArgs(index, this[index]));
-      }
-    }
-
-    private void SortWithNames(Comparison<Color> comparer)
-    {
-      int count;
-      Color[] colors;
-      string[] names;
-
-      count = this.Count;
-      colors = new Color[count];
-      names = new string[count];
-
-      this.CopyTo(colors, 0);
-      this.SwatchNames.CopyTo(names, 0);
-
-      this.Quicksort(colors, names, 0, count - 1, comparer);
-
-      this.ClearItems();
-
-      for (int i = 0; i < count; i++)
-      {
-        this.Add(colors[i]);
-        this.SetName(i, names[i]);
-      }
-    }
-
-    private void Quicksort(Color[] colors, string[] names, int left, int right, Comparison<Color> comparer)
-    {
-      int i = left, j = right;
-      Color pivot = colors[(left + right) / 2];
-
-      // derived from http://snipd.net/quicksort-in-c
-
-      while (i <= j)
-      {
-        while (comparer(colors[i], pivot) < 0)
-        {
-          i++;
-        }
-
-        while (comparer(colors[j], pivot) > 0)
-        {
-          j--;
-        }
-
-        if (i <= j)
-        {
-          // Swap
-          Color tmp = colors[i];
-          colors[i] = colors[j];
-          colors[j] = tmp;
-
-          string z;
-
-          z = names[i];
-          names[i] = names[j];
-          names[j] = z;
-
-          i++;
-          j--;
-        }
-      }
-
-      // Recursive calls
-      if (left < j)
-      {
-        Quicksort(colors, names, left, j, comparer);
-      }
-
-      if (i < right)
-      {
-        Quicksort(colors, names, i, right, comparer);
-      }
-    }
-#endif
 
     /// <summary>
     /// Compares two <see cref="ColorCollection"/> objects. The result specifies whether the values of the two <see cref="ColorCollection"/> objects are equal.
