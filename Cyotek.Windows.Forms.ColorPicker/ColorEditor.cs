@@ -29,6 +29,12 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventColorChanged = new object();
 
+    private static readonly object _eventNubColorChanged = new object();
+
+    private static readonly object _eventNubOutlineColorChanged = new object();
+
+    private static readonly object _eventNubSizeChanged = new object();
+
     private static readonly object _eventOrientationChanged = new object();
 
     private static readonly object _eventPreserveAlphaChannelChanged = new object();
@@ -48,6 +54,12 @@ namespace Cyotek.Windows.Forms
     private HslColor _hslColor;
 
     private bool _lockUpdates;
+
+    private Color _nubColor;
+
+    private Color _nubOutlineColor;
+
+    private Size _nubSize;
 
     private Orientation _orientation;
 
@@ -81,6 +93,9 @@ namespace Cyotek.Windows.Forms
       _showRgb = true;
       _showHsl = true;
       _showHex = true;
+      _nubSize = new Size(8, 8);
+      _nubColor = Color.Black;
+      _nubOutlineColor = Color.White;
 
       this.ResizeComponents();
     }
@@ -94,6 +109,36 @@ namespace Cyotek.Windows.Forms
     {
       add => this.Events.AddHandler(_eventColorChanged, value);
       remove => this.Events.RemoveHandler(_eventColorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the NubColor property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler NubColorChanged
+    {
+      add => this.Events.AddHandler(_eventNubColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventNubColorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the NubOutlineColor property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler NubOutlineColorChanged
+    {
+      add => this.Events.AddHandler(_eventNubOutlineColorChanged, value);
+      remove => this.Events.RemoveHandler(_eventNubOutlineColorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the NubSize property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler NubSizeChanged
+    {
+      add => this.Events.AddHandler(_eventNubSizeChanged, value);
+      remove => this.Events.RemoveHandler(_eventNubSizeChanged, value);
     }
 
     [Category("Property Changed")]
@@ -225,6 +270,54 @@ namespace Cyotek.Windows.Forms
           {
             this.OnColorChanged(EventArgs.Empty);
           }
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Black")]
+    public Color NubColor
+    {
+      get => _nubColor;
+      set
+      {
+        if (_nubColor != value)
+        {
+          _nubColor = value;
+
+          this.OnNubColorChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "White")]
+    public Color NubOutlineColor
+    {
+      get => _nubOutlineColor;
+      set
+      {
+        if (_nubOutlineColor != value)
+        {
+          _nubOutlineColor = value;
+
+          this.OnNubOutlineColorChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(typeof(Size), "8, 8")]
+    public Size NubSize
+    {
+      get => _nubSize;
+      set
+      {
+        if (_nubSize != value)
+        {
+          _nubSize = value;
+
+          this.OnNubSizeChanged(EventArgs.Empty);
         }
       }
     }
@@ -400,6 +493,51 @@ namespace Cyotek.Windows.Forms
       base.OnLoad(e);
 
       this.ResizeComponents();
+    }
+
+    /// <summary>
+    /// Raises the <see cref="NubColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnNubColorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.UpdateSliderNubs();
+
+      handler = (EventHandler)this.Events[_eventNubColorChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="NubOutlineColorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnNubOutlineColorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.UpdateSliderNubs();
+
+      handler = (EventHandler)this.Events[_eventNubOutlineColorChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="NubSizeChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnNubSizeChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.UpdateSliderNubs();
+
+      handler = (EventHandler)this.Events[_eventNubSizeChanged];
+
+      handler?.Invoke(this, e);
     }
 
     /// <summary>
@@ -897,6 +1035,24 @@ namespace Cyotek.Windows.Forms
       lLabel.Visible = _showHsl;
       lColorBar.Visible = _showHsl;
       lNumericUpDown.Visible = _showHsl;
+    }
+
+    private void UpdateSliderNub(ColorSlider control)
+    {
+      control.NubSize = _nubSize;
+      control.NubColor = _nubColor;
+      control.NubOutlineColor = _nubOutlineColor;
+    }
+
+    private void UpdateSliderNubs()
+    {
+      this.UpdateSliderNub(rColorBar);
+      this.UpdateSliderNub(gColorBar);
+      this.UpdateSliderNub(bColorBar);
+      this.UpdateSliderNub(hColorBar);
+      this.UpdateSliderNub(sColorBar);
+      this.UpdateSliderNub(lColorBar);
+      this.UpdateSliderNub(aColorBar);
     }
 
     /// <summary>
