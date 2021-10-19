@@ -37,6 +37,12 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventShowColorSpaceLabelsChanged = new object();
 
+    private static readonly object _eventShowHexEditorChanged = new object();
+
+    private static readonly object _eventShowHslEditorsChanged = new object();
+
+    private static readonly object _eventShowRgbEditorsChanged = new object();
+
     private Color _color;
 
     private HslColor _hslColor;
@@ -50,6 +56,12 @@ namespace Cyotek.Windows.Forms
     private bool _showAlphaChannel;
 
     private bool _showColorSpaceLabels;
+
+    private bool _showHexEditor;
+
+    private bool _showHslEditors;
+
+    private bool _showRgbEditors;
 
     #endregion Private Fields
 
@@ -66,6 +78,9 @@ namespace Cyotek.Windows.Forms
       _orientation = Orientation.Vertical;
       _showAlphaChannel = true;
       _showColorSpaceLabels = true;
+      _showRgbEditors = true;
+      _showHslEditors = true;
+      _showHexEditor = true;
 
       this.ResizeComponents();
     }
@@ -115,6 +130,36 @@ namespace Cyotek.Windows.Forms
       remove => this.Events.RemoveHandler(_eventShowColorSpaceLabelsChanged, value);
     }
 
+    /// <summary>
+    /// Occurs when the ShowHexEditor property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowHexEditorChanged
+    {
+      add => this.Events.AddHandler(_eventShowHexEditorChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowHexEditorChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the ShowHslEditors property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowHslEditorsChanged
+    {
+      add => this.Events.AddHandler(_eventShowHslEditorsChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowHslEditorsChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the ShowRgbEditors property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler ShowRgbEditorsChanged
+    {
+      add => this.Events.AddHandler(_eventShowRgbEditorsChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowRgbEditorsChanged, value);
+    }
+
     #endregion Public Events
 
     #region Public Properties
@@ -124,7 +169,7 @@ namespace Cyotek.Windows.Forms
     /// </summary>
     /// <value>The component color.</value>
     [Category("Appearance")]
-    [DefaultValue(typeof(Color), "0, 0, 0")]
+    [DefaultValue(typeof(Color), "Black")]
     public virtual Color Color
     {
       get => _color;
@@ -248,6 +293,54 @@ namespace Cyotek.Windows.Forms
           _showColorSpaceLabels = value;
 
           this.OnShowColorSpaceLabelsChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(true)]
+    public bool ShowHexEditor
+    {
+      get => _showHexEditor;
+      set
+      {
+        if (_showHexEditor != value)
+        {
+          _showHexEditor = value;
+
+          this.OnShowHexEditorChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(true)]
+    public bool ShowHslEditors
+    {
+      get => _showHslEditors;
+      set
+      {
+        if (_showHslEditors != value)
+        {
+          _showHslEditors = value;
+
+          this.OnShowHslEditorsChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    [Category("Appearance")]
+    [DefaultValue(true)]
+    public bool ShowRgbEditors
+    {
+      get => _showRgbEditors;
+      set
+      {
+        if (_showRgbEditors != value)
+        {
+          _showRgbEditors = value;
+
+          this.OnShowRgbEditorsChanged(EventArgs.Empty);
         }
       }
     }
@@ -392,6 +485,57 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
+    /// Raises the <see cref="ShowHexEditorChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowHexEditorChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.UpdateFields(false);
+      this.SetControlStates();
+      this.ResizeComponents();
+
+      handler = (EventHandler)this.Events[_eventShowHexEditorChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowHslEditorsChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowHslEditorsChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.UpdateFields(false);
+      this.SetControlStates();
+      this.ResizeComponents();
+
+      handler = (EventHandler)this.Events[_eventShowHslEditorsChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="ShowRgbEditorsChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnShowRgbEditorsChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      this.UpdateFields(false);
+      this.SetControlStates();
+      this.ResizeComponents();
+
+      handler = (EventHandler)this.Events[_eventShowRgbEditorsChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
     /// Updates the editing field values.
     /// </summary>
     /// <param name="userAction">if set to <c>true</c> the update is due to user interaction.</param>
@@ -404,51 +548,66 @@ namespace Cyotek.Windows.Forms
           _lockUpdates = true;
 
           // RGB
-          if (!(userAction && rNumericUpDown.Focused))
+          if (_showRgbEditors)
           {
-            rNumericUpDown.Value = _color.R;
-          }
-          if (!(userAction && gNumericUpDown.Focused))
-          {
-            gNumericUpDown.Value = _color.G;
-          }
-          if (!(userAction && bNumericUpDown.Focused))
-          {
-            bNumericUpDown.Value = _color.B;
-          }
-          rColorBar.Value = _color.R;
-          rColorBar.Color = _color;
-          gColorBar.Value = _color.G;
-          gColorBar.Color = _color;
-          bColorBar.Value = _color.B;
-          bColorBar.Color = _color;
+            if (!(userAction && rNumericUpDown.Focused))
+            {
+              rNumericUpDown.Value = _color.R;
+            }
 
-          // HTML
-          if (!(userAction && hexTextBox.Focused))
-          {
-            hexTextBox.Text = _color.IsNamedColor
-              ? _color.Name
-              : string.Format("{0:X2}{1:X2}{2:X2}", _color.R, _color.G, _color.B);
+            if (!(userAction && gNumericUpDown.Focused))
+            {
+              gNumericUpDown.Value = _color.G;
+            }
+
+            if (!(userAction && bNumericUpDown.Focused))
+            {
+              bNumericUpDown.Value = _color.B;
+            }
+
+            rColorBar.Value = _color.R;
+            rColorBar.Color = _color;
+            gColorBar.Value = _color.G;
+            gColorBar.Color = _color;
+            bColorBar.Value = _color.B;
+            bColorBar.Color = _color;
           }
 
-          // HSL
-          if (!(userAction && hNumericUpDown.Focused))
+          if (_showHexEditor)
           {
-            hNumericUpDown.Value = (int)_hslColor.H;
+            // HTML
+            if (!(userAction && hexTextBox.Focused))
+            {
+              hexTextBox.Text = _color.IsNamedColor
+                ? _color.Name
+                : string.Format("{0:X2}{1:X2}{2:X2}", _color.R, _color.G, _color.B);
+            }
           }
-          if (!(userAction && sNumericUpDown.Focused))
+
+          if (_showHslEditors)
           {
-            sNumericUpDown.Value = (int)(_hslColor.S * 100);
+            // HSL
+            if (!(userAction && hNumericUpDown.Focused))
+            {
+              hNumericUpDown.Value = (int)_hslColor.H;
+            }
+
+            if (!(userAction && sNumericUpDown.Focused))
+            {
+              sNumericUpDown.Value = (int)(_hslColor.S * 100);
+            }
+
+            if (!(userAction && lNumericUpDown.Focused))
+            {
+              lNumericUpDown.Value = (int)(_hslColor.L * 100);
+            }
+
+            hColorBar.Value = (int)_hslColor.H;
+            sColorBar.Color = _color;
+            sColorBar.Value = (int)(_hslColor.S * 100);
+            lColorBar.Color = _color;
+            lColorBar.Value = (int)(_hslColor.L * 100);
           }
-          if (!(userAction && lNumericUpDown.Focused))
-          {
-            lNumericUpDown.Value = (int)(_hslColor.L * 100);
-          }
-          hColorBar.Value = (int)_hslColor.H;
-          sColorBar.Color = _color;
-          sColorBar.Value = (int)(_hslColor.S * 100);
-          lColorBar.Color = _color;
-          lColorBar.Value = (int)(_hslColor.L * 100);
 
           // Alpha
           if (!(userAction && aNumericUpDown.Focused))
@@ -586,7 +745,7 @@ namespace Cyotek.Windows.Forms
           : hLabel.Width);
         nubOffset = (rColorBar.NubSize.Width >> 1) + 1;
 
-        columnWidth = _orientation == Orientation.Horizontal
+        columnWidth = _orientation == Orientation.Horizontal && (!_showHslEditors || _showRgbEditors)
           ? (size.Width - (padding.Horizontal + innerMargin)) >> 1
           : size.Width - padding.Horizontal;
 
@@ -594,7 +753,7 @@ namespace Cyotek.Windows.Forms
         group1EditLeft = columnWidth - editWidth;
         group1BarLeft = group1HeaderLeft + barHorizontalOffset + innerMargin;
 
-        if (_orientation == Orientation.Horizontal)
+        if (_orientation == Orientation.Horizontal && _showRgbEditors)
         {
           group2HeaderLeft = padding.Left + columnWidth + innerMargin;
           group2EditLeft = size.Width - (padding.Right + editWidth);
@@ -612,74 +771,84 @@ namespace Cyotek.Windows.Forms
         this.SetBarStates(barWidth >= _minimumBarWidth);
 
         // RGB header
-        if (_showColorSpaceLabels)
+        if ((_showHexEditor || _showRgbEditors) && _showColorSpaceLabels)
         {
           rgbHeaderLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
           top += rowHeight + innerMargin;
         }
 
-        // R row
-        rLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        rColorBar.SetBounds(group1BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        rNumericUpDown.SetBounds(group1EditLeft + editOffset, top, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        top += rowHeight + innerMargin;
-
-        // G row
-        gLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        gColorBar.SetBounds(group1BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        gNumericUpDown.SetBounds(group1EditLeft + editOffset, top, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        top += rowHeight + innerMargin;
-
-        // B row
-        bLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        bColorBar.SetBounds(group1BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        bNumericUpDown.SetBounds(group1EditLeft + editOffset, top, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        top += rowHeight + innerMargin;
-
-        // Hex row
-        hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        hexTextBox.SetBounds(group1BarLeft + nubOffset, top + colorBarOffset, barWidth + innerMargin + editWidth - nubOffset, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        top += rowHeight + innerMargin;
-
-        // reset top
-        if (_orientation == Orientation.Horizontal)
+        if (_showRgbEditors)
         {
-          top = padding.Top;
-        }
+          // R row
+          rLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          rColorBar.SetBounds(group1BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          rNumericUpDown.SetBounds(group1EditLeft + editOffset, top, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          top += rowHeight + innerMargin;
 
-        // HSL header
-        if (_showColorSpaceLabels)
-        {
-          hslLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          // G row
+          gLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          gColorBar.SetBounds(group1BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          gNumericUpDown.SetBounds(group1EditLeft + editOffset, top, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          top += rowHeight + innerMargin;
+
+          // B row
+          bLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          bColorBar.SetBounds(group1BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          bNumericUpDown.SetBounds(group1EditLeft + editOffset, top, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
           top += rowHeight + innerMargin;
         }
 
-        // H row
-        hLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        hColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        hNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        top += rowHeight + innerMargin;
+        if (_showHexEditor)
+        {
+          // Hex row
+          hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          hexTextBox.SetBounds(group1BarLeft + nubOffset, top + colorBarOffset, barWidth + innerMargin + editWidth - nubOffset, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          top += rowHeight + innerMargin;
+        }
 
-        // S row
-        sLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        sColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        sNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        top += rowHeight + innerMargin;
+        if (_showHslEditors)
+        {
+          // reset top
+          if (_orientation == Orientation.Horizontal)
+          {
+            top = padding.Top;
+          }
 
-        // L row
-        lLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        lColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        lNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        top += rowHeight + innerMargin;
+          // HSL header
+          if (_showColorSpaceLabels)
+          {
+            hslLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+            top += rowHeight + innerMargin;
+          }
 
-        // A row
-        aLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
-        aColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
-        aNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          // H row
+          hLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          hColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          hNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          top += rowHeight + innerMargin;
+
+          // S row
+          sLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          sColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          sNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          top += rowHeight + innerMargin;
+
+          // L row
+          lLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          lColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          lNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          top += rowHeight + innerMargin;
+        }
+
+        if (_showAlphaChannel)
+        {
+          // A row
+          aLabel.SetBounds(group2HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
+          aColorBar.SetBounds(group2BarLeft, top + colorBarOffset, barWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+          aNumericUpDown.SetBounds(group2EditLeft, top + editOffset, editWidth, 0, BoundsSpecified.Location | BoundsSpecified.Width);
+        }
       }
-      // ReSharper disable EmptyGeneralCatchClause
       catch
-      // ReSharper restore EmptyGeneralCatchClause
       {
         // ignore errors
       }
@@ -687,12 +856,14 @@ namespace Cyotek.Windows.Forms
 
     private void SetBarStates(bool visible)
     {
-      rColorBar.Visible = visible;
-      gColorBar.Visible = visible;
-      bColorBar.Visible = visible;
-      hColorBar.Visible = visible;
-      sColorBar.Visible = visible;
-      lColorBar.Visible = visible;
+      rColorBar.Visible = visible && _showRgbEditors;
+      gColorBar.Visible = visible && _showRgbEditors;
+      bColorBar.Visible = visible && _showRgbEditors;
+
+      hColorBar.Visible = visible && _showHslEditors;
+      sColorBar.Visible = visible && _showHslEditors;
+      lColorBar.Visible = visible && _showHslEditors;
+
       aColorBar.Visible = _showAlphaChannel && visible;
     }
 
@@ -702,8 +873,30 @@ namespace Cyotek.Windows.Forms
       aColorBar.Visible = _showAlphaChannel;
       aNumericUpDown.Visible = _showAlphaChannel;
 
-      rgbHeaderLabel.Visible = _showColorSpaceLabels;
-      hslLabel.Visible = _showColorSpaceLabels;
+      rgbHeaderLabel.Visible = (_showHexEditor || _showRgbEditors) && _showColorSpaceLabels;
+      rLabel.Visible = _showRgbEditors;
+      rColorBar.Visible = _showRgbEditors;
+      rNumericUpDown.Visible = _showRgbEditors;
+      gLabel.Visible = _showRgbEditors;
+      gColorBar.Visible = _showRgbEditors;
+      gNumericUpDown.Visible = _showRgbEditors;
+      bLabel.Visible = _showRgbEditors;
+      bColorBar.Visible = _showRgbEditors;
+      bNumericUpDown.Visible = _showRgbEditors;
+
+      hexLabel.Visible = _showHexEditor;
+      hexTextBox.Visible = _showHexEditor;
+
+      hslLabel.Visible = _showHslEditors && _showColorSpaceLabels;
+      hLabel.Visible = _showHslEditors;
+      hColorBar.Visible = _showHslEditors;
+      hNumericUpDown.Visible = _showHslEditors;
+      sLabel.Visible = _showHslEditors;
+      sColorBar.Visible = _showHslEditors;
+      sNumericUpDown.Visible = _showHslEditors;
+      lLabel.Visible = _showHslEditors;
+      lColorBar.Visible = _showHslEditors;
+      lNumericUpDown.Visible = _showHslEditors;
     }
 
     /// <summary>
