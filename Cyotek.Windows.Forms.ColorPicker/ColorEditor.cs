@@ -37,11 +37,11 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventShowColorSpaceLabelsChanged = new object();
 
-    private static readonly object _eventShowHexEditorChanged = new object();
+    private static readonly object _eventShowHexChanged = new object();
 
-    private static readonly object _eventShowHslEditorsChanged = new object();
+    private static readonly object _eventShowHslChanged = new object();
 
-    private static readonly object _eventShowRgbEditorsChanged = new object();
+    private static readonly object _eventShowRgbChanged = new object();
 
     private Color _color;
 
@@ -57,11 +57,11 @@ namespace Cyotek.Windows.Forms
 
     private bool _showColorSpaceLabels;
 
-    private bool _showHexEditor;
+    private bool _showHex;
 
-    private bool _showHslEditors;
+    private bool _showHsl;
 
-    private bool _showRgbEditors;
+    private bool _showRgb;
 
     #endregion Private Fields
 
@@ -78,9 +78,9 @@ namespace Cyotek.Windows.Forms
       _orientation = Orientation.Vertical;
       _showAlphaChannel = true;
       _showColorSpaceLabels = true;
-      _showRgbEditors = true;
-      _showHslEditors = true;
-      _showHexEditor = true;
+      _showRgb = true;
+      _showHsl = true;
+      _showHex = true;
 
       this.ResizeComponents();
     }
@@ -131,33 +131,33 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
-    /// Occurs when the ShowHexEditor property value changes
+    /// Occurs when the ShowHex property value changes
     /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ShowHexEditorChanged
+    public event EventHandler ShowHexChanged
     {
-      add => this.Events.AddHandler(_eventShowHexEditorChanged, value);
-      remove => this.Events.RemoveHandler(_eventShowHexEditorChanged, value);
+      add => this.Events.AddHandler(_eventShowHexChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowHexChanged, value);
     }
 
     /// <summary>
-    /// Occurs when the ShowHslEditors property value changes
+    /// Occurs when the ShowHsl property value changes
     /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ShowHslEditorsChanged
+    public event EventHandler ShowHslChanged
     {
-      add => this.Events.AddHandler(_eventShowHslEditorsChanged, value);
-      remove => this.Events.RemoveHandler(_eventShowHslEditorsChanged, value);
+      add => this.Events.AddHandler(_eventShowHslChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowHslChanged, value);
     }
 
     /// <summary>
-    /// Occurs when the ShowRgbEditors property value changes
+    /// Occurs when the ShowRgb property value changes
     /// </summary>
     [Category("Property Changed")]
-    public event EventHandler ShowRgbEditorsChanged
+    public event EventHandler ShowRgbChanged
     {
-      add => this.Events.AddHandler(_eventShowRgbEditorsChanged, value);
-      remove => this.Events.RemoveHandler(_eventShowRgbEditorsChanged, value);
+      add => this.Events.AddHandler(_eventShowRgbChanged, value);
+      remove => this.Events.RemoveHandler(_eventShowRgbChanged, value);
     }
 
     #endregion Public Events
@@ -299,48 +299,48 @@ namespace Cyotek.Windows.Forms
 
     [Category("Appearance")]
     [DefaultValue(true)]
-    public bool ShowHexEditor
+    public bool ShowHex
     {
-      get => _showHexEditor;
+      get => _showHex;
       set
       {
-        if (_showHexEditor != value)
+        if (_showHex != value)
         {
-          _showHexEditor = value;
+          _showHex = value;
 
-          this.OnShowHexEditorChanged(EventArgs.Empty);
+          this.OnShowHexChanged(EventArgs.Empty);
         }
       }
     }
 
     [Category("Appearance")]
     [DefaultValue(true)]
-    public bool ShowHslEditors
+    public bool ShowHsl
     {
-      get => _showHslEditors;
+      get => _showHsl;
       set
       {
-        if (_showHslEditors != value)
+        if (_showHsl != value)
         {
-          _showHslEditors = value;
+          _showHsl = value;
 
-          this.OnShowHslEditorsChanged(EventArgs.Empty);
+          this.OnShowHslChanged(EventArgs.Empty);
         }
       }
     }
 
     [Category("Appearance")]
     [DefaultValue(true)]
-    public bool ShowRgbEditors
+    public bool ShowRgb
     {
-      get => _showRgbEditors;
+      get => _showRgb;
       set
       {
-        if (_showRgbEditors != value)
+        if (_showRgb != value)
         {
-          _showRgbEditors = value;
+          _showRgb = value;
 
-          this.OnShowRgbEditorsChanged(EventArgs.Empty);
+          this.OnShowRgbChanged(EventArgs.Empty);
         }
       }
     }
@@ -485,10 +485,10 @@ namespace Cyotek.Windows.Forms
     }
 
     /// <summary>
-    /// Raises the <see cref="ShowHexEditorChanged" /> event.
+    /// Raises the <see cref="ShowHexChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected virtual void OnShowHexEditorChanged(EventArgs e)
+    protected virtual void OnShowHexChanged(EventArgs e)
     {
       EventHandler handler;
 
@@ -496,16 +496,16 @@ namespace Cyotek.Windows.Forms
       this.SetControlStates();
       this.ResizeComponents();
 
-      handler = (EventHandler)this.Events[_eventShowHexEditorChanged];
+      handler = (EventHandler)this.Events[_eventShowHexChanged];
 
       handler?.Invoke(this, e);
     }
 
     /// <summary>
-    /// Raises the <see cref="ShowHslEditorsChanged" /> event.
+    /// Raises the <see cref="ShowHslChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected virtual void OnShowHslEditorsChanged(EventArgs e)
+    protected virtual void OnShowHslChanged(EventArgs e)
     {
       EventHandler handler;
 
@@ -513,16 +513,16 @@ namespace Cyotek.Windows.Forms
       this.SetControlStates();
       this.ResizeComponents();
 
-      handler = (EventHandler)this.Events[_eventShowHslEditorsChanged];
+      handler = (EventHandler)this.Events[_eventShowHslChanged];
 
       handler?.Invoke(this, e);
     }
 
     /// <summary>
-    /// Raises the <see cref="ShowRgbEditorsChanged" /> event.
+    /// Raises the <see cref="ShowRgbChanged" /> event.
     /// </summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    protected virtual void OnShowRgbEditorsChanged(EventArgs e)
+    protected virtual void OnShowRgbChanged(EventArgs e)
     {
       EventHandler handler;
 
@@ -530,7 +530,7 @@ namespace Cyotek.Windows.Forms
       this.SetControlStates();
       this.ResizeComponents();
 
-      handler = (EventHandler)this.Events[_eventShowRgbEditorsChanged];
+      handler = (EventHandler)this.Events[_eventShowRgbChanged];
 
       handler?.Invoke(this, e);
     }
@@ -548,7 +548,7 @@ namespace Cyotek.Windows.Forms
           _lockUpdates = true;
 
           // RGB
-          if (_showRgbEditors)
+          if (_showRgb)
           {
             if (!(userAction && rNumericUpDown.Focused))
             {
@@ -573,7 +573,7 @@ namespace Cyotek.Windows.Forms
             bColorBar.Color = _color;
           }
 
-          if (_showHexEditor)
+          if (_showHex)
           {
             // HTML
             if (!(userAction && hexTextBox.Focused))
@@ -584,7 +584,7 @@ namespace Cyotek.Windows.Forms
             }
           }
 
-          if (_showHslEditors)
+          if (_showHsl)
           {
             // HSL
             if (!(userAction && hNumericUpDown.Focused))
@@ -745,7 +745,7 @@ namespace Cyotek.Windows.Forms
           : hLabel.Width);
         nubOffset = (rColorBar.NubSize.Width >> 1) + 1;
 
-        columnWidth = _orientation == Orientation.Horizontal && (!_showHslEditors || _showRgbEditors)
+        columnWidth = _orientation == Orientation.Horizontal && (!_showHsl || _showRgb)
           ? (size.Width - (padding.Horizontal + innerMargin)) >> 1
           : size.Width - padding.Horizontal;
 
@@ -753,7 +753,7 @@ namespace Cyotek.Windows.Forms
         group1EditLeft = columnWidth - editWidth;
         group1BarLeft = group1HeaderLeft + barHorizontalOffset + innerMargin;
 
-        if (_orientation == Orientation.Horizontal && _showRgbEditors)
+        if (_orientation == Orientation.Horizontal && _showRgb)
         {
           group2HeaderLeft = padding.Left + columnWidth + innerMargin;
           group2EditLeft = size.Width - (padding.Right + editWidth);
@@ -771,13 +771,13 @@ namespace Cyotek.Windows.Forms
         this.SetBarStates(barWidth >= _minimumBarWidth);
 
         // RGB header
-        if ((_showHexEditor || _showRgbEditors) && _showColorSpaceLabels)
+        if ((_showHex || _showRgb) && _showColorSpaceLabels)
         {
           rgbHeaderLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
           top += rowHeight + innerMargin;
         }
 
-        if (_showRgbEditors)
+        if (_showRgb)
         {
           // R row
           rLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
@@ -798,7 +798,7 @@ namespace Cyotek.Windows.Forms
           top += rowHeight + innerMargin;
         }
 
-        if (_showHexEditor)
+        if (_showHex)
         {
           // Hex row
           hexLabel.SetBounds(group1HeaderLeft, top + labelOffset, 0, 0, BoundsSpecified.Location);
@@ -806,7 +806,7 @@ namespace Cyotek.Windows.Forms
           top += rowHeight + innerMargin;
         }
 
-        if (_showHslEditors)
+        if (_showHsl)
         {
           // reset top
           if (_orientation == Orientation.Horizontal)
@@ -856,13 +856,13 @@ namespace Cyotek.Windows.Forms
 
     private void SetBarStates(bool visible)
     {
-      rColorBar.Visible = visible && _showRgbEditors;
-      gColorBar.Visible = visible && _showRgbEditors;
-      bColorBar.Visible = visible && _showRgbEditors;
+      rColorBar.Visible = visible && _showRgb;
+      gColorBar.Visible = visible && _showRgb;
+      bColorBar.Visible = visible && _showRgb;
 
-      hColorBar.Visible = visible && _showHslEditors;
-      sColorBar.Visible = visible && _showHslEditors;
-      lColorBar.Visible = visible && _showHslEditors;
+      hColorBar.Visible = visible && _showHsl;
+      sColorBar.Visible = visible && _showHsl;
+      lColorBar.Visible = visible && _showHsl;
 
       aColorBar.Visible = _showAlphaChannel && visible;
     }
@@ -873,30 +873,30 @@ namespace Cyotek.Windows.Forms
       aColorBar.Visible = _showAlphaChannel;
       aNumericUpDown.Visible = _showAlphaChannel;
 
-      rgbHeaderLabel.Visible = (_showHexEditor || _showRgbEditors) && _showColorSpaceLabels;
-      rLabel.Visible = _showRgbEditors;
-      rColorBar.Visible = _showRgbEditors;
-      rNumericUpDown.Visible = _showRgbEditors;
-      gLabel.Visible = _showRgbEditors;
-      gColorBar.Visible = _showRgbEditors;
-      gNumericUpDown.Visible = _showRgbEditors;
-      bLabel.Visible = _showRgbEditors;
-      bColorBar.Visible = _showRgbEditors;
-      bNumericUpDown.Visible = _showRgbEditors;
+      rgbHeaderLabel.Visible = (_showHex || _showRgb) && _showColorSpaceLabels;
+      rLabel.Visible = _showRgb;
+      rColorBar.Visible = _showRgb;
+      rNumericUpDown.Visible = _showRgb;
+      gLabel.Visible = _showRgb;
+      gColorBar.Visible = _showRgb;
+      gNumericUpDown.Visible = _showRgb;
+      bLabel.Visible = _showRgb;
+      bColorBar.Visible = _showRgb;
+      bNumericUpDown.Visible = _showRgb;
 
-      hexLabel.Visible = _showHexEditor;
-      hexTextBox.Visible = _showHexEditor;
+      hexLabel.Visible = _showHex;
+      hexTextBox.Visible = _showHex;
 
-      hslLabel.Visible = _showHslEditors && _showColorSpaceLabels;
-      hLabel.Visible = _showHslEditors;
-      hColorBar.Visible = _showHslEditors;
-      hNumericUpDown.Visible = _showHslEditors;
-      sLabel.Visible = _showHslEditors;
-      sColorBar.Visible = _showHslEditors;
-      sNumericUpDown.Visible = _showHslEditors;
-      lLabel.Visible = _showHslEditors;
-      lColorBar.Visible = _showHslEditors;
-      lNumericUpDown.Visible = _showHslEditors;
+      hslLabel.Visible = _showHsl && _showColorSpaceLabels;
+      hLabel.Visible = _showHsl;
+      hColorBar.Visible = _showHsl;
+      hNumericUpDown.Visible = _showHsl;
+      sLabel.Visible = _showHsl;
+      sColorBar.Visible = _showHsl;
+      sNumericUpDown.Visible = _showHsl;
+      lLabel.Visible = _showHsl;
+      lColorBar.Visible = _showHsl;
+      lNumericUpDown.Visible = _showHsl;
     }
 
     /// <summary>
