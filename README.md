@@ -87,7 +87,9 @@ character hexadecimal notation, or choose from named web and
 system colors.
 
 Use of the alpha channel can be configured via the
-`ShowAlphaChannel` and `PreserveAlphaChannel` properties.
+`ShowAlphaChannel` and `PreserveAlphaChannel` properties. The
+`ShowHex`, `ShowHsl` and `ShowRgb` properties can be used to
+show or hide groups of editors.
 
 ### ScreenColorPicker Control
 
@@ -117,13 +119,13 @@ and provide your own logic.
 
 ### ColorEditorManager
 
+![ColorEditorManager compnent demonstration][coloreditormanagerscreen]
+
 This is a non-GUI component that you can drop onto a form, and
 bind to other controls in this library. When the `Color`
 property of one control changes, it is reflected in the others
 without having to lift a finger. Useful if you're creating
 composite displays from multiple controls.
-
-![ColorEditorManager compnent demonstration][coloreditormanagerscreen]
 
 ## Color Palettes and External Palette Files
 

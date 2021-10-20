@@ -15,6 +15,10 @@
 * Added `DisplayLightness` property to the `ColorWheel` control.
   When set, the wheel is drawn using the specified lightness,
   otherwise it draws the wheel at 50% (default)
+* Added `ShowSaturationRing`, `ShowCenterLines`, `LineColor`,
+  `ShowAngleArrow`, `SecondaryColors` and
+  `SecondarySelectionSize` properties to the `ColorWheel`
+  control
 * Added `ScreenColorPicker.CaptureMouse` and `ReleaseMouse`
   methods. These allow you to initiate a screen picker operation
   without having to click and drag in the source control, for
@@ -23,18 +27,16 @@
   allowing you to know when a selection operation starts and
   ends
 * Added `ColorSlider.NubOutlineColor`
-* Added `ColorEditor.PreserveAlphaChannel`. By default, the
-  `ColorEditor` will strip the alpha component from a colour if
-  the `ShowAlphaChannel` property is not set. This new property
-  allows the component to be preserved
 * Added `PreserveAlphaChannel`, `ShowLoad`, `ShowSave` and
   `CustomColors` properties to the `ColorPickerDialog` component
 * Added `CustomColorsLoading` and `CustomColorsSaving` events to
   the `ColorPickerDialog` component
-* Added `ShowSaturationRing`, `ShowCenterLines`, `LineColor`,
-  `ShowAngleArrow`, `SecondaryColors` and
-  `SecondarySelectionSize` properties to the `ColorWheel`
-  control
+* Added `ColorEditor.PreserveAlphaChannel`. By default, the
+  `ColorEditor` will strip the alpha component from a colour if
+  the `ShowAlphaChannel` property is not set. This new property
+  allows the component to be preserved
+* Added `ColorEditor.ShowHex`, `ShowHsl` and `ShowRgb`
+  properties for showing or hiding groups of editors
 
 #### Changed
 
