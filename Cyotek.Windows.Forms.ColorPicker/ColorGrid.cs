@@ -479,7 +479,7 @@ namespace Cyotek.Windows.Forms
 
           if (value != InvalidIndex)
           {
-            this.Color = this.GetColor(value);
+            _color = this.GetColor(value);
           }
 
           this.OnColorIndexChanged(EventArgs.Empty);
@@ -542,6 +542,11 @@ namespace Cyotek.Windows.Forms
       get => _customColors;
       set
       {
+        if (value == null)
+        {
+          value = new ColorCollection();
+        }
+
         if (!object.ReferenceEquals(_customColors, value))
         {
           this.RemoveEventHandlers(_customColors);
@@ -828,12 +833,8 @@ namespace Cyotek.Windows.Forms
       int colorCount;
       int customColorCount;
 
-      colorCount = _colors != null
-        ? _colors.Count
-        : 0;
-      customColorCount = _customColors != null
-        ? _customColors.Count
-        : 0;
+      colorCount = _colors.Count;
+      customColorCount = _customColors.Count;
 
       if (index < 0 || index > colorCount + customColorCount)
       {
@@ -855,12 +856,8 @@ namespace Cyotek.Windows.Forms
       int colorCount;
       int customColorCount;
 
-      colorCount = _colors != null
-        ? _colors.Count
-        : 0;
-      customColorCount = _customColors != null
-        ? _customColors.Count
-        : 0;
+      colorCount = _colors.Count;
+      customColorCount = _customColors.Count;
 
       if (colorCount < 0 || colorIndex > colorCount + customColorCount)
       {
@@ -1027,18 +1024,14 @@ namespace Cyotek.Windows.Forms
         _actualColumns = 1;
       }
 
-      primaryRows = this.GetRows(_colors != null
-        ? _colors.Count
-        : 0);
+      primaryRows = this.GetRows(_colors.Count);
       if (primaryRows == 0)
       {
         primaryRows = 1;
       }
 
       customRows = _showCustomColors
-        ? this.GetRows(_customColors != null
-                            ? _customColors.Count
-                            : 0)
+        ? this.GetRows(_customColors.Count)
         : 0;
 
       _primaryRows = primaryRows;
@@ -1052,25 +1045,22 @@ namespace Cyotek.Windows.Forms
 
     protected void DefineColorRegions(ColorCollection colors, int rangeStart, int offset)
     {
-      if (colors != null)
+      int rows;
+      int index;
+
+      rows = this.GetRows(colors.Count);
+      index = 0;
+
+      for (int row = 0; row < rows; row++)
       {
-        int rows;
-        int index;
-
-        rows = this.GetRows(colors.Count);
-        index = 0;
-
-        for (int row = 0; row < rows; row++)
+        for (int column = 0; column < _actualColumns; column++)
         {
-          for (int column = 0; column < _actualColumns; column++)
+          if (index < colors.Count)
           {
-            if (index < colors.Count)
-            {
-              _colorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + column * (_scaledCellSize.Width + _spacing.Width), offset + row * (_scaledCellSize.Height + _spacing.Height), _scaledCellSize.Width, _scaledCellSize.Height));
-            }
-
-            index++;
+            _colorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + column * (_scaledCellSize.Width + _spacing.Width), offset + row * (_scaledCellSize.Height + _spacing.Height), _scaledCellSize.Width, _scaledCellSize.Height));
           }
+
+          index++;
         }
       }
     }
@@ -1211,11 +1201,9 @@ namespace Cyotek.Windows.Forms
     {
       int index;
 
-      index = _colors != null
-        ? _colors.IndexOf(value)
-        : InvalidIndex;
+      index = _colors.IndexOf(value);
 
-      if (index == InvalidIndex && _showCustomColors && _customColors != null)
+      if (index == InvalidIndex && _showCustomColors)
       {
         index = _customColors.IndexOf(value);
         if (index != InvalidIndex)
@@ -1750,7 +1738,7 @@ namespace Cyotek.Windows.Forms
 
           if (_colorRegions.TryGetValue(_colorIndex, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
           {
-            this.PaintSelectedCell(e, _colorIndex, this.Color, bounds);
+            this.PaintSelectedCell(e, _colorIndex, _color, bounds);
           }
         }
       }
@@ -2025,23 +2013,20 @@ namespace Cyotek.Windows.Forms
 
         _colorRegions.Clear();
 
-        if (_colors != null)
+        this.DefineColorRegions(_colors, 0, this.Padding.Top);
+        if (_showCustomColors)
         {
-          this.DefineColorRegions(_colors, 0, this.Padding.Top);
-          if (_showCustomColors)
-          {
-            this.DefineColorRegions(_customColors, _colors.Count, this.Padding.Top + _separatorHeight + (_scaledCellSize.Height + _spacing.Height) * _primaryRows);
-          }
-
-          this.ColorIndex = this.GetColorIndex(this.Color);
-
-          if (!this.Color.IsEmpty && _colorIndex == InvalidIndex && _autoAddColors && _showCustomColors)
-          {
-            this.AddCustomColor(this.Color);
-          }
-
-          this.Invalidate();
+          this.DefineColorRegions(_customColors, _colors.Count, this.Padding.Top + _separatorHeight + (_scaledCellSize.Height + _spacing.Height) * _primaryRows);
         }
+
+        this.ColorIndex = this.GetColorIndex(_color);
+
+        if (!_color.IsEmpty && _colorIndex == InvalidIndex && _autoAddColors && _showCustomColors)
+        {
+          this.AddCustomColor(_color);
+        }
+
+        this.Invalidate();
       }
       else
       {
@@ -2102,7 +2087,7 @@ namespace Cyotek.Windows.Forms
         index -= _colors.Count;
       }
 
-      if (index >= 0 && index < collection.Count && collection[index] != this.Color)
+      if (index >= 0 && index < collection.Count && collection[index] != _color)
       {
         _previousColorIndex = index;
         _colorIndex = -1;
