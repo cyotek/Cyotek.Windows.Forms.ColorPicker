@@ -37,6 +37,9 @@
   allows the component to be preserved
 * Added `ColorEditor.ShowHex`, `ShowHsl` and `ShowRgb`
   properties for showing or hiding groups of editors
+* Added the `ColorEditor.NubSize`, `NubColor` and
+  `NubOutlineColor` to allow at least some customisation of the
+  sliders
 
 #### Changed
 

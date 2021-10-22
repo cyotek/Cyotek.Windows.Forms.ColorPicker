@@ -91,6 +91,10 @@ Use of the alpha channel can be configured via the
 `ShowHex`, `ShowHsl` and `ShowRgb` properties can be used to
 show or hide groups of editors.
 
+Alternatively, the `NubSize`, `NubColor` and `NubOutlineColor`
+properties can be used to customise the appearance of the
+sliders.
+
 ### ScreenColorPicker Control
 
 ![ScreenColorPicker control demonstration][screenpickerscreen]
