@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms
@@ -33,6 +32,26 @@ namespace Cyotek.Windows.Forms
     #endregion Public Fields
 
     #region Private Fields
+
+    private static readonly Color[] _defaultCustomColors =
+    {
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White,
+      Color.White
+    };
 
     private static readonly object _eventAutoAddColorsChanged = new object();
 
@@ -141,13 +160,14 @@ namespace Cyotek.Windows.Forms
     public ColorGrid()
     {
       this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick | ControlStyles.SupportsTransparentBackColor, true);
+
       _previousHotIndex = InvalidIndex;
       _previousColorIndex = InvalidIndex;
       _hotIndex = InvalidIndex;
 
       _colorRegions = new Dictionary<int, Rectangle>();
       _colors = ColorPalettes.NamedColors;
-      _customColors = new ColorCollection(Enumerable.Repeat(Color.White, 16));
+      _customColors = new ColorCollection(_defaultCustomColors);
       _showCustomColors = true;
       _cellSize = new Size(12, 12);
       _spacing = new Size(3, 3);
@@ -910,10 +930,13 @@ namespace Cyotek.Windows.Forms
       result = new ColorHitTestInfo();
       colorIndex = InvalidIndex;
 
-      foreach (KeyValuePair<int, Rectangle> pair in _colorRegions.Where(pair => pair.Value.Contains(point)))
+      foreach (KeyValuePair<int, Rectangle> pair in _colorRegions)
       {
-        colorIndex = pair.Key;
-        break;
+        if (pair.Value.Contains(point))
+        {
+          colorIndex = pair.Key;
+          break;
+        }
       }
 
       result.Index = colorIndex;
@@ -936,9 +959,7 @@ namespace Cyotek.Windows.Forms
     {
       if (this.AllowPainting && index != InvalidIndex)
       {
-        Rectangle bounds;
-
-        if (_colorRegions.TryGetValue(index, out bounds))
+        if (_colorRegions.TryGetValue(index, out Rectangle bounds))
         {
           if (_selectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
           {
@@ -1722,9 +1743,7 @@ namespace Cyotek.Windows.Forms
           // and the custom colors
           for (int i = 0; i < _customColors.Count; i++)
           {
-            Rectangle bounds;
-
-            if (_colorRegions.TryGetValue(colorCount + i, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
+            if (_colorRegions.TryGetValue(colorCount + i, out Rectangle bounds) && e.ClipRectangle.IntersectsWith(bounds))
             {
               this.PaintCell(e, i, colorCount + i, _customColors[i], bounds);
             }
@@ -1734,9 +1753,7 @@ namespace Cyotek.Windows.Forms
         // draw the selected color
         if (_selectedCellStyle != ColorGridSelectedCellStyle.None && _colorIndex >= 0)
         {
-          Rectangle bounds;
-
-          if (_colorRegions.TryGetValue(_colorIndex, out bounds) && e.ClipRectangle.IntersectsWith(bounds))
+          if (_colorRegions.TryGetValue(_colorIndex, out Rectangle bounds) && e.ClipRectangle.IntersectsWith(bounds))
           {
             this.PaintSelectedCell(e, _colorIndex, _color, bounds);
           }
