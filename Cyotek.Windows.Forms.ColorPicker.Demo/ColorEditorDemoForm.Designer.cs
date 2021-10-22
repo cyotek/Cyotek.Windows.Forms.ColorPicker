@@ -101,7 +101,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.colorEditor.Location = new System.Drawing.Point(0, 0);
       this.colorEditor.Name = "colorEditor";
       this.colorEditor.Padding = new System.Windows.Forms.Padding(10);
-      this.colorEditor.Size = new System.Drawing.Size(324, 384);
+      this.colorEditor.Size = new System.Drawing.Size(322, 384);
       this.colorEditor.TabIndex = 0;
       this.colorEditor.ColorChanged += new System.EventHandler(this.colorEditor_ColorChanged);
       // 
@@ -121,7 +121,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.optionsSplitContainer.Panel2.Controls.Add(this.colorPreviewBox);
       this.optionsSplitContainer.Panel2.Controls.Add(this.demoLabel);
       this.optionsSplitContainer.Size = new System.Drawing.Size(656, 384);
-      this.optionsSplitContainer.SplitterDistance = 324;
+      this.optionsSplitContainer.SplitterDistance = 322;
       this.optionsSplitContainer.SplitterWidth = 6;
       this.optionsSplitContainer.TabIndex = 0;
       // 

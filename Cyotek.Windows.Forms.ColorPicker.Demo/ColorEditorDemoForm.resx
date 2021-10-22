@@ -125,6 +125,8 @@
 
 To disable the use of the alpha channel, set the ShowAlphaChannel property to false. By default, this will also cause any alpha to be stripped when setting the Color property. To preserve the alpha channel whilst not allowing it to be directly edited, set the PreserveAlphaChannel property to true.
 
+The ShowHex, ShowHsl and ShowRgb properties can be used to show or hide specific editors.
+
 This control can also be bound to a ColorEditorManager component, allowing several color editing components to notify each other of color changes for creating composite color editors.</value>
   </data>
   <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
