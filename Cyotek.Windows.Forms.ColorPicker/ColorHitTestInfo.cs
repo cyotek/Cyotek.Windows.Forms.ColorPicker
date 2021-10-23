@@ -1,25 +1,61 @@
-﻿using System.Drawing;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright (c) 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System.Drawing;
 
 namespace Cyotek.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   public class ColorHitTestInfo
   {
-    #region Properties
+    #region Private Fields
 
-    public Color Color { get; set; }
+    private Color _color;
 
-    public int Index { get; set; }
+    private int _index;
 
-    public ColorSource Source { get; set; }
+    private ColorSource _source;
 
-    #endregion
+    #endregion Private Fields
+
+    #region Public Constructors
+
+    public ColorHitTestInfo()
+    {
+      _color = Color.Empty;
+      _index = ColorGrid.InvalidIndex;
+      _source = ColorSource.None;
+    }
+
+    #endregion Public Constructors
+
+    #region Public Properties
+
+    public Color Color
+    {
+      get => _color;
+      set => _color = value;
+    }
+
+    public int Index
+    {
+      get => _index;
+      set => _index = value;
+    }
+
+    public ColorSource Source
+    {
+      get => _source;
+      set => _source = value;
+    }
+
+    #endregion Public Properties
   }
 }

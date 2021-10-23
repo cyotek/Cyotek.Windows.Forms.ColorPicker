@@ -91,7 +91,7 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventSpacingChanged = new object();
 
-    private readonly IDictionary<int, Rectangle> _colorRegions;
+    private Size _actualCellSize;
 
     private int _actualColumns;
 
@@ -135,7 +135,7 @@ namespace Cyotek.Windows.Forms
 
     private int _primaryRows;
 
-    private Size _scaledCellSize;
+    private int _rowCount;
 
     private ColorGridSelectedCellStyle _selectedCellStyle;
 
@@ -165,7 +165,6 @@ namespace Cyotek.Windows.Forms
       _previousColorIndex = InvalidIndex;
       _hotIndex = InvalidIndex;
 
-      _colorRegions = new Dictionary<int, Rectangle>();
       _colors = ColorPalettes.NamedColors;
       _customColors = new ColorCollection(_defaultCustomColors);
       _showCustomColors = true;
@@ -727,7 +726,8 @@ namespace Cyotek.Windows.Forms
     /// </value>
     protected virtual bool AllowPainting => _updateCount == 0;
 
-    protected IDictionary<int, Rectangle> ColorRegions => _colorRegions;
+    [Obsolete("This property is no longer used.", true)]
+    protected IDictionary<int, Rectangle> ColorRegions => new Dictionary<int, Rectangle>();
 
     protected int CustomRows
     {
@@ -742,6 +742,8 @@ namespace Cyotek.Windows.Forms
       get => _primaryRows;
       set => _primaryRows = value;
     }
+
+    protected int Rows => _rowCount;
 
     protected int SeparatorHeight
     {
@@ -839,32 +841,116 @@ namespace Cyotek.Windows.Forms
     /// </returns>
     public Rectangle GetCellBounds(int index)
     {
-      if (index < 0 || index > _colors.Count + _customColors.Count - 1)
+      Rectangle bounds;
+
+      if (this.GetCellCoordinates(index, out int r, out int c))
       {
-        throw new ArgumentOutOfRangeException(nameof(index));
+        Padding padding;
+        int x;
+        int y;
+
+        padding = this.Padding;
+
+        x = padding.Left + (c * (_actualCellSize.Width + _spacing.Width));
+        y = padding.Top + (r * (_actualCellSize.Height + _spacing.Height));
+
+        if (this.IsCustomColor(index))
+        {
+          y += _separatorHeight;
+        }
+
+        bounds = new Rectangle(x, y, _actualCellSize.Width, _actualCellSize.Height);
+      }
+      else
+      {
+        bounds = Rectangle.Empty;
       }
 
-      return _colorRegions[index];
+      return bounds;
+    }
+
+    public bool GetCellCoordinates(Point point, out int r, out int c) => this.GetCellCoordinates(point.X, point.Y, out r, out c);
+
+    public bool GetCellCoordinates(int x, int y, out int r, out int c)
+    {
+      Padding padding;
+
+      padding = this.Padding;
+      x -= padding.Left;
+      y -= padding.Top;
+
+      r = y / (_actualCellSize.Height + _spacing.Height);
+
+      if (r < 0 || r > _rowCount)
+      {
+        r = ColorGrid.InvalidIndex;
+      }
+      else if (r >= _primaryRows)
+      {
+        y -= _separatorHeight;
+        r = y / (_actualCellSize.Height + _spacing.Height);
+
+        if (r < _primaryRows)
+        {
+          r = ColorGrid.InvalidIndex;
+        }
+      }
+
+      c = x / (_actualCellSize.Width + _spacing.Width);
+
+      if (this.IsOutOfBounds(r, c, x, y))
+      {
+        r = ColorGrid.InvalidIndex; c = ColorGrid.InvalidIndex;
+      }
+
+      return c != ColorGrid.InvalidIndex && r != ColorGrid.InvalidIndex;
+    }
+
+    public bool GetCellCoordinates(int index, out int r, out int c)
+    {
+      bool result;
+
+      result = this.IsValidIndex(index);
+
+      if (result)
+      {
+        if (!this.IsCustomColor(index))
+        {
+          r = index / _actualColumns;
+          c = index % _actualColumns;
+        }
+        else
+        {
+          r = _primaryRows + (index - _colors.Count) / _actualColumns;
+          c = (index - _colors.Count) % _actualColumns;
+        }
+      }
+      else
+      {
+        r = ColorGrid.InvalidIndex;
+        c = ColorGrid.InvalidIndex;
+      }
+
+      return result;
     }
 
     public Color GetColor(int index)
     {
       Color result;
-      int colorCount;
-      int customColorCount;
 
-      colorCount = _colors.Count;
-      customColorCount = _customColors.Count;
-
-      if (index < 0 || index > colorCount + customColorCount)
+      if (this.IsValidIndex(index))
       {
-        result = Color.Empty;
+        int colorCount;
+
+        colorCount = _colors.Count;
+
+        result = index < colorCount
+          ? _colors[index]
+          : _customColors[index - colorCount];
       }
       else
       {
-        result = index > colorCount - 1
-          ? _customColors[index - colorCount]
-          : _colors[index];
+        result = Color.Empty;
       }
 
       return result;
@@ -873,21 +959,16 @@ namespace Cyotek.Windows.Forms
     public ColorSource GetColorSource(int colorIndex)
     {
       ColorSource result;
-      int colorCount;
-      int customColorCount;
 
-      colorCount = _colors.Count;
-      customColorCount = _customColors.Count;
-
-      if (colorCount < 0 || colorIndex > colorCount + customColorCount)
+      if (this.IsValidIndex(colorIndex))
       {
-        result = ColorSource.None;
+        result = colorIndex < _colors.Count
+            ? ColorSource.Standard
+            : ColorSource.Custom;
       }
       else
       {
-        result = colorIndex > colorCount - 1
-          ? ColorSource.Custom
-          : ColorSource.Standard;
+        result = ColorSource.None;
       }
 
       return result;
@@ -895,19 +976,15 @@ namespace Cyotek.Windows.Forms
 
     public ColorSource GetColorSource(Color color)
     {
-      int index;
       ColorSource result;
 
-      index = _colors.IndexOf(color);
-
-      if (index != InvalidIndex)
+      if (_colors.IndexOf(color) != ColorGrid.InvalidIndex)
       {
         result = ColorSource.Standard;
       }
       else
       {
-        index = _customColors.IndexOf(color);
-        result = index != InvalidIndex
+        result = _customColors.IndexOf(color) != ColorGrid.InvalidIndex
           ? ColorSource.Custom
           : ColorSource.None;
       }
@@ -922,34 +999,23 @@ namespace Cyotek.Windows.Forms
         : base.GetPreferredSize(proposedSize);
     }
 
-    public ColorHitTestInfo HitTest(Point point)
+    public ColorHitTestInfo HitTest(Point point) => this.HitTest(point.X, point.Y);
+
+    public ColorHitTestInfo HitTest(int x, int y)
     {
       ColorHitTestInfo result;
-      int colorIndex;
 
       result = new ColorHitTestInfo();
-      colorIndex = InvalidIndex;
 
-      foreach (KeyValuePair<int, Rectangle> pair in _colorRegions)
+      if (this.GetCellCoordinates(x, y, out int r, out int c))
       {
-        if (pair.Value.Contains(point))
-        {
-          colorIndex = pair.Key;
-          break;
-        }
-      }
+        int index;
 
-      result.Index = colorIndex;
-      if (colorIndex != InvalidIndex)
-      {
-        result.Color = colorIndex < _colors.Count + _customColors.Count
-          ? this.GetColor(colorIndex)
-          : Color.White;
-        result.Source = this.GetColorSource(colorIndex);
-      }
-      else
-      {
-        result.Source = ColorSource.None;
+        index = this.GetCellIndex(c, r);
+
+        result.Index = index;
+        result.Color = this.GetColor(index);
+        result.Source = this.GetColorSource(index);
       }
 
       return result;
@@ -957,7 +1023,7 @@ namespace Cyotek.Windows.Forms
 
     public void Invalidate(int index)
     {
-      if (this.AllowPainting && index != InvalidIndex)
+      if (this.AllowPainting && this.IsValidIndex(index))
       {
         Rectangle bounds;
 
@@ -965,7 +1031,7 @@ namespace Cyotek.Windows.Forms
 
         if (_selectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
         {
-          bounds.Inflate(this.Padding.Left, this.Padding.Top);
+          bounds = this.ZoomBounds(bounds);
         }
 
         this.Invalidate(bounds);
@@ -1040,17 +1106,13 @@ namespace Cyotek.Windows.Forms
 
       _actualColumns = _columns != 0
         ? _columns
-        : (this.ClientSize.Width + _spacing.Width - this.Padding.Vertical) / (_scaledCellSize.Width + _spacing.Width);
+        : (this.ClientSize.Width + _spacing.Width - this.Padding.Vertical) / (_actualCellSize.Width + _spacing.Width);
       if (_actualColumns < 1)
       {
         _actualColumns = 1;
       }
 
       primaryRows = this.GetRows(_colors.Count);
-      if (primaryRows == 0)
-      {
-        primaryRows = 1;
-      }
 
       customRows = _showCustomColors
         ? this.GetRows(_customColors.Count)
@@ -1058,6 +1120,7 @@ namespace Cyotek.Windows.Forms
 
       _primaryRows = primaryRows;
       _customRows = customRows;
+      _rowCount = primaryRows + customRows;
     }
 
     protected virtual Brush CreateTransparencyBrush()
@@ -1065,26 +1128,9 @@ namespace Cyotek.Windows.Forms
       return new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
     }
 
+    [Obsolete("This method is no longer used.", true)]
     protected void DefineColorRegions(ColorCollection colors, int rangeStart, int offset)
     {
-      int rows;
-      int index;
-
-      rows = this.GetRows(colors.Count);
-      index = 0;
-
-      for (int row = 0; row < rows; row++)
-      {
-        for (int column = 0; column < _actualColumns; column++)
-        {
-          if (index < colors.Count)
-          {
-            _colorRegions.Add(rangeStart + index, new Rectangle(this.Padding.Left + column * (_scaledCellSize.Width + _spacing.Width), offset + row * (_scaledCellSize.Height + _spacing.Height), _scaledCellSize.Width, _scaledCellSize.Height));
-          }
-
-          index++;
-        }
-      }
     }
 
     protected override void Dispose(bool disposing)
@@ -1128,14 +1174,14 @@ namespace Cyotek.Windows.Forms
 
       if (_columns != 0)
       {
-        width = (_scaledCellSize.Width + _spacing.Width) * _actualColumns + this.Padding.Horizontal - _spacing.Width;
+        width = (_actualCellSize.Width + _spacing.Width) * _actualColumns + this.Padding.Horizontal - _spacing.Width;
       }
       else
       {
         width = this.ClientSize.Width;
       }
 
-      return new Size(width, (_scaledCellSize.Height + _spacing.Height) * (_primaryRows + _customRows) + offset + this.Padding.Vertical - _spacing.Height);
+      return new Size(width, (_actualCellSize.Height + _spacing.Height) * (_primaryRows + _customRows) + offset + this.Padding.Vertical - _spacing.Height);
     }
 
     protected int GetCellIndex(Point point)
@@ -1707,7 +1753,7 @@ namespace Cyotek.Windows.Forms
       if (this.AllowPainting)
       {
         int colorCount;
-          Rectangle bounds;
+        Rectangle bounds;
 
         colorCount = _colors.Count;
 
@@ -1728,7 +1774,6 @@ namespace Cyotek.Windows.Forms
         // draw cells for all current colors
         for (int i = 0; i < colorCount; i++)
         {
-
           bounds = this.GetCellBounds(i);
           if (e.ClipRectangle.IntersectsWith(bounds))
           {
@@ -1939,7 +1984,7 @@ namespace Cyotek.Windows.Forms
 
         case ColorGridSelectedCellStyle.Zoomed:
           // make the cell larger according to the padding
-          bounds.Inflate(this.Padding.Left, this.Padding.Top);
+          bounds = this.ZoomBounds(bounds);
 
           // fill the inner
           e.Graphics.FillRectangle(Brushes.White, bounds);
@@ -1976,19 +2021,19 @@ namespace Cyotek.Windows.Forms
 
     protected virtual void PaintSeparator(PaintEventArgs e)
     {
+      Padding padding;
       int x1;
-      int y1;
       int x2;
-      int y2;
+      int y;
 
-      x1 = this.Padding.Left;
-      x2 = this.ClientSize.Width - this.Padding.Right;
-      y1 = _separatorHeight / 2 + this.Padding.Top + _primaryRows * (_scaledCellSize.Height + _spacing.Height) + 1 - _spacing.Height;
-      y2 = y1;
+      padding = this.Padding;
+      x1 = padding.Left;
+      x2 = this.ClientSize.Width - padding.Right;
+      y = padding.Top + (_primaryRows * (_actualCellSize.Height + _spacing.Height)) + (_separatorHeight / 2) - 1;
 
       using (Pen pen = new Pen(_cellBorderColor))
       {
-        e.Graphics.DrawLine(pen, x1, y1, x2, y2);
+        e.Graphics.DrawLine(pen, x1, y, x2, y);
       }
     }
 
@@ -2031,14 +2076,6 @@ namespace Cyotek.Windows.Forms
         else if (base.AutoSize)
         {
           this.SizeToFit();
-        }
-
-        _colorRegions.Clear();
-
-        this.DefineColorRegions(_colors, 0, this.Padding.Top);
-        if (_showCustomColors)
-        {
-          this.DefineColorRegions(_customColors, _colors.Count, this.Padding.Top + _separatorHeight + (_scaledCellSize.Height + _spacing.Height) * _primaryRows);
         }
 
         this.ColorIndex = this.GetColorIndex(_color);
@@ -2147,6 +2184,18 @@ namespace Cyotek.Windows.Forms
       return new Point(column, row);
     }
 
+    private bool IsCustomColor(int index) => index >= _colors.Count;
+
+    private bool IsOutOfBounds(int r, int c, int x, int y)
+    {
+      return c < 0
+          || c >= _actualColumns
+          || x > c * (_actualCellSize.Width + _spacing.Width) + _actualCellSize.Width
+          || y > r * (_actualCellSize.Height + _spacing.Height) + _actualCellSize.Height;
+    }
+
+    private bool IsValidIndex(int index) => index >= 0 && index < _colors.Count + _customColors.Count;
+
     private void RemoveEventHandlers(ColorCollection value)
     {
       if (value != null)
@@ -2170,11 +2219,11 @@ namespace Cyotek.Windows.Forms
 
       if (scaleX > 1 && scaleY > 1)
       {
-        _scaledCellSize = new Size((int)(_cellSize.Width * scaleX), (int)(_cellSize.Height * scaleY));
+        _actualCellSize = new Size((int)(_cellSize.Width * scaleX), (int)(_cellSize.Height * scaleY));
       }
       else
       {
-        _scaledCellSize = _cellSize;
+        _actualCellSize = _cellSize;
       }
     }
 
@@ -2210,6 +2259,8 @@ namespace Cyotek.Windows.Forms
         this.EditColor(index);
       }
     }
+
+    private Rectangle ZoomBounds(Rectangle bounds) => Rectangle.Inflate(bounds, Math.Max(6, _spacing.Width), Math.Max(6, _spacing.Height));
 
     #endregion Private Methods
   }
