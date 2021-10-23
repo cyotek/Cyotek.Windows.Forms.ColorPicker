@@ -574,7 +574,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // nubWidthToolStripTextBox
       // 
-      this.nubWidthToolStripTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.nubWidthToolStripTextBox.Name = "nubWidthToolStripTextBox";
       this.nubWidthToolStripTextBox.Size = new System.Drawing.Size(24, 25);
       this.nubWidthToolStripTextBox.Text = "8";
@@ -588,7 +587,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // nubHeightToolStripTextBox
       // 
-      this.nubHeightToolStripTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.nubHeightToolStripTextBox.Name = "nubHeightToolStripTextBox";
       this.nubHeightToolStripTextBox.Size = new System.Drawing.Size(24, 25);
       this.nubHeightToolStripTextBox.Text = "8";
@@ -629,13 +627,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // ColorSliderDemonstrationForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.ClientSize = new System.Drawing.Size(784, 561);
       this.Controls.Add(propertiesSplitContainer);
       this.Controls.Add(toolStrip1);
       this.Controls.Add(menuStrip);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.Name = "ColorSliderDemonstrationForm";
       this.Text = "ColorSlider Controls Demonstration";
       saturationSliderGroupBox.ResumeLayout(false);
