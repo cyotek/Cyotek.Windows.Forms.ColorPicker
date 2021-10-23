@@ -179,8 +179,6 @@ namespace Cyotek.Windows.Forms
       _cellSize = new Size(12, 12);
       _spacing = new Size(3, 3);
       _columns = 16;
-      base.AutoSize = true;
-      this.Padding = new Padding(5);
       _autoAddColors = true;
       _cellBorderColor = SystemColors.ButtonShadow;
       _showToolTips = true;
@@ -198,6 +196,8 @@ namespace Cyotek.Windows.Forms
       this.CalculateActualCellSize();
       this.RefreshColors();
     }
+
+    protected override Size DefaultSize => new Size(200, 100);
 
     #endregion Public Constructors
 
@@ -355,11 +355,7 @@ namespace Cyotek.Windows.Forms
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int ActualColumns
-    {
-      get => _actualColumns;
-      protected set => _actualColumns = value;
-    }
+    public int ActualColumns => _actualColumns;
 
     [Category("Behavior")]
     [DefaultValue(true)]
@@ -394,7 +390,7 @@ namespace Cyotek.Windows.Forms
     }
 
     [Browsable(true)]
-    [DefaultValue(true)]
+    [DefaultValue(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override bool AutoSize
     {
@@ -778,6 +774,7 @@ namespace Cyotek.Windows.Forms
     [Obsolete("This property is no longer used.", true)]
     protected IDictionary<int, Rectangle> ColorRegions => new Dictionary<int, Rectangle>();
 
+    [Obsolete("Setting this property will be removed in a future update.")]
     protected int CustomRows
     {
       get => _customRows;
@@ -786,6 +783,7 @@ namespace Cyotek.Windows.Forms
 
     protected override Padding DefaultPadding => new Padding(5);
 
+    [Obsolete("Setting this property will be removed in a future update.")]
     protected int PrimaryRows
     {
       get => _primaryRows;
@@ -794,6 +792,7 @@ namespace Cyotek.Windows.Forms
 
     protected int Rows => _rowCount;
 
+    [Obsolete("This property will be removed in a future update.")]
     protected int SeparatorHeight
     {
       get => _separatorHeight;
