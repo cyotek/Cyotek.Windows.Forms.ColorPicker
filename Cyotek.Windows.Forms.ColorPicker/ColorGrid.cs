@@ -477,24 +477,28 @@ namespace Cyotek.Windows.Forms
 
         if (!value.IsEmpty)
         {
-          // the new color matches the color at the current index, so don't change the index
-          // this stops the selection hopping about if you have duplicate colors in a palette
+          // if the new color matches the color at the current index, don't change the index -
+          // this stops the selection hopping about if you have duplicate colors in a palette.
           // otherwise, if the colors don't match, then find the index that does
           newIndex = this.GetColor(_colorIndex) == value
             ? _colorIndex
             : this.GetColorIndex(value);
 
-          if (newIndex == InvalidIndex)
+          if (newIndex == ColorGrid.InvalidIndex)
           {
             newIndex = this.AddCustomColor(value);
           }
         }
         else
         {
-          newIndex = InvalidIndex;
+          newIndex = ColorGrid.InvalidIndex;
         }
 
-        this.ColorIndex = newIndex;
+        if (newIndex != _colorIndex)
+        {
+          _colorIndex = newIndex;
+          this.OnColorIndexChanged(EventArgs.Empty);
+        }
 
         this.OnColorChanged(EventArgs.Empty);
       }
@@ -512,9 +516,17 @@ namespace Cyotek.Windows.Forms
           _previousColorIndex = _colorIndex;
           _colorIndex = value;
 
-          if (value != InvalidIndex)
+          if (value != ColorGrid.InvalidIndex)
           {
-            _color = this.GetColor(value);
+            Color newColor;
+
+            newColor = this.GetColor(value);
+
+            if (_color != newColor)
+            {
+              _color = newColor;
+              this.OnColorChanged(EventArgs.Empty);
+            }
           }
 
           this.OnColorIndexChanged(EventArgs.Empty);
