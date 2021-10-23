@@ -47,6 +47,12 @@
 * The `Up`, `Down`, `Home` and `End` keys are now used to
   manipulate the saturation value when a `ColorWheel` control
   has focus
+* [BREAKING] The `ColorGrid.AutoSize` property now defaults to
+  `false`
+* [BREAKING] If the `AutoSize` and `AutoFit` properties of a
+  `ColorGrid` are `false`, and the `ColumnCount` is above zero,
+  the `CellSize` will be ignored and a scaled value based on the
+  control width will be calculated instead
 
 #### Deprecated
 
@@ -60,6 +66,12 @@
 * The `AdobePhotoshopColorSwatchColorSpace` and
   `AdobePhotoshopColorSwatchFileVersion` enums have been marked
   as obsolete
+* The `CustomRows`, `PrimaryRows`, `SeparatorHeight` and
+  `WasKeyPressed` `ColorGrid` properties have been marked as
+  obsolete
+* The `ColorGrid.ColorRegions` property and `DefineColorRegions`
+  method have been marked as obsolete and will cause a compile
+  time error if usage is attempted
 
 #### Removed
 
