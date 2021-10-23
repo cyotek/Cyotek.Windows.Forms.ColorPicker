@@ -959,15 +959,16 @@ namespace Cyotek.Windows.Forms
     {
       if (this.AllowPainting && index != InvalidIndex)
       {
-        if (_colorRegions.TryGetValue(index, out Rectangle bounds))
-        {
-          if (_selectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
-          {
-            bounds.Inflate(this.Padding.Left, this.Padding.Top);
-          }
+        Rectangle bounds;
 
-          this.Invalidate(bounds);
+        bounds = this.GetCellBounds(index);
+
+        if (_selectedCellStyle == ColorGridSelectedCellStyle.Zoomed)
+        {
+          bounds.Inflate(this.Padding.Left, this.Padding.Top);
         }
+
+        this.Invalidate(bounds);
       }
     }
 
@@ -1602,7 +1603,7 @@ namespace Cyotek.Windows.Forms
             int y;
             Point location;
 
-            location = _colorRegions[_colorIndex].Location;
+            location = this.GetCellBounds(_colorIndex).Location;
             x = location.X;
             y = location.Y + _cellSize.Height;
 
@@ -1706,6 +1707,7 @@ namespace Cyotek.Windows.Forms
       if (this.AllowPainting)
       {
         int colorCount;
+          Rectangle bounds;
 
         colorCount = _colors.Count;
 
@@ -1726,9 +1728,8 @@ namespace Cyotek.Windows.Forms
         // draw cells for all current colors
         for (int i = 0; i < colorCount; i++)
         {
-          Rectangle bounds;
 
-          bounds = _colorRegions[i];
+          bounds = this.GetCellBounds(i);
           if (e.ClipRectangle.IntersectsWith(bounds))
           {
             this.PaintCell(e, i, i, _colors[i], bounds);
@@ -1743,7 +1744,9 @@ namespace Cyotek.Windows.Forms
           // and the custom colors
           for (int i = 0; i < _customColors.Count; i++)
           {
-            if (_colorRegions.TryGetValue(colorCount + i, out Rectangle bounds) && e.ClipRectangle.IntersectsWith(bounds))
+            bounds = this.GetCellBounds(colorCount + i);
+
+            if (e.ClipRectangle.IntersectsWith(bounds))
             {
               this.PaintCell(e, i, colorCount + i, _customColors[i], bounds);
             }
@@ -1753,7 +1756,9 @@ namespace Cyotek.Windows.Forms
         // draw the selected color
         if (_selectedCellStyle != ColorGridSelectedCellStyle.None && _colorIndex >= 0)
         {
-          if (_colorRegions.TryGetValue(_colorIndex, out Rectangle bounds) && e.ClipRectangle.IntersectsWith(bounds))
+          bounds = this.GetCellBounds(_colorIndex);
+
+          if (e.ClipRectangle.IntersectsWith(bounds))
           {
             this.PaintSelectedCell(e, _colorIndex, _color, bounds);
           }
