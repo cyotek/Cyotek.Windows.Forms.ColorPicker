@@ -19,6 +19,8 @@ namespace Cyotek.Windows.Forms
 {
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]
+  [ToolboxBitmap(typeof(ColorWheel), "ColorWheelToolboxBitmap.bmp")]
+  [ToolboxItem(true)]
   public class ColorWheel : Control, IColorEditor
   {
 #if !NET46_OR_GREATER

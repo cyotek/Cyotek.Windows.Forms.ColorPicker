@@ -16,6 +16,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using CommonMark;
+using Cyotek.Demo.Windows.Forms;
 using Cyotek.Windows.Forms.ColorPicker.Demo.Properties;
 using TheArtOfDev.HtmlRenderer.WinForms;
 

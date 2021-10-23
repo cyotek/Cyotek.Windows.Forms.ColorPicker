@@ -1,37 +1,107 @@
+// Reading DOOM WAD files
+// https://www.cyotek.com/blog/reading-doom-wad-files
+
+// Writing DOOM WAD files
+// https://www.cyotek.com/blog/writing-doom-wad-files
+
+// Copyright (c) 2020-2021 Cyotek Ltd. All Rights Reserved.
+
+// This work is licensed under the MIT License.
+// See LICENSE.txt for the full text
+
+// Found this example useful?
+// https://www.cyotek.com/contribute
+
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Demo.Windows.Forms
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2018 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-  // https://www.paypal.me/cyotek
-
-  internal partial class BaseForm : Form
+  internal class BaseForm : System.Windows.Forms.Form
   {
-    #region Constructors
+    #region Protected Constructors
 
-    public BaseForm()
+    protected BaseForm()
     {
-      this.SuspendLayout();
+      base.MaximizeBox = false;
+      base.MinimizeBox = false;
+      base.ShowIcon = false;
+      base.ShowInTaskbar = false;
+      base.StartPosition = FormStartPosition.CenterParent;
+      base.FormBorderStyle = FormBorderStyle.FixedDialog;
       this.AutoScaleDimensions = new SizeF(6F, 13F);
       this.AutoScaleMode = AutoScaleMode.Font;
-      this.MinimizeBox = false;
-      this.ShowIcon = false;
-      this.ShowInTaskbar = false;
-      this.StartPosition = FormStartPosition.CenterParent;
-      this.ResumeLayout(false);
     }
 
-    #endregion
+    #endregion Protected Constructors
 
-    #region Methods
+    #region Public Properties
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override Font Font
+    {
+      get => base.Font;
+      set => base.Font = value;
+    }
+
+    [DefaultValue(typeof(FormBorderStyle), "FixedDialog")]
+    public new FormBorderStyle FormBorderStyle
+    {
+      get => base.FormBorderStyle;
+      set => base.FormBorderStyle = value;
+    }
+
+    [DefaultValue(false)]
+    public new bool MaximizeBox
+    {
+      get => base.MaximizeBox;
+      set => base.MaximizeBox = value;
+    }
+
+    [DefaultValue(false)]
+    public new bool MinimizeBox
+    {
+      get => base.MinimizeBox;
+      set => base.MinimizeBox = value;
+    }
+
+    [DefaultValue(false)]
+    public new bool ShowIcon
+    {
+      get => base.ShowIcon;
+      set => base.ShowIcon = value;
+    }
+
+    [DefaultValue(false)]
+    public new bool ShowInTaskbar
+    {
+      get => base.ShowInTaskbar;
+      set => base.ShowInTaskbar = value;
+    }
+
+    [DefaultValue(typeof(FormStartPosition), "CenterParent")]
+    public new FormStartPosition StartPosition
+    {
+      get => base.StartPosition;
+      set => base.StartPosition = value;
+    }
+
+    #endregion Public Properties
+
+    #region Protected Methods
+
+    protected override void OnLoad(EventArgs e)
+    {
+      if (!this.DesignMode)
+      {
+        this.Font = SystemFonts.MessageBoxFont;
+      }
+
+      base.OnLoad(e);
+    }
 
     protected override void OnShown(EventArgs e)
     {
@@ -40,13 +110,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       Cursor.Current = Cursors.Default;
     }
 
-    protected override void OnLoad(EventArgs e)
-    {
-      base.OnLoad(e);
-
-      base.Font = SystemFonts.MessageBoxFont;
-    }
-
-    #endregion
+    #endregion Protected Methods
   }
 }

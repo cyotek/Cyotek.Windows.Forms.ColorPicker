@@ -6,6 +6,7 @@
 
 // If you use this code in your applications, donations or attribution are welcome
 
+using Cyotek.Demo.Windows.Forms;
 using System;
 using Cyotek.Windows.Forms.ToolStripControllerHosts;
 

@@ -21,6 +21,8 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]
+  [ToolboxBitmap(typeof(ColorEditor), "ColorEditorToolboxBitmap.bmp")]
+  [ToolboxItem(true)]
   public partial class ColorEditor : UserControl, IColorEditor
   {
     #region Private Fields

@@ -67,7 +67,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // iconPictureBox
       // 
-      this.iconPictureBox.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.icon;
+      this.iconPictureBox.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.Icon;
       this.iconPictureBox.Location = new System.Drawing.Point(12, 12);
       this.iconPictureBox.Name = "iconPictureBox";
       this.iconPictureBox.Size = new System.Drawing.Size(64, 64);

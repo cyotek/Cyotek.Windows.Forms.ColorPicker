@@ -24,6 +24,8 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]
+  [ToolboxBitmap(typeof(ColorGrid), "ColorGridToolboxBitmap.bmp")]
+  [ToolboxItem(true)]
   public class ColorGrid : Control, IColorEditor
   {
     #region Constants
