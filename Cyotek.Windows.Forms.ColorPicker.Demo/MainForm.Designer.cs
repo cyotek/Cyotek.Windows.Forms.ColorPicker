@@ -167,7 +167,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.Name = "MainForm";
       this.ShowIcon = true;
       this.ShowInTaskbar = true;
-      this.Text = "Cyotek ColorPicker Controls for Windows Forms";
+      this.Text = "Cyotek Color Picker Controls for Windows Forms";
       this.Controls.SetChildIndex(this.groupBox1, 0);
       this.groupBox1.ResumeLayout(false);
       this.ResumeLayout(false);

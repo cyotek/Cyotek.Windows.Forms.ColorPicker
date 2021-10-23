@@ -1,4 +1,4 @@
-# Cyotek.Windows.Forms.ColorPickers Control Collection
+# ![Icon][icon] Cyotek Color Picker Controls for Windows Forms
 
 [![Build status][cibadge]][ci] [![NuGet][nugetbadge]][nuget]
 
@@ -235,6 +235,8 @@ some time, donations are welcome.
 [Hosting a ColorGrid control in a ToolStrip]: http://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip
 
 [blogtag]: http://www.cyotek.com/blog/tag/colorpicker
+
+[icon]: res/icon-32.png
 [colorgridscreen]: res/cp-colorgridcontrol.png
 [colorwheelscreen]: res/cp-colorwheelcontrol.png
 [colorsliderscreen]: res/cp-colorslidercontrols.png

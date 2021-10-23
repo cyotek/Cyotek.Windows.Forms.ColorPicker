@@ -1,4 +1,4 @@
-# Cyotek.Windows.Forms.ColorPickers Control Collection
+# Cyotek Color Picker Controls for Windows Forms
 
 ## Change Log
 
@@ -103,7 +103,7 @@
 
 * The protected `SelectionGlyph`, `Points`, `LockUpdates` and
   `Colors` properties of the `ColorWheel` control are deprecated
-  and will be removed in a subsequent updated.
+  and will be removed in a subsequent update
 
 #### Fixed
 
