@@ -56,10 +56,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       demoLabel.BackColor = System.Drawing.SystemColors.Info;
       demoLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
-      demoLabel.Location = new System.Drawing.Point(345, 27);
+      demoLabel.Location = new System.Drawing.Point(296, 23);
       demoLabel.Name = "demoLabel";
-      demoLabel.Padding = new System.Windows.Forms.Padding(10);
-      demoLabel.Size = new System.Drawing.Size(412, 310);
+      demoLabel.Padding = new System.Windows.Forms.Padding(9, 9, 9, 9);
+      demoLabel.Size = new System.Drawing.Size(353, 269);
       demoLabel.TabIndex = 6;
       demoLabel.Text = resources.GetString("demoLabel.Text");
       // 
@@ -68,9 +68,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       previewGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
       previewGroupBox.Controls.Add(this.dialogColorPreviewPanel);
-      previewGroupBox.Location = new System.Drawing.Point(12, 139);
+      previewGroupBox.Location = new System.Drawing.Point(10, 120);
       previewGroupBox.Name = "previewGroupBox";
-      previewGroupBox.Size = new System.Drawing.Size(200, 195);
+      previewGroupBox.Size = new System.Drawing.Size(171, 169);
       previewGroupBox.TabIndex = 3;
       previewGroupBox.TabStop = false;
       previewGroupBox.Text = "Preview";
@@ -80,9 +80,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.dialogColorPreviewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.dialogColorPreviewPanel.Color = System.Drawing.Color.Empty;
-      this.dialogColorPreviewPanel.Location = new System.Drawing.Point(6, 25);
+      this.dialogColorPreviewPanel.Location = new System.Drawing.Point(5, 22);
       this.dialogColorPreviewPanel.Name = "dialogColorPreviewPanel";
-      this.dialogColorPreviewPanel.Size = new System.Drawing.Size(188, 164);
+      this.dialogColorPreviewPanel.Size = new System.Drawing.Size(161, 142);
       this.dialogColorPreviewPanel.TabIndex = 1;
       // 
       // menuStrip
@@ -91,8 +91,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.fileToolStripMenuItem});
       this.menuStrip.Location = new System.Drawing.Point(0, 0);
       this.menuStrip.Name = "menuStrip";
-      this.menuStrip.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-      this.menuStrip.Size = new System.Drawing.Size(769, 24);
+      this.menuStrip.Size = new System.Drawing.Size(659, 24);
       this.menuStrip.TabIndex = 0;
       // 
       // fileToolStripMenuItem
@@ -113,9 +112,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // browseColorButton
       // 
-      this.browseColorButton.Location = new System.Drawing.Point(12, 106);
+      this.browseColorButton.Location = new System.Drawing.Point(10, 92);
       this.browseColorButton.Name = "browseColorButton";
-      this.browseColorButton.Size = new System.Drawing.Size(121, 27);
+      this.browseColorButton.Size = new System.Drawing.Size(104, 23);
       this.browseColorButton.TabIndex = 2;
       this.browseColorButton.Text = "&Choose Color...";
       this.browseColorButton.UseVisualStyleBackColor = true;
@@ -124,27 +123,27 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // colorPreviewPanel
       // 
       this.colorPreviewPanel.Color = System.Drawing.Color.Empty;
-      this.colorPreviewPanel.Location = new System.Drawing.Point(12, 27);
+      this.colorPreviewPanel.Location = new System.Drawing.Point(10, 23);
       this.colorPreviewPanel.Name = "colorPreviewPanel";
-      this.colorPreviewPanel.Size = new System.Drawing.Size(200, 73);
+      this.colorPreviewPanel.Size = new System.Drawing.Size(171, 63);
       this.colorPreviewPanel.TabIndex = 1;
       // 
       // showAlphaChannelCheckBox
       // 
       this.showAlphaChannelCheckBox.Checked = true;
       this.showAlphaChannelCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.showAlphaChannelCheckBox.Location = new System.Drawing.Point(218, 27);
+      this.showAlphaChannelCheckBox.Location = new System.Drawing.Point(187, 23);
       this.showAlphaChannelCheckBox.Name = "showAlphaChannelCheckBox";
-      this.showAlphaChannelCheckBox.Size = new System.Drawing.Size(121, 36);
+      this.showAlphaChannelCheckBox.Size = new System.Drawing.Size(104, 31);
       this.showAlphaChannelCheckBox.TabIndex = 4;
       this.showAlphaChannelCheckBox.Text = "Show &Alpha Channel";
       this.showAlphaChannelCheckBox.UseVisualStyleBackColor = true;
       // 
       // preserveAlphaChannelCheckBox
       // 
-      this.preserveAlphaChannelCheckBox.Location = new System.Drawing.Point(217, 69);
+      this.preserveAlphaChannelCheckBox.Location = new System.Drawing.Point(186, 60);
       this.preserveAlphaChannelCheckBox.Name = "preserveAlphaChannelCheckBox";
-      this.preserveAlphaChannelCheckBox.Size = new System.Drawing.Size(122, 36);
+      this.preserveAlphaChannelCheckBox.Size = new System.Drawing.Size(105, 31);
       this.preserveAlphaChannelCheckBox.TabIndex = 5;
       this.preserveAlphaChannelCheckBox.Text = "&Preserve Alpha Channel";
       this.preserveAlphaChannelCheckBox.UseVisualStyleBackColor = true;
@@ -154,9 +153,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.showLoadCheckBox.AutoSize = true;
       this.showLoadCheckBox.Checked = true;
       this.showLoadCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.showLoadCheckBox.Location = new System.Drawing.Point(218, 111);
+      this.showLoadCheckBox.Location = new System.Drawing.Point(187, 96);
       this.showLoadCheckBox.Name = "showLoadCheckBox";
-      this.showLoadCheckBox.Size = new System.Drawing.Size(84, 19);
+      this.showLoadCheckBox.Size = new System.Drawing.Size(80, 17);
       this.showLoadCheckBox.TabIndex = 7;
       this.showLoadCheckBox.Text = "Show &Load";
       this.showLoadCheckBox.UseVisualStyleBackColor = true;
@@ -166,18 +165,18 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.showSaveCheckBox.AutoSize = true;
       this.showSaveCheckBox.Checked = true;
       this.showSaveCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.showSaveCheckBox.Location = new System.Drawing.Point(218, 136);
+      this.showSaveCheckBox.Location = new System.Drawing.Point(187, 118);
       this.showSaveCheckBox.Name = "showSaveCheckBox";
-      this.showSaveCheckBox.Size = new System.Drawing.Size(82, 19);
+      this.showSaveCheckBox.Size = new System.Drawing.Size(81, 17);
       this.showSaveCheckBox.TabIndex = 8;
       this.showSaveCheckBox.Text = "Show &Save";
       this.showSaveCheckBox.UseVisualStyleBackColor = true;
       // 
       // ColorPickerDialogDemoForm
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(769, 346);
+      this.ClientSize = new System.Drawing.Size(659, 300);
       this.Controls.Add(this.showSaveCheckBox);
       this.Controls.Add(this.showLoadCheckBox);
       this.Controls.Add(previewGroupBox);
@@ -187,7 +186,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.Controls.Add(demoLabel);
       this.Controls.Add(this.browseColorButton);
       this.Controls.Add(this.menuStrip);
-      this.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.Name = "ColorPickerDialogDemoForm";

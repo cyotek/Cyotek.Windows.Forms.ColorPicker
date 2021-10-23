@@ -23,6 +23,8 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   [DefaultProperty(nameof(ColorGrid.Color))]
   [DefaultEvent(nameof(ColorGrid.ColorChanged))]
+  [ToolboxBitmap(typeof(ColorGrid), "ColorGridToolboxBitmap.bmp")]
+  [ToolboxItem(true)]
   public class ColorGrid : Control, IColorEditor
   {
     #region Public Fields

@@ -1,4 +1,4 @@
-# Cyotek.Windows.Forms.ColorPickers Control Collection
+# ![Icon][icon] Cyotek Color Picker Controls for Windows Forms
 
 [![Build status][cibadge]][ci] [![NuGet][nugetbadge]][nuget]
 
@@ -87,7 +87,13 @@ character hexadecimal notation, or choose from named web and
 system colors.
 
 Use of the alpha channel can be configured via the
-`ShowAlphaChannel` and `PreserveAlphaChannel` properties.
+`ShowAlphaChannel` and `PreserveAlphaChannel` properties. The
+`ShowHex`, `ShowHsl` and `ShowRgb` properties can be used to
+show or hide groups of editors.
+
+Alternatively, the `NubSize`, `NubColor` and `NubOutlineColor`
+properties can be used to customise the appearance of the
+sliders.
 
 ### ScreenColorPicker Control
 
@@ -117,13 +123,13 @@ and provide your own logic.
 
 ### ColorEditorManager
 
+![ColorEditorManager compnent demonstration][coloreditormanagerscreen]
+
 This is a non-GUI component that you can drop onto a form, and
 bind to other controls in this library. When the `Color`
 property of one control changes, it is reflected in the others
 without having to lift a finger. Useful if you're creating
 composite displays from multiple controls.
-
-![ColorEditorManager compnent demonstration][coloreditormanagerscreen]
 
 ## Color Palettes and External Palette Files
 
@@ -209,8 +215,6 @@ some time, donations are welcome.
 
 * Inspiration (and some code!) was taken from [Color Picker with
   Color Wheel and Eye Dropper]
-* The icon used by the demonstration is from the [Crystal
-  Project Icons]
 * The eye dropper png graphic is from the [Momentum Glossy
   Icons]
 * [DawnBringer 16 color palette]
@@ -219,7 +223,6 @@ some time, donations are welcome.
 * [Arne Palette v20]
 
 [Color Picker with Color Wheel and Eye Dropper]: http://www.codeproject.com/Articles/21965/Color-Picker-with-Color-Wheel-and-Eye-Dropper
-[Crystal Project Icons]: http://www.iconfinder.com/icondetails/17937/128/color_color_scheme_icons_renk_icon
 [Momentum Glossy Icons]: http://www.iconfinder.com/icondetails/84569/32/eyedropper_icon
 [DawnBringer 16 color palette]: http://www.pixeljoint.com/forum/forum_posts.asp?TID=12795
 [DawnBringer 32 color palette]: http://www.pixeljoint.com/forum/forum_posts.asp?TID=16247
@@ -232,6 +235,8 @@ some time, donations are welcome.
 [Hosting a ColorGrid control in a ToolStrip]: http://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip
 
 [blogtag]: http://www.cyotek.com/blog/tag/colorpicker
+
+[icon]: res/icon-32.png
 [colorgridscreen]: res/cp-colorgridcontrol.png
 [colorwheelscreen]: res/cp-colorwheelcontrol.png
 [colorsliderscreen]: res/cp-colorslidercontrols.png

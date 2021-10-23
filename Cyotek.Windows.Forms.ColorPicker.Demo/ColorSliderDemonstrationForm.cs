@@ -9,6 +9,7 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
+using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
