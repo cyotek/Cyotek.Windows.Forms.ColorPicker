@@ -23,6 +23,8 @@ namespace Cyotek.Windows.Forms
   /// </summary>
   [DefaultProperty("Color")]
   [DefaultEvent("ColorChanged")]
+  [ToolboxBitmap(typeof(ScreenColorPicker), "ScreenColorPickerToolboxBitmap.bmp")]
+  [ToolboxItem(true)]
   public class ScreenColorPicker : Control, IColorEditor
   {
     #region Private Fields

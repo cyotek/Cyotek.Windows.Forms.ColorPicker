@@ -18,7 +18,10 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Represents a control that binds multiple editors together as a single composite unit.
   /// </summary>
-  [DefaultEvent("ColorChanged")]
+  [DefaultEvent(nameof(ColorEditorManager.ColorChanged))]
+  [DefaultProperty(nameof(ColorEditorManager.Color))]
+  [ToolboxBitmap(typeof(ColorEditorManager), "ColorEditorManagerToolboxBitmap.bmp")]
+  [ToolboxItem(true)]
   public class ColorEditorManager : Component, IColorEditor
   {
     #region Private Fields
@@ -107,8 +110,8 @@ namespace Cyotek.Windows.Forms
     /// Gets or sets the component color.
     /// </summary>
     /// <value>The component color.</value>
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [Category("Appearance")]
+    [DefaultValue(typeof(Color), "Empty")]
     public Color Color
     {
       get => _color;
@@ -294,35 +297,14 @@ namespace Cyotek.Windows.Forms
         case ColorWheel colorWheel:
           colorWheel.HslColorChanged += this.HslColorChangedHandler;
           break;
+
         case LightnessColorSlider lightnessColorSlider:
           lightnessColorSlider.ValueChanged += this.ColorChangedHandler;
           break;
+
         default:
           control.ColorChanged += this.ColorChangedHandler;
           break;
-      }
-    }
-
-    private void HslColorChangedHandler(object sender, EventArgs e)
-    {
-      if (!_lockUpdates)
-      {
-        HslColor color;
-
-        if (sender is ColorWheel colorWheel)
-        {
-          color = colorWheel.HslColor;
-        }
-        else
-        {
-          color = HslColor.Empty;
-        }
-
-        _lockUpdates = true;
-        this.HslColor = color;
-        this.Color = color.ToRgbColor(Convert.ToInt32(_colorWheel.Alpha * 255));
-        _lockUpdates = false;
-        this.Synchronize((IColorEditor)sender);
       }
     }
 
@@ -526,15 +508,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void SyncWheel(byte alpha, double lightness)
-    {
-      if (_colorWheel != null)
-      {
-        _colorWheel.Lightness = lightness;
-        _colorWheel.Alpha = alpha * _rgbMultiplier;
-      }
-    }
-
     protected virtual void UnbindEvents(IColorEditor control)
     {
       switch (control)
@@ -542,9 +515,11 @@ namespace Cyotek.Windows.Forms
         case ColorWheel colorWheel:
           colorWheel.HslColorChanged -= this.HslColorChangedHandler;
           break;
+
         case LightnessColorSlider lightnessColorSlider:
           lightnessColorSlider.ValueChanged -= this.ColorChangedHandler;
           break;
+
         default:
           control.ColorChanged -= this.ColorChangedHandler;
           break;
@@ -572,6 +547,38 @@ namespace Cyotek.Windows.Forms
         this.Color = source.Color;
         _lockUpdates = false;
         this.Synchronize(source);
+      }
+    }
+
+    private void HslColorChangedHandler(object sender, EventArgs e)
+    {
+      if (!_lockUpdates)
+      {
+        HslColor color;
+
+        if (sender is ColorWheel colorWheel)
+        {
+          color = colorWheel.HslColor;
+        }
+        else
+        {
+          color = HslColor.Empty;
+        }
+
+        _lockUpdates = true;
+        this.HslColor = color;
+        this.Color = color.ToRgbColor(Convert.ToInt32(_colorWheel.Alpha * 255));
+        _lockUpdates = false;
+        this.Synchronize((IColorEditor)sender);
+      }
+    }
+
+    private void SyncWheel(byte alpha, double lightness)
+    {
+      if (_colorWheel != null)
+      {
+        _colorWheel.Lightness = lightness;
+        _colorWheel.Alpha = alpha * _rgbMultiplier;
       }
     }
 
