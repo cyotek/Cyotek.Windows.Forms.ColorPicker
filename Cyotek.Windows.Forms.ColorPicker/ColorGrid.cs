@@ -125,6 +125,8 @@ namespace Cyotek.Windows.Forms
 
     private ColorEditingMode _editMode;
 
+    private int _fullyVisibleRows;
+
     private int _hotIndex;
 
     private bool _layoutRequired;
@@ -809,6 +811,30 @@ namespace Cyotek.Windows.Forms
 
     #region Private Properties
 
+    /// <summary> Gets the inner client rectangle. </summary>
+    /// <value> A <see cref="Rectangle"/> that describes the inner client area. </value>
+    private Rectangle InnerClient
+    {
+      get
+      {
+        Padding padding;
+        Size size;
+        int w;
+        int h;
+
+        padding = this.Padding;
+        size = this.ClientSize;
+        w = size.Width - padding.Horizontal;
+        h = size.Height - padding.Vertical;
+        if (_rowCount > _fullyVisibleRows)
+        {
+          //  w -= _scrollBar.Width;
+        }
+
+        return new Rectangle(padding.Left, padding.Top, w, h);
+      }
+    }
+
     private int TopRow => _topItem / _actualColumns;
 
     private int TotalCount => _showCustomColors
@@ -1189,13 +1215,23 @@ namespace Cyotek.Windows.Forms
       _customRows = customRows;
       _rowCount = primaryRows + customRows;
 
-      _visibleRows = size.Height > 0 && _actualCellSize.Height > 0
-        ? size.Height / (_actualCellSize.Height + _separatorHeight)
+      _fullyVisibleRows = size.Height > 0 && _actualCellSize.Height > 0
+        ? this.InnerClient.Height / (_actualCellSize.Height + _spacing.Height)
         : 1;
 
-      if (_visibleRows == 0)
+      if (_fullyVisibleRows == 0)
       {
+        _fullyVisibleRows = 1;
         _visibleRows = 1;
+      }
+      else
+      {
+        _visibleRows = _fullyVisibleRows;
+        if (_rowCount > _visibleRows && this.InnerClient.Height % (_actualCellSize.Height + _spacing.Height) != 0)
+        {
+          // account for a partially visible row
+          _visibleRows++;
+        }
       }
     }
 
@@ -2164,6 +2200,41 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private void CalculateActualCellSize()
+    {
+      if (_autoFit)
+      {
+        this.CalculateCellSize();
+      }
+      else if (_columns > 0 && !base.AutoSize)
+      {
+        int size;
+
+        size = (this.ClientSize.Width - (this.Padding.Horizontal + (_spacing.Width * _columns))) / _columns;
+
+        _actualCellSize = new Size(size, size);
+      }
+      else
+      {
+        Point dpi;
+        float scaleX;
+        float scaleY;
+
+        dpi = NativeMethods.GetDesktopDpi();
+        scaleX = dpi.X / 96F;
+        scaleY = dpi.Y / 96F;
+
+        if (scaleX > 1 && scaleY > 1)
+        {
+          _actualCellSize = new Size((int)(_cellSize.Width * scaleX), (int)(_cellSize.Height * scaleY));
+        }
+        else
+        {
+          _actualCellSize = _cellSize;
+        }
+      }
+    }
+
     private void ColorsCollectionChangedHandler(object sender, ColorCollectionEventArgs e)
     {
       this.RefreshColors();
@@ -2313,41 +2384,6 @@ namespace Cyotek.Windows.Forms
         value.ItemRemoved -= this.ColorsCollectionChangedHandler;
         value.ItemsCleared -= this.ColorsCollectionChangedHandler;
         value.ItemReplaced -= this.ColorsCollectionItemReplacedHandler;
-      }
-    }
-
-    private void CalculateActualCellSize()
-    {
-      if (_autoFit)
-      {
-        this.CalculateCellSize();
-      }
-      else if (_columns > 0 && !base.AutoSize)
-      {
-        int size;
-
-        size = (this.ClientSize.Width - (this.Padding.Horizontal + (_spacing.Width * _columns))) / _columns;
-
-        _actualCellSize = new Size(size, size);
-      }
-      else
-      {
-        Point dpi;
-        float scaleX;
-        float scaleY;
-
-        dpi = NativeMethods.GetDesktopDpi();
-        scaleX = dpi.X / 96F;
-        scaleY = dpi.Y / 96F;
-
-        if (scaleX > 1 && scaleY > 1)
-        {
-          _actualCellSize = new Size((int)(_cellSize.Width * scaleX), (int)(_cellSize.Height * scaleY));
-        }
-        else
-        {
-          _actualCellSize = _cellSize;
-        }
       }
     }
 
