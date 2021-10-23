@@ -193,7 +193,7 @@ namespace Cyotek.Windows.Forms
       this.AddEventHandlers(_colors);
       this.AddEventHandlers(_customColors);
 
-      this.SetScaledCellSize();
+      this.CalculateActualCellSize();
       this.RefreshColors();
     }
 
@@ -1144,15 +1144,20 @@ namespace Cyotek.Windows.Forms
 
     protected virtual void CalculateCellSize()
     {
+      Size size;
+      Padding padding;
       int w;
       int h;
 
-      w = (this.ClientSize.Width - this.Padding.Horizontal) / _actualColumns - _spacing.Width;
-      h = (this.ClientSize.Height - this.Padding.Vertical) / (_primaryRows + _customRows) - _spacing.Height;
+      size = this.ClientSize;
+      padding = this.Padding;
+
+      w = (size.Width - padding.Horizontal) / _actualColumns - _spacing.Width;
+      h = (size.Height - padding.Vertical) / (_primaryRows + _customRows) - _spacing.Height;
 
       if (w > 0 && h > 0)
       {
-        this.CellSize = new Size(w, h);
+        _actualCellSize = new Size(w, h);
       }
     }
 
@@ -1500,7 +1505,7 @@ namespace Cyotek.Windows.Forms
     {
       EventHandler handler;
 
-      this.SetScaledCellSize();
+      this.CalculateActualCellSize();
 
       if (base.AutoSize)
       {
@@ -1722,7 +1727,7 @@ namespace Cyotek.Windows.Forms
 
             location = this.GetCellBounds(_colorIndex).Location;
             x = location.X;
-            y = location.Y + _cellSize.Height;
+            y = location.Y + _actualCellSize.Height;
 
             this.ShowContextMenu(new Point(x, y));
             break;
@@ -2099,13 +2104,11 @@ namespace Cyotek.Windows.Forms
     {
       if (this.AllowPainting)
       {
+        this.CalculateActualCellSize();
+
         this.CalculateGridSize();
 
-        if (_autoFit)
-        {
-          this.CalculateCellSize();
-        }
-        else if (base.AutoSize)
+        if (base.AutoSize)
         {
           this.SizeToFit();
         }
@@ -2313,23 +2316,38 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    private void SetScaledCellSize()
+    private void CalculateActualCellSize()
     {
-      Point dpi;
-      float scaleX;
-      float scaleY;
-
-      dpi = NativeMethods.GetDesktopDpi();
-      scaleX = dpi.X / 96F;
-      scaleY = dpi.Y / 96F;
-
-      if (scaleX > 1 && scaleY > 1)
+      if (_autoFit)
       {
-        _actualCellSize = new Size((int)(_cellSize.Width * scaleX), (int)(_cellSize.Height * scaleY));
+        this.CalculateCellSize();
+      }
+      else if (_columns > 0 && !base.AutoSize)
+      {
+        int size;
+
+        size = (this.ClientSize.Width - (this.Padding.Horizontal + (_spacing.Width * _columns))) / _columns;
+
+        _actualCellSize = new Size(size, size);
       }
       else
       {
-        _actualCellSize = _cellSize;
+        Point dpi;
+        float scaleX;
+        float scaleY;
+
+        dpi = NativeMethods.GetDesktopDpi();
+        scaleX = dpi.X / 96F;
+        scaleY = dpi.Y / 96F;
+
+        if (scaleX > 1 && scaleY > 1)
+        {
+          _actualCellSize = new Size((int)(_cellSize.Width * scaleX), (int)(_cellSize.Height * scaleY));
+        }
+        else
+        {
+          _actualCellSize = _cellSize;
+        }
       }
     }
 
