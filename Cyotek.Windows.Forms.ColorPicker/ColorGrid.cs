@@ -91,6 +91,8 @@ namespace Cyotek.Windows.Forms
 
     private static readonly object _eventSpacingChanged = new object();
 
+    private static readonly object _eventTopItemChanged = new object();
+
     private Size _actualCellSize;
 
     private int _actualColumns;
@@ -149,7 +151,11 @@ namespace Cyotek.Windows.Forms
 
     private ToolTip _toolTip;
 
+    private int _topItem;
+
     private int _updateCount;
+
+    private int _visibleRows;
 
     private bool _wasKeyPressed;
 
@@ -329,6 +335,16 @@ namespace Cyotek.Windows.Forms
     {
       add => this.Events.AddHandler(_eventSpacingChanged, value);
       remove => this.Events.RemoveHandler(_eventSpacingChanged, value);
+    }
+
+    /// <summary>
+    /// Occurs when the TopItem property value changes
+    /// </summary>
+    [Category("Property Changed")]
+    public event EventHandler TopItemChanged
+    {
+      add => this.Events.AddHandler(_eventTopItemChanged, value);
+      remove => this.Events.RemoveHandler(_eventTopItemChanged, value);
     }
 
     #endregion Public Events
@@ -714,6 +730,22 @@ namespace Cyotek.Windows.Forms
       set => base.Text = value;
     }
 
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int TopItem
+    {
+      get => _topItem;
+      set
+      {
+        if (_topItem != value)
+        {
+          _topItem = value;
+
+          this.OnTopItemChanged(EventArgs.Empty);
+        }
+      }
+    }
+
     #endregion Public Properties
 
     #region Protected Properties
@@ -759,6 +791,16 @@ namespace Cyotek.Windows.Forms
     }
 
     #endregion Protected Properties
+
+    #region Private Properties
+
+    private int TopRow => _topItem * _actualColumns;
+
+    private int TotalCount => _showCustomColors
+      ? _colors.Count + _customColors.Count
+      : _colors.Count;
+
+    #endregion Private Properties
 
     #region Public Methods
 
@@ -1101,12 +1143,17 @@ namespace Cyotek.Windows.Forms
 
     protected virtual void CalculateGridSize()
     {
+      Size size;
+      Padding padding;
       int primaryRows;
       int customRows;
 
+      size = this.ClientSize;
+      padding = this.Padding;
+
       _actualColumns = _columns != 0
         ? _columns
-        : (this.ClientSize.Width + _spacing.Width - this.Padding.Vertical) / (_actualCellSize.Width + _spacing.Width);
+        : (size.Width + _spacing.Width - padding.Horizontal) / (_actualCellSize.Width + _spacing.Width);
       if (_actualColumns < 1)
       {
         _actualColumns = 1;
@@ -1121,6 +1168,15 @@ namespace Cyotek.Windows.Forms
       _primaryRows = primaryRows;
       _customRows = customRows;
       _rowCount = primaryRows + customRows;
+
+      _visibleRows = size.Height > 0 && _actualCellSize.Height > 0
+        ? size.Height / (_actualCellSize.Height + _separatorHeight)
+        : 1;
+
+      if (_visibleRows == 0)
+      {
+        _visibleRows = 1;
+      }
     }
 
     protected virtual Brush CreateTransparencyBrush()
@@ -1208,7 +1264,7 @@ namespace Cyotek.Windows.Forms
           result -= lastStandardRowOffset;
         }
 
-        if (result > _colors.Count + _customColors.Count - 1)
+        if (result > this.TotalCount - 1)
         {
           result = InvalidIndex;
         }
@@ -1752,62 +1808,10 @@ namespace Cyotek.Windows.Forms
 
       if (this.AllowPainting)
       {
-        int colorCount;
-        Rectangle bounds;
-
-        colorCount = _colors.Count;
-
         this.OnPaintBackground(e); // HACK: Easiest way of supporting things like BackgroundImage, BackgroundImageLayout etc as the PaintBackground event is no longer being called
-
-        // draw a design time dotted grid
-        if (this.DesignMode)
-        {
-          using (Pen pen = new Pen(SystemColors.ButtonShadow)
-          {
-            DashStyle = DashStyle.Dot
-          })
-          {
-            e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
-          }
-        }
-
-        // draw cells for all current colors
-        for (int i = 0; i < colorCount; i++)
-        {
-          bounds = this.GetCellBounds(i);
-          if (e.ClipRectangle.IntersectsWith(bounds))
-          {
-            this.PaintCell(e, i, i, _colors[i], bounds);
-          }
-        }
-
-        if (_customColors.Count != 0 && _showCustomColors)
-        {
-          // draw a separator
-          this.PaintSeparator(e);
-
-          // and the custom colors
-          for (int i = 0; i < _customColors.Count; i++)
-          {
-            bounds = this.GetCellBounds(colorCount + i);
-
-            if (e.ClipRectangle.IntersectsWith(bounds))
-            {
-              this.PaintCell(e, i, colorCount + i, _customColors[i], bounds);
-            }
-          }
-        }
-
-        // draw the selected color
-        if (_selectedCellStyle != ColorGridSelectedCellStyle.None && _colorIndex >= 0)
-        {
-          bounds = this.GetCellBounds(_colorIndex);
-
-          if (e.ClipRectangle.IntersectsWith(bounds))
-          {
-            this.PaintSelectedCell(e, _colorIndex, _color, bounds);
-          }
-        }
+        this.PaintDesignModeAdornments(e);
+        this.PaintVisibleCells(e);
+        this.PaintSelectedColor(e);
       }
     }
 
@@ -1909,6 +1913,19 @@ namespace Cyotek.Windows.Forms
       }
 
       handler = (EventHandler)this.Events[_eventSpacingChanged];
+
+      handler?.Invoke(this, e);
+    }
+
+    /// <summary>
+    /// Raises the <see cref="TopItemChanged" /> event.
+    /// </summary>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+    protected virtual void OnTopItemChanged(EventArgs e)
+    {
+      EventHandler handler;
+
+      handler = (EventHandler)this.Events[_eventTopItemChanged];
 
       handler?.Invoke(this, e);
     }
@@ -2194,7 +2211,73 @@ namespace Cyotek.Windows.Forms
           || y > r * (_actualCellSize.Height + _spacing.Height) + _actualCellSize.Height;
     }
 
-    private bool IsValidIndex(int index) => index >= 0 && index < _colors.Count + _customColors.Count;
+    private bool IsValidIndex(int index) => index >= 0 && index < this.TotalCount;
+
+    private void PaintDesignModeAdornments(PaintEventArgs e)
+    {
+      // draw a design time dotted grid
+      if (this.DesignMode)
+      {
+        using (Pen pen = new Pen(SystemColors.ButtonShadow)
+        {
+          DashStyle = DashStyle.Dot
+        })
+        {
+          e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+        }
+      }
+    }
+
+    private void PaintSelectedColor(PaintEventArgs e)
+    {
+      // draw the selected color
+      if (_selectedCellStyle != ColorGridSelectedCellStyle.None && this.IsValidIndex(_colorIndex))
+      {
+        Rectangle bounds;
+
+        bounds = this.GetCellBounds(_colorIndex);
+
+        if (e.ClipRectangle.IntersectsWith(bounds))
+        {
+          this.PaintSelectedCell(e, _colorIndex, _color, bounds);
+        }
+      }
+    }
+
+    private void PaintVisibleCells(PaintEventArgs e)
+    {
+      int baseCount;
+      int start;
+      int end;
+
+      baseCount = _colors.Count;
+      start = this.TopRow;
+      end = Math.Min(this.TotalCount, start + (_visibleRows * _actualColumns));
+
+      for (int i = 0; i < end; i++)
+      {
+        Color color;
+        int index;
+
+        if (i < baseCount)
+        {
+          index = i;
+          color = _colors[i];
+        }
+        else
+        {
+          index = i - baseCount;
+          color = _customColors[index];
+
+          if (index == 0)
+          {
+            this.PaintSeparator(e);
+          }
+        }
+
+        this.PaintCell(e, index, i, color, this.GetCellBounds(i));
+      }
+    }
 
     private void RemoveEventHandlers(ColorCollection value)
     {
