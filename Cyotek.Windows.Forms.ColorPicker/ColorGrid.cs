@@ -167,7 +167,7 @@ namespace Cyotek.Windows.Forms
 
     public ColorGrid()
     {
-      this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick | ControlStyles.SupportsTransparentBackColor, true);
+      this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick | ControlStyles.SupportsTransparentBackColor | ControlStyles.ResizeRedraw, true);
 
       _previousHotIndex = InvalidIndex;
       _previousColorIndex = InvalidIndex;
@@ -1177,7 +1177,7 @@ namespace Cyotek.Windows.Forms
       size = this.ClientSize;
       padding = this.Padding;
 
-      w = (size.Width - padding.Horizontal) / _actualColumns - _spacing.Width;
+      w = ((size.Width - padding.Horizontal) / _actualColumns) - _spacing.Width;
       h = (size.Height - padding.Vertical) / (_primaryRows + _customRows) - _spacing.Height;
 
       if (w > 0 && h > 0)
@@ -1198,7 +1198,7 @@ namespace Cyotek.Windows.Forms
 
       _actualColumns = _columns != 0
         ? _columns
-        : (size.Width + _spacing.Width - padding.Horizontal) / (_actualCellSize.Width + _spacing.Width);
+        : (size.Width - padding.Right) / (_actualCellSize.Width + _spacing.Width);
       if (_actualColumns < 1)
       {
         _actualColumns = 1;
@@ -1226,7 +1226,7 @@ namespace Cyotek.Windows.Forms
       else
       {
         _visibleRows = _fullyVisibleRows;
-        if (_rowCount > _visibleRows && this.InnerClient.Height % (_actualCellSize.Height + _spacing.Height) != 0)
+        if (_rowCount > _visibleRows && _actualCellSize.Height > 0 && this.InnerClient.Height % (_actualCellSize.Height + _spacing.Height) != 0)
         {
           // account for a partially visible row
           _visibleRows++;
@@ -2209,7 +2209,7 @@ namespace Cyotek.Windows.Forms
       {
         int size;
 
-        size = (this.ClientSize.Width - (this.Padding.Horizontal + (_spacing.Width * _columns))) / _columns;
+        size = (this.ClientSize.Width - (this.Padding.Horizontal + (_spacing.Width * (_columns - 1)))) / _columns;
 
         _actualCellSize = new Size(size, size);
       }
@@ -2312,6 +2312,34 @@ namespace Cyotek.Windows.Forms
         })
         {
           e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+
+          if (_actualCellSize.Width > 0 && _actualCellSize.Height > 0)
+          {
+            int y;
+
+            y = this.Padding.Top;
+
+            for (int r = 0; r < _visibleRows; r++)
+            {
+              int x;
+
+              x = this.Padding.Left;
+
+              for (int c = 0; c < _actualColumns; c++)
+              {
+                e.Graphics.DrawRectangle(pen, x, y, _actualCellSize.Width - 1, _actualCellSize.Height - 1);
+
+                x += _actualCellSize.Width + _spacing.Width;
+              }
+
+              y += _actualCellSize.Height + _spacing.Height;
+
+              if (r == _primaryRows - 1)
+              {
+                y += _separatorHeight;
+              }
+            }
+          }
         }
       }
     }
