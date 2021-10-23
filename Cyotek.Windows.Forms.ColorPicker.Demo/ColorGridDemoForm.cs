@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -89,7 +90,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void grayScaleButton_Click(object sender, EventArgs e)
     {
-      colorGrid.Colors = new ColorCollection(Enumerable.Range(0, 254).Select(i => Color.FromArgb(i, i, i)));
+      colorGrid.Colors = this.MakeShades(i => Color.FromArgb(i, i, i));
     }
 
     private void hexagonPaletteButton_Click(object sender, EventArgs e)
@@ -127,10 +128,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void savePaletteButton_Click(object sender, EventArgs e)
     {
       using (FileDialog dialog = new SaveFileDialog
-                                 {
-                                   Filter = PaletteSerializer.DefaultSaveFilter,
-                                   Title = "Save Palette As"
-                                 })
+      {
+        Filter = PaletteSerializer.DefaultSaveFilter,
+        Title = "Save Palette As"
+      })
       {
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
@@ -146,19 +147,33 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       }
     }
 
+    private ColorCollection MakeShades(Func<int, Color> createColor)
+    {
+      ColorCollection colors;
+
+      colors = new ColorCollection();
+
+      for (int i = 0; i < 256; i++)
+      {
+        colors.Add(createColor(i));
+      }
+
+      return colors;
+    }
+
     private void shadesOfBlueButton_Click(object sender, EventArgs e)
     {
-      colorGrid.Colors = new ColorCollection(Enumerable.Range(0, 254).Select(i => Color.FromArgb(0, 0, i)));
+      colorGrid.Colors = this.MakeShades(i => Color.FromArgb(0, 0, i));
     }
 
     private void shadesOfGreenButton_Click(object sender, EventArgs e)
     {
-      colorGrid.Colors = new ColorCollection(Enumerable.Range(0, 254).Select(i => Color.FromArgb(0, i, 0)));
+      colorGrid.Colors = this.MakeShades(i => Color.FromArgb(0, i, 0));
     }
 
     private void shadesOfRedButton_Click(object sender, EventArgs e)
     {
-      colorGrid.Colors = new ColorCollection(Enumerable.Range(0, 254).Select(i => Color.FromArgb(i, 0, 0)));
+      colorGrid.Colors = this.MakeShades(i => Color.FromArgb(i, 0, 0));
     }
 
     private void standardColorsButton_Click(object sender, EventArgs e)
