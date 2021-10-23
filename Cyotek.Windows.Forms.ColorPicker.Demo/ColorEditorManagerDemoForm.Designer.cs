@@ -118,6 +118,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // colorEditor
       // 
       this.colorEditor.Color = System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
+      this.colorEditor.Dock = System.Windows.Forms.DockStyle.Fill;
       this.colorEditor.Location = new System.Drawing.Point(177, 3);
       this.colorEditor.Name = "colorEditor";
       this.tableLayoutPanel1.SetRowSpan(this.colorEditor, 2);
@@ -160,7 +161,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
       this.demoLabel.Location = new System.Drawing.Point(480, 0);
       this.demoLabel.Name = "demoLabel";
-      this.demoLabel.Padding = new System.Windows.Forms.Padding(9, 9, 9, 9);
+      this.demoLabel.Padding = new System.Windows.Forms.Padding(9);
       this.tableLayoutPanel1.SetRowSpan(this.demoLabel, 2);
       this.demoLabel.Size = new System.Drawing.Size(168, 235);
       this.demoLabel.TabIndex = 3;
