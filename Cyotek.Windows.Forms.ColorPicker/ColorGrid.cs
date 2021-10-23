@@ -21,8 +21,8 @@ namespace Cyotek.Windows.Forms
   /// <summary>
   /// Represents a grid control, which displays a collection of colors using different styles.
   /// </summary>
-  [DefaultProperty("Color")]
-  [DefaultEvent("ColorChanged")]
+  [DefaultProperty(nameof(ColorGrid.Color))]
+  [DefaultEvent(nameof(ColorGrid.ColorChanged))]
   public class ColorGrid : Control, IColorEditor
   {
     #region Public Fields
@@ -496,6 +496,7 @@ namespace Cyotek.Windows.Forms
 
         if (newIndex != _colorIndex)
         {
+          _previousColorIndex = _colorIndex;
           _colorIndex = newIndex;
           this.OnColorIndexChanged(EventArgs.Empty);
         }
@@ -753,6 +754,8 @@ namespace Cyotek.Windows.Forms
         {
           _topItem = value;
 
+          this.Invalidate();
+
           this.OnTopItemChanged(EventArgs.Empty);
         }
       }
@@ -806,7 +809,7 @@ namespace Cyotek.Windows.Forms
 
     #region Private Properties
 
-    private int TopRow => _topItem * _actualColumns;
+    private int TopRow => _topItem / _actualColumns;
 
     private int TotalCount => _showCustomColors
       ? _colors.Count + _customColors.Count
@@ -906,7 +909,7 @@ namespace Cyotek.Windows.Forms
         padding = this.Padding;
 
         x = padding.Left + (c * (_actualCellSize.Width + _spacing.Width));
-        y = padding.Top + (r * (_actualCellSize.Height + _spacing.Height));
+        y = padding.Top + ((r - this.TopRow) * (_actualCellSize.Height + _spacing.Height));
 
         if (this.IsCustomColor(index))
         {
@@ -933,7 +936,7 @@ namespace Cyotek.Windows.Forms
       x -= padding.Left;
       y -= padding.Top;
 
-      r = y / (_actualCellSize.Height + _spacing.Height);
+      r = this.TopRow + (y / (_actualCellSize.Height + _spacing.Height));
 
       if (r < 0 || r > _rowCount)
       {
@@ -2058,7 +2061,7 @@ namespace Cyotek.Windows.Forms
       padding = this.Padding;
       x1 = padding.Left;
       x2 = this.ClientSize.Width - padding.Right;
-      y = padding.Top + (_primaryRows * (_actualCellSize.Height + _spacing.Height)) + (_separatorHeight / 2) - 1;
+      y = padding.Top + ((_primaryRows - this.TopRow) * (_actualCellSize.Height + _spacing.Height)) + (_separatorHeight / 2) - 1;
 
       using (Pen pen = new Pen(_cellBorderColor))
       {
@@ -2261,13 +2264,16 @@ namespace Cyotek.Windows.Forms
       int baseCount;
       int start;
       int end;
+      Rectangle clip;
 
       baseCount = _colors.Count;
-      start = this.TopRow;
+      start = _topItem * _actualColumns;
       end = Math.Min(this.TotalCount, start + (_visibleRows * _actualColumns));
+      clip = e.ClipRectangle;
 
       for (int i = 0; i < end; i++)
       {
+        Rectangle bounds;
         Color color;
         int index;
 
@@ -2287,7 +2293,12 @@ namespace Cyotek.Windows.Forms
           }
         }
 
-        this.PaintCell(e, index, i, color, this.GetCellBounds(i));
+        bounds = this.GetCellBounds(i);
+
+        if (clip.IntersectsWith(bounds))
+        {
+          this.PaintCell(e, index, i, color, bounds);
+        }
       }
     }
 
