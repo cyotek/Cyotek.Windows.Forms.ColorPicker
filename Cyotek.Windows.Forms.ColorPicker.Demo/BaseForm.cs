@@ -30,7 +30,6 @@ namespace Cyotek.Demo.Windows.Forms
       base.ShowIcon = false;
       base.ShowInTaskbar = false;
       base.StartPosition = FormStartPosition.CenterParent;
-      base.FormBorderStyle = FormBorderStyle.FixedDialog;
       this.AutoScaleDimensions = new SizeF(6F, 13F);
       this.AutoScaleMode = AutoScaleMode.Font;
     }
@@ -45,13 +44,6 @@ namespace Cyotek.Demo.Windows.Forms
     {
       get => base.Font;
       set => base.Font = value;
-    }
-
-    [DefaultValue(typeof(FormBorderStyle), "FixedDialog")]
-    public new FormBorderStyle FormBorderStyle
-    {
-      get => base.FormBorderStyle;
-      set => base.FormBorderStyle = value;
     }
 
     [DefaultValue(false)]

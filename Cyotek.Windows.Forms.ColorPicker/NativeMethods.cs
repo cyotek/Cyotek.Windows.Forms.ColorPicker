@@ -1,6 +1,9 @@
 // Cyotek Color Picker Controls Library
 // http://cyotek.com/blog/tag/colorpicker
 
+// Creating a custom single-axis scrolling control in WinForms
+// https://www.cyotek.com/blog/creating-a-custom-single-axis-scrolling-control-in-winforms
+
 // Copyright (c) 2013-2021 Cyotek Ltd.
 
 // This work is licensed under the MIT License.
@@ -31,15 +34,27 @@ namespace Cyotek.Windows.Forms
 
     public const int R2_NOT = 6;
 
+    public const int SPI_GETWHEELSCROLLCHARS = 0x006C;
+
+    public const int SPI_GETWHEELSCROLLLINES = 0x0068;
+
     public const int WH_KEYBOARD_LL = 13;
 
     public const int WH_MOUSE_LL = 14;
+
+    public const int WHEEL_DELTA = 120;
+
+    public const int WHEEL_PAGESCROLL = int.MaxValue;
 
     public const int WM_KEYDOWN = 0x0100;
 
     public const int WM_LBUTTONDOWN = 0x0201;
 
+    public const int WM_MOUSEHWHEEL = 0x20e;
+
     public const int WM_MOUSEMOVE = 0x0200;
+
+    public const int WM_MOUSEWHEEL = 0x20a;
 
     public const int WM_NCLBUTTONDOWN = 0x00A1;
 
@@ -48,6 +63,8 @@ namespace Cyotek.Windows.Forms
     #region Private Fields
 
     private const string _gdi32DllName = "gdi32.dll";
+
+    private const string _kernel32DllName = "kernel32.dll";
 
     private const string _user32DllName = "user32.dll";
 
@@ -70,7 +87,13 @@ namespace Cyotek.Windows.Forms
     {
       NativeMethods.RECT rect;
 
-      rect = new NativeMethods.RECT(x, y, x + w, y + h);
+      rect = new NativeMethods.RECT
+      {
+        left = x,
+        top = y,
+        right = x + w,
+        bottom = y + h
+      };
 
       // The Win32 API DrawFocusRect draws using an inverted brush and so works on black,
       // whereas ControlPaint.DrawFocusRect decidedly does not
@@ -110,8 +133,11 @@ namespace Cyotek.Windows.Forms
     [DllImport(_gdi32DllName)]
     public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    [DllImport(_kernel32DllName, CharSet = CharSet.Auto, SetLastError = true)]
     public static extern IntPtr GetModuleHandle(string lpModuleName);
+
+    [DllImport(_kernel32DllName)]
+    public static extern uint GetTickCount();
 
     [DllImport(_gdi32DllName, EntryPoint = "LineTo", CallingConvention = CallingConvention.StdCall)]
     public static extern bool LineTo(IntPtr hdc, int x, int y);
@@ -122,6 +148,9 @@ namespace Cyotek.Windows.Forms
     [DllImport(_user32DllName, EntryPoint = "ReleaseDC", CallingConvention = CallingConvention.StdCall)]
     public static extern IntPtr ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
+    [DllImport(_user32DllName, SetLastError = false)]
+    public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
     [DllImport(_gdi32DllName, EntryPoint = "SetROP2", CallingConvention = CallingConvention.StdCall)]
     public static extern int SetROP2(IntPtr hdc, int fnDrawMode);
 
@@ -131,9 +160,16 @@ namespace Cyotek.Windows.Forms
     [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
     public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
 
+    [DllImport(_user32DllName, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SystemParametersInfo(int uiAction, uint uiParam, ref int pvParam, int fWinIni);
+
     [DllImport(_user32DllName, CharSet = CharSet.Auto, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+    [DllImport(_user32DllName)]
+    public static extern IntPtr WindowFromPoint(Point point);
 
     #endregion Public Methods
 
@@ -149,14 +185,6 @@ namespace Cyotek.Windows.Forms
       public int right;
 
       public int bottom;
-
-      public RECT(int left, int top, int right, int bottom)
-      {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-      }
     }
 
     #endregion Public Structs

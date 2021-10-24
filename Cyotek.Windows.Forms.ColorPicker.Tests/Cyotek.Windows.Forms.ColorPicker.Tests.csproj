@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="data\background.lbm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

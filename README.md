@@ -206,6 +206,7 @@ some time, donations are welcome.
 
 ## Related Reading
 
+* [Creating a custom single-axis scrolling control in WinForms][scrollblog]
 * [Reading Photoshop Color Swatch (aco) files using C#]
 * [Writing Photoshop Color Swatch (aco) files using C#]
 * [Loading the color palette from a BBM/LBM image file using C#]
@@ -229,10 +230,11 @@ some time, donations are welcome.
 [Space Monster Games]: http://www.spacemonsters.co.uk/2011/10/the-atari-colour-palette/
 [Arne Palette v20]: http://androidarts.com/palette/16pal.htm
 
-[Reading Photoshop Color Swatch (aco) files using C#]: http://cyotek.com/blog/reading-photoshop-color-swatch-aco-files-using-csharp
-[Writing Photoshop Color Swatch (aco) files using C#]: http://cyotek.com/blog/writing-photoshop-color-swatch-aco-files-using-csharp
-[Loading the color palette from a BBM/LBM image file using C#]: http://cyotek.com/blog/loading-the-color-palette-from-a-bbm-lbm-image-file-using-csharp
-[Hosting a ColorGrid control in a ToolStrip]: http://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip
+[scrollblog]: https://www.cyotek.com/blog/creating-a-custom-single-axis-scrolling-control-in-winforms
+[Reading Photoshop Color Swatch (aco) files using C#]: https://www.cyotek.com/blog/reading-photoshop-color-swatch-aco-files-using-csharp
+[Writing Photoshop Color Swatch (aco) files using C#]: https://www.cyotek.com/blog/writing-photoshop-color-swatch-aco-files-using-csharp
+[Loading the color palette from a BBM/LBM image file using C#]: https://www.cyotek.com/blog/loading-the-color-palette-from-a-bbm-lbm-image-file-using-csharp
+[Hosting a ColorGrid control in a ToolStrip]: https://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip
 
 [blogtag]: http://www.cyotek.com/blog/tag/colorpicker
 

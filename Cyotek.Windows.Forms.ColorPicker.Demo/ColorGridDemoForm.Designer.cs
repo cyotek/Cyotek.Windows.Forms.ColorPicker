@@ -54,9 +54,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).BeginInit();
       this.propertiesSplitContainer.Panel1.SuspendLayout();
       this.propertiesSplitContainer.Panel2.SuspendLayout();
       this.propertiesSplitContainer.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).BeginInit();
       this.optionsSplitContainer.Panel1.SuspendLayout();
       this.optionsSplitContainer.Panel2.SuspendLayout();
       this.optionsSplitContainer.SuspendLayout();
@@ -97,10 +99,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // colorGrid
       // 
-      this.colorGrid.Location = new System.Drawing.Point(3, 3);
+      this.colorGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.colorGrid.Location = new System.Drawing.Point(0, 0);
       this.colorGrid.Name = "colorGrid";
       this.colorGrid.Padding = new System.Windows.Forms.Padding(6);
-      this.colorGrid.Size = new System.Drawing.Size(249, 182);
+      this.colorGrid.Size = new System.Drawing.Size(287, 428);
       this.colorGrid.TabIndex = 0;
       this.colorGrid.ColorChanged += new System.EventHandler(this.colorGrid_ColorChanged);
       // 
@@ -123,7 +126,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.optionsSplitContainer.Panel2.Controls.Add(this.groupBox1);
       this.optionsSplitContainer.Panel2.Controls.Add(this.addNewColorButton);
       this.optionsSplitContainer.Size = new System.Drawing.Size(667, 428);
-      this.optionsSplitContainer.SplitterDistance = 288;
+      this.optionsSplitContainer.SplitterDistance = 287;
       this.optionsSplitContainer.SplitterWidth = 5;
       this.optionsSplitContainer.TabIndex = 0;
       // 
@@ -136,7 +139,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.groupBox4.Controls.Add(this.savePaletteButton);
       this.groupBox4.Location = new System.Drawing.Point(3, 315);
       this.groupBox4.Name = "groupBox4";
-      this.groupBox4.Size = new System.Drawing.Size(368, 110);
+      this.groupBox4.Size = new System.Drawing.Size(369, 110);
       this.groupBox4.TabIndex = 4;
       this.groupBox4.TabStop = false;
       this.groupBox4.Text = "External Palette Files";
@@ -148,17 +151,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             | System.Windows.Forms.AnchorStyles.Right)));
       this.palettesListBox.FormattingEnabled = true;
       this.palettesListBox.IntegralHeight = false;
-      this.palettesListBox.ItemHeight = 15;
       this.palettesListBox.Location = new System.Drawing.Point(6, 22);
       this.palettesListBox.Name = "palettesListBox";
-      this.palettesListBox.Size = new System.Drawing.Size(272, 82);
+      this.palettesListBox.Size = new System.Drawing.Size(273, 82);
       this.palettesListBox.TabIndex = 0;
       this.palettesListBox.SelectedIndexChanged += new System.EventHandler(this.palettesListBox_SelectedIndexChanged);
       // 
       // savePaletteButton
       // 
       this.savePaletteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.savePaletteButton.Location = new System.Drawing.Point(284, 81);
+      this.savePaletteButton.Location = new System.Drawing.Point(285, 81);
       this.savePaletteButton.Name = "savePaletteButton";
       this.savePaletteButton.Size = new System.Drawing.Size(75, 23);
       this.savePaletteButton.TabIndex = 1;
@@ -174,7 +176,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.groupBox3.Controls.Add(this.resetCustomColorsButton);
       this.groupBox3.Location = new System.Drawing.Point(3, 49);
       this.groupBox3.Name = "groupBox3";
-      this.groupBox3.Size = new System.Drawing.Size(368, 60);
+      this.groupBox3.Size = new System.Drawing.Size(369, 60);
       this.groupBox3.TabIndex = 1;
       this.groupBox3.TabStop = false;
       this.groupBox3.Text = "Custom Colors";
@@ -209,7 +211,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.groupBox2.Controls.Add(this.grayScaleButton);
       this.groupBox2.Location = new System.Drawing.Point(3, 215);
       this.groupBox2.Name = "groupBox2";
-      this.groupBox2.Size = new System.Drawing.Size(368, 94);
+      this.groupBox2.Size = new System.Drawing.Size(369, 94);
       this.groupBox2.TabIndex = 3;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Dynamically Generated Color Palettes";
@@ -264,7 +266,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.groupBox1.Controls.Add(this.office2010Button);
       this.groupBox1.Location = new System.Drawing.Point(3, 115);
       this.groupBox1.Name = "groupBox1";
-      this.groupBox1.Size = new System.Drawing.Size(368, 94);
+      this.groupBox1.Size = new System.Drawing.Size(369, 94);
       this.groupBox1.TabIndex = 2;
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Pre-defined Color Palettes";
@@ -362,8 +364,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       // 
       // ColorGridDemoForm
       // 
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(1006, 474);
       this.Controls.Add(this.propertiesSplitContainer);
       this.Controls.Add(this.menuStrip);
@@ -372,10 +374,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.Text = "ColorGrid Control Demonstration";
       this.propertiesSplitContainer.Panel1.ResumeLayout(false);
       this.propertiesSplitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).EndInit();
       this.propertiesSplitContainer.ResumeLayout(false);
       this.optionsSplitContainer.Panel1.ResumeLayout(false);
-      this.optionsSplitContainer.Panel1.PerformLayout();
       this.optionsSplitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).EndInit();
       this.optionsSplitContainer.ResumeLayout(false);
       this.groupBox4.ResumeLayout(false);
       this.groupBox3.ResumeLayout(false);

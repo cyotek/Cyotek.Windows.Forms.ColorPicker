@@ -1,3 +1,14 @@
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright (c) 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
 using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Drawing;
@@ -7,14 +18,6 @@ using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   internal partial class ColorGridDemoForm : BaseForm
   {
     #region Constructors
@@ -68,10 +71,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       Random random;
 
       random = new Random();
-      r = random.Next(0, 254);
-      g = random.Next(0, 254);
-      b = random.Next(0, 254);
-      a = random.Next(0, 254);
+      r = random.Next(0, 256);
+      g = random.Next(0, 256);
+      b = random.Next(0, 256);
+      a = random.Next(0, 256);
 
       colorGrid.Color = Color.FromArgb(a, r, g, b);
     }

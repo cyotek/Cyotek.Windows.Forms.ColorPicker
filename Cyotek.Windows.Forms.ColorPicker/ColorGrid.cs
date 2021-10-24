@@ -25,7 +25,7 @@ namespace Cyotek.Windows.Forms
   [DefaultEvent(nameof(ColorGrid.ColorChanged))]
   [ToolboxBitmap(typeof(ColorGrid), "ColorGridToolboxBitmap.bmp")]
   [ToolboxItem(true)]
-  public class ColorGrid : Control, IColorEditor
+  public partial class ColorGrid : Control, IColorEditor
   {
     #region Public Fields
 
@@ -141,7 +141,9 @@ namespace Cyotek.Windows.Forms
 
     private int _primaryRows;
 
-    private int _rowCount;
+    private int _rows;
+
+    private ScrollBar _scrollBar;
 
     private ColorGridSelectedCellStyle _selectedCellStyle;
 
@@ -166,6 +168,30 @@ namespace Cyotek.Windows.Forms
     #endregion Private Fields
 
     #region Public Constructors
+
+    /// <summary> Static constructor. </summary>
+    static ColorGrid()
+    {
+      OperatingSystem os;
+
+      os = Environment.OSVersion;
+
+      // Windows 10 (or at least recent versions of it) automatically
+      // send WM_MOUSEWHEEL and WM_MOUSEHWHEEL messages to the window
+      // under the cursor even if it doesn't have focus.
+      //
+      // Therefore, we don't need to add a message filter unless we
+      // are running under an older version of Windows.
+      //
+      // Note: Remember that attempting to get the OS version will lie
+      // unless you are using a manifest that explicitly states you
+      // support a given version of Windows
+
+      if (os.Platform == PlatformID.Win32NT && os.Version.Major < 10)
+      {
+        MouseWheelMessageFilter<ColorGrid>.Enabled = true;
+      }
+    }
 
     public ColorGrid()
     {
@@ -195,11 +221,11 @@ namespace Cyotek.Windows.Forms
       this.AddEventHandlers(_colors);
       this.AddEventHandlers(_customColors);
 
+      this.CreateScrollbar();
+
       this.CalculateActualCellSize();
       this.RefreshColors();
     }
-
-    protected override Size DefaultSize => new Size(200, 100);
 
     #endregion Public Constructors
 
@@ -574,6 +600,8 @@ namespace Cyotek.Windows.Forms
         {
           _columns = value;
           this.CalculateGridSize();
+          this.DefineRows();
+          this.Invalidate();
 
           this.OnColumnsChanged(EventArgs.Empty);
         }
@@ -785,6 +813,8 @@ namespace Cyotek.Windows.Forms
 
     protected override Padding DefaultPadding => new Padding(5);
 
+    protected override Size DefaultSize => new Size(200, 100);
+
     [Obsolete("Setting this property will be removed in a future update.")]
     protected int PrimaryRows
     {
@@ -792,7 +822,7 @@ namespace Cyotek.Windows.Forms
       set => _primaryRows = value;
     }
 
-    protected int Rows => _rowCount;
+    protected int Rows => _rows;
 
     [Obsolete("This property will be removed in a future update.")]
     protected int SeparatorHeight
@@ -827,20 +857,20 @@ namespace Cyotek.Windows.Forms
         size = this.ClientSize;
         w = size.Width - padding.Horizontal;
         h = size.Height - padding.Vertical;
-        if (_rowCount > _fullyVisibleRows)
+        if (_rows > _fullyVisibleRows)
         {
-          //  w -= _scrollBar.Width;
+          w -= _scrollBar.Width;
         }
 
         return new Rectangle(padding.Left, padding.Top, w, h);
       }
     }
 
-    private int TopRow => _topItem / _actualColumns;
-
-    private int TotalCount => _showCustomColors
+    private int ItemCount => _showCustomColors
       ? _colors.Count + _customColors.Count
       : _colors.Count;
+
+    private int TopRow => _topItem / _actualColumns;
 
     #endregion Private Properties
 
@@ -936,7 +966,7 @@ namespace Cyotek.Windows.Forms
         padding = this.Padding;
 
         x = padding.Left + (c * (_actualCellSize.Width + _spacing.Width));
-        y = padding.Top + ((r - this.TopRow) * (_actualCellSize.Height + _spacing.Height));
+        y = padding.Top + ((r - _scrollBar.Value) * (_actualCellSize.Height + _spacing.Height));
 
         if (this.IsCustomColor(index))
         {
@@ -965,7 +995,7 @@ namespace Cyotek.Windows.Forms
 
       r = this.TopRow + (y / (_actualCellSize.Height + _spacing.Height));
 
-      if (r < 0 || r > _rowCount)
+      if (r < 0 || r > _rows)
       {
         r = ColorGrid.InvalidIndex;
       }
@@ -1122,49 +1152,6 @@ namespace Cyotek.Windows.Forms
       }
     }
 
-    public void Navigate(int offsetX, int offsetY)
-    {
-      this.Navigate(offsetX, offsetY, NavigationOrigin.Current);
-    }
-
-    public virtual void Navigate(int offsetX, int offsetY, NavigationOrigin origin)
-    {
-      Point cellLocation;
-      Point offsetCellLocation;
-      int row;
-      int column;
-      int index;
-
-      switch (origin)
-      {
-        case NavigationOrigin.Begin:
-          cellLocation = Point.Empty;
-          break;
-
-        case NavigationOrigin.End:
-          cellLocation = new Point(_actualColumns - 1, _primaryRows + _customRows - 1);
-          break;
-
-        default:
-          cellLocation = this.CurrentCell;
-          break;
-      }
-
-      if (cellLocation.X == -1 && cellLocation.Y == -1)
-      {
-        cellLocation = Point.Empty; // If no cell is selected, assume the first one is for the purpose of keyboard navigation
-      }
-
-      offsetCellLocation = this.GetCellOffset(cellLocation, offsetX, offsetY);
-      row = offsetCellLocation.Y;
-      column = offsetCellLocation.X;
-      index = this.GetCellIndex(column, row);
-      if (index != InvalidIndex)
-      {
-        this.ColorIndex = index;
-      }
-    }
-
     #endregion Public Methods
 
     #region Protected Methods
@@ -1172,15 +1159,13 @@ namespace Cyotek.Windows.Forms
     protected virtual void CalculateCellSize()
     {
       Size size;
-      Padding padding;
       int w;
       int h;
 
-      size = this.ClientSize;
-      padding = this.Padding;
+      size = this.InnerClient.Size;
 
-      w = ((size.Width - padding.Horizontal) / _actualColumns) - _spacing.Width;
-      h = (size.Height - padding.Vertical) / (_primaryRows + _customRows) - _spacing.Height;
+      w = (size.Width / _actualColumns) - _spacing.Width;
+      h = (size.Height / _rows) - _spacing.Height;
 
       if (w > 0 && h > 0)
       {
@@ -1214,7 +1199,7 @@ namespace Cyotek.Windows.Forms
 
       _primaryRows = primaryRows;
       _customRows = customRows;
-      _rowCount = primaryRows + customRows;
+      _rows = primaryRows + customRows;
 
       _fullyVisibleRows = size.Height > 0 && _actualCellSize.Height > 0
         ? this.InnerClient.Height / (_actualCellSize.Height + _spacing.Height)
@@ -1228,7 +1213,7 @@ namespace Cyotek.Windows.Forms
       else
       {
         _visibleRows = _fullyVisibleRows;
-        if (_rowCount > _visibleRows && _actualCellSize.Height > 0 && this.InnerClient.Height % (_actualCellSize.Height + _spacing.Height) != 0)
+        if (_rows > _visibleRows && _actualCellSize.Height > 0 && this.InnerClient.Height % (_actualCellSize.Height + _spacing.Height) != 0)
         {
           // account for a partially visible row
           _visibleRows++;
@@ -1253,8 +1238,8 @@ namespace Cyotek.Windows.Forms
         this.RemoveEventHandlers(_colors);
         this.RemoveEventHandlers(_customColors);
 
+        this.DisposeScrollbar();
         _toolTip?.Dispose();
-
         _cellBackgroundBrush?.Dispose();
       }
 
@@ -1294,7 +1279,7 @@ namespace Cyotek.Windows.Forms
         width = this.ClientSize.Width;
       }
 
-      return new Size(width, (_actualCellSize.Height + _spacing.Height) * (_primaryRows + _customRows) + offset + this.Padding.Vertical - _spacing.Height);
+      return new Size(width, (_actualCellSize.Height + _spacing.Height) * _rows + offset + this.Padding.Vertical - _spacing.Height);
     }
 
     protected int GetCellIndex(Point point)
@@ -1306,7 +1291,7 @@ namespace Cyotek.Windows.Forms
     {
       int result;
 
-      if (column >= 0 && column < _actualColumns && row >= 0 && row < _primaryRows + _customRows)
+      if (column >= 0 && column < _actualColumns && row >= 0 && row < _rows)
       {
         int lastStandardRowOffset;
 
@@ -1321,7 +1306,7 @@ namespace Cyotek.Windows.Forms
           result -= lastStandardRowOffset;
         }
 
-        if (result > this.TotalCount - 1)
+        if (result > this.ItemCount - 1)
         {
           result = InvalidIndex;
         }
@@ -1332,50 +1317,6 @@ namespace Cyotek.Windows.Forms
       }
 
       return result;
-    }
-
-    protected Point GetCellOffset(int columnOffset, int rowOffset)
-    {
-      return this.GetCellOffset(this.CurrentCell, columnOffset, rowOffset);
-    }
-
-    protected Point GetCellOffset(Point cell, int columnOffset, int rowOffset)
-    {
-      int row;
-      int column;
-      int lastStandardRowOffset;
-      int lastStandardRowLastColumn;
-
-      lastStandardRowOffset = _primaryRows * _actualColumns - _colors.Count;
-      lastStandardRowLastColumn = _actualColumns - lastStandardRowOffset;
-      column = cell.X + columnOffset;
-      row = cell.Y + rowOffset;
-
-      // if the row is the last row, but there aren't enough columns to fill the row - nudge it to the last available
-      if (row == _primaryRows - 1 && column >= lastStandardRowLastColumn)
-      {
-        column = lastStandardRowLastColumn - 1;
-      }
-
-      // wrap the column to the end of the previous row
-      if (column < 0)
-      {
-        column = _actualColumns - 1;
-        row--;
-        if (row == _primaryRows - 1)
-        {
-          column = _actualColumns - (lastStandardRowOffset + 1);
-        }
-      }
-
-      // wrap to column to the start of the next row
-      if (row == _primaryRows - 1 && column >= _actualColumns - lastStandardRowOffset || column >= _actualColumns)
-      {
-        column = 0;
-        row++;
-      }
-
-      return new Point(column, row);
     }
 
     protected virtual int GetColorIndex(Color value)
@@ -1701,45 +1642,14 @@ namespace Cyotek.Windows.Forms
     {
       _wasKeyPressed = true;
 
-      switch (e.KeyData)
-      {
-        case Keys.Down:
-          this.Navigate(0, 1);
-          e.Handled = true;
-          break;
-
-        case Keys.Up:
-          this.Navigate(0, -1);
-          e.Handled = true;
-          break;
-
-        case Keys.Left:
-          this.Navigate(-1, 0);
-          e.Handled = true;
-          break;
-
-        case Keys.Right:
-          this.Navigate(1, 0);
-          e.Handled = true;
-          break;
-
-        case Keys.Home:
-          this.Navigate(0, 0, NavigationOrigin.Begin);
-          e.Handled = true;
-          break;
-
-        case Keys.End:
-          this.Navigate(0, 0, NavigationOrigin.End);
-          e.Handled = true;
-          break;
-      }
+      this.Update(e);
 
       base.OnKeyDown(e);
     }
 
     protected override void OnKeyUp(KeyEventArgs e)
     {
-      if (_wasKeyPressed && _colorIndex != InvalidIndex)
+      if (_wasKeyPressed && _colorIndex != ColorGrid.InvalidIndex)
       {
         switch (e.KeyData)
         {
@@ -1892,6 +1802,12 @@ namespace Cyotek.Windows.Forms
       this.RefreshColors();
 
       base.OnResize(e);
+
+      if (_scrollBar != null)
+      {
+        this.AdjustLayout();
+        this.DefineRows();
+      }
     }
 
     /// <summary>
@@ -2095,15 +2011,15 @@ namespace Cyotek.Windows.Forms
 
     protected virtual void PaintSeparator(PaintEventArgs e)
     {
-      Padding padding;
+      Rectangle inner;
       int x1;
       int x2;
       int y;
 
-      padding = this.Padding;
-      x1 = padding.Left;
-      x2 = this.ClientSize.Width - padding.Right;
-      y = padding.Top + ((_primaryRows - this.TopRow) * (_actualCellSize.Height + _spacing.Height)) + (_separatorHeight / 2) - 1;
+      inner = this.InnerClient;
+      x1 = inner.Left;
+      x2 = inner.Right;
+      y = inner.Top + ((_primaryRows - this.TopRow) * (_actualCellSize.Height + _spacing.Height)) + (_separatorHeight / 2) - 1;
 
       using (Pen pen = new Pen(_cellBorderColor))
       {
@@ -2133,6 +2049,7 @@ namespace Cyotek.Windows.Forms
         {
           this.Color = hitTest.Color;
           this.ColorIndex = hitTest.Index;
+          this.EnsureVisible(hitTest.Index);
         }
       }
     }
@@ -2201,6 +2118,15 @@ namespace Cyotek.Windows.Forms
       }
     }
 
+    private void AdjustLayout()
+    {
+      Size size;
+
+      size = this.ClientSize;
+
+      _scrollBar.Bounds = new Rectangle(size.Width - _scrollBar.Width, 0, _scrollBar.Width, size.Height);
+    }
+
     private void CalculateActualCellSize()
     {
       if (_autoFit)
@@ -2211,7 +2137,7 @@ namespace Cyotek.Windows.Forms
       {
         int size;
 
-        size = (this.ClientSize.Width - (this.Padding.Horizontal + (_spacing.Width * (_columns - 1)))) / _columns;
+        size = (this.InnerClient.Width - (_spacing.Width * (_columns - 1))) / _columns;
 
         _actualCellSize = new Size(size, size);
       }
@@ -2263,6 +2189,61 @@ namespace Cyotek.Windows.Forms
       this.Invalidate(e.Index);
     }
 
+    private void CreateScrollbar()
+    {
+      this.DisposeScrollbar();
+
+      _scrollBar = new VScrollBar();
+
+      _scrollBar.Enabled = false;
+      _scrollBar.Visible = false;
+
+      _scrollBar.ValueChanged += this.ScrollbarValueChangedHandler;
+
+      this.Controls.Add(_scrollBar);
+    }
+
+    /// <summary> Defines the number of rows the list contains and updates scrollbar attributes. </summary>
+    private void DefineRows()
+    {
+      if (this.ItemCount > 0)
+      {
+        //this.DefineColumns();
+        //this.DefineRowCount();
+
+        if (_rows > _fullyVisibleRows)
+        {
+          // HACK: Awful, required to resize cells after showing a scrollbar
+          //this.DefineColumns();
+          //this.DefineRowCount();
+        }
+
+        if (_scrollBar != null)
+        {
+          _scrollBar.LargeChange = _fullyVisibleRows;
+          _scrollBar.Maximum = _rows - 1;
+          this.SetScrollValue(_scrollBar.Value);
+        }
+      }
+
+      if (_scrollBar != null)
+      {
+        _scrollBar.Enabled = _rows > _fullyVisibleRows;
+        _scrollBar.Visible = _rows > _fullyVisibleRows;
+      }
+    }
+
+    private void DisposeScrollbar()
+    {
+      if (_scrollBar != null)
+      {
+        this.Controls.Remove(_scrollBar);
+        _scrollBar.ValueChanged -= this.ScrollbarValueChangedHandler;
+        _scrollBar.Dispose();
+        _scrollBar = null;
+      }
+    }
+
     private Point GetCell(int index)
     {
       int row;
@@ -2301,7 +2282,7 @@ namespace Cyotek.Windows.Forms
           || y > r * (_actualCellSize.Height + _spacing.Height) + _actualCellSize.Height;
     }
 
-    private bool IsValidIndex(int index) => index >= 0 && index < this.TotalCount;
+    private bool IsValidIndex(int index) => index >= 0 && index < this.ItemCount;
 
     private void PaintDesignModeAdornments(PaintEventArgs e)
     {
@@ -2371,7 +2352,7 @@ namespace Cyotek.Windows.Forms
 
       baseCount = _colors.Count;
       start = _topItem * _actualColumns;
-      end = Math.Min(this.TotalCount, start + (_visibleRows * _actualColumns));
+      end = Math.Min(this.ItemCount, start + (_visibleRows * _actualColumns));
       clip = e.ClipRectangle;
 
       for (int i = 0; i < end; i++)
@@ -2446,6 +2427,14 @@ namespace Cyotek.Windows.Forms
       if (!e.Cancel)
       {
         this.EditColor(index);
+      }
+    }
+
+    private void ValidateIndex(int index, bool allowInvalid)
+    {
+      if (!((index == ColorGrid.InvalidIndex && allowInvalid) || this.IsValidIndex(index)))
+      {
+        throw new ArgumentOutOfRangeException(nameof(index));
       }
     }
 

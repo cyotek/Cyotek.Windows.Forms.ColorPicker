@@ -40,9 +40,19 @@
 * Added the `ColorEditor.NubSize`, `NubColor` and
   `NubOutlineColor` to allow at least some customisation of the
   sliders
+* Added `ColorGrid.Navigate` overloads that allow easier grid
+  navigation the existing method
+* Added `ColorGrid.EnsureVisible`
+* Added `ColorGrid.TopItem`
 
 #### Changed
 
+* [BREAKING] The `ColorGrid.AutoSize` property now defaults to
+  `false`
+* [BREAKING] If the `AutoSize` and `AutoFit` properties of a
+  `ColorGrid` are `false`, and the `ColumnCount` is above zero,
+  the `CellSize` will be ignored and a scaled value based on the
+  control width will be calculated instead
 * Added dedicated targets for .NET 3.5, .NET 4.0, .NET 4.5.2,
   .NET 4.6.2,.NET 4.7.2, .NET 4.8, .NET 5.0 and .NET Core 3.1
 * Focus rectangles in slider controls now use an inverse
@@ -52,12 +62,8 @@
 * The `Up`, `Down`, `Home` and `End` keys are now used to
   manipulate the saturation value when a `ColorWheel` control
   has focus
-* [BREAKING] The `ColorGrid.AutoSize` property now defaults to
-  `false`
-* [BREAKING] If the `AutoSize` and `AutoFit` properties of a
-  `ColorGrid` are `false`, and the `ColumnCount` is above zero,
-  the `CellSize` will be ignored and a scaled value based on the
-  control width will be calculated instead
+* The `Page Up` and `Page Down` keys can now be used to navigate
+  a `ColorGrid`
 
 #### Deprecated
 
@@ -103,6 +109,8 @@
 * Calling `ColorGrid.EndUpdate` didn't perform layout operations
   if the total number of colours had changed whiles updating was
   disabled
+* Pressing `Home` or `End` in a `ColorGrid` would sometimes take
+  no action
 
 ### 1.8.0
 
