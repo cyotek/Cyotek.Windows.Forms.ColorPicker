@@ -9,7 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyotek.Windows.Forms.ColorP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{9563C21E-04F8-4FB7-AD31-2A0DDDE91142}"
 	ProjectSection(SolutionItems) = preProject
-		ACKNOWLEDGEMENTS.md = ACKNOWLEDGEMENTS.md
 		CHANGELOG.md = CHANGELOG.md
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
