@@ -69,8 +69,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageIcon>icon.png</PackageIcon>
-    <!-- https://github.com/NuGet/Home/issues/10791 -->
-    <!-- <PackageReadmeFile>nuget-readme.md</PackageReadmeFile> -->
+    <PackageReadmeFile>nuget-readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
