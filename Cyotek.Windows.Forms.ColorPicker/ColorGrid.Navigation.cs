@@ -17,6 +17,14 @@ namespace Cyotek.Windows.Forms
 {
   partial class ColorGrid
   {
+    #region Private Properties
+
+    private int CustomRowOffset => _customRows * _actualColumns - _customColors.Count;
+
+    private int PrimaryRowOffset => _primaryRows * _actualColumns - _colors.Count;
+
+    #endregion Private Properties
+
     #region Public Methods
 
     public void EnsureVisible(int index)
@@ -127,7 +135,7 @@ namespace Cyotek.Windows.Forms
       int lastStandardRowOffset;
       int lastStandardRowLastColumn;
 
-      lastStandardRowOffset = _primaryRows * _actualColumns - _colors.Count;
+      lastStandardRowOffset = this.PrimaryRowOffset;
       lastStandardRowLastColumn = _actualColumns - lastStandardRowOffset;
       column = cell.X + columnOffset;
       row = cell.Y + rowOffset;
@@ -177,47 +185,89 @@ namespace Cyotek.Windows.Forms
 
     #region Private Methods
 
+    private int AdjustNavigationIncrement(int increment)
+    {
+      this.GetCellCoordinates(_colorIndex, out int r, out int c);
+
+      if (increment == _actualColumns)
+      {
+        if (r == _primaryRows - 1)
+        {
+          // the current row is the end of the
+          // primary colours and may be partial
+          increment -= this.PrimaryRowOffset;
+        }
+        else if (r + 1 == _primaryRows - 1 && c >= _actualColumns - this.PrimaryRowOffset)
+        {
+          // the next row is partial AND the current
+          // column is beyond the length of the new row
+          increment -= this.PrimaryRowOffset;
+        }
+        else if (r == _primaryRows + _customRows - 1)
+        {
+          // the current row is the end of the
+          // custom colours and may be partial
+          increment -= this.CustomRowOffset;
+        }
+        else if (r + 1 == _primaryRows + _customRows - 1 && c >= _actualColumns - this.CustomRowOffset)
+        {
+          // the next row is partial AND the current
+          // column is beyond the length of the new row
+          increment -= this.CustomRowOffset;
+        }
+      }
+      else if (increment == -_actualColumns && r - 1 == _primaryRows - 1 && c < _actualColumns - this.PrimaryRowOffset)
+      {
+        // the previous row is partial AND the current
+        // column is within the length of the new row
+        increment += this.PrimaryRowOffset;
+      }
+
+      return increment;
+    }
+
     private int GetNavigationDestination(ColorGridNavigationMode mode)
     {
       int index;
 
-      switch (mode)
+      if (mode > ColorGridNavigationMode.None && mode <= ColorGridNavigationMode.NextPage)
       {
-        case ColorGridNavigationMode.Previous:
+        if (mode == ColorGridNavigationMode.Previous)
+        {
           index = this.GetNavigationDestination(-1, true);
-          break;
-
-        case ColorGridNavigationMode.Next:
+        }
+        else if (mode == ColorGridNavigationMode.Next)
+        {
           index = this.GetNavigationDestination(1, true);
-          break;
-
-        case ColorGridNavigationMode.PreviousRow:
+        }
+        else if (mode == ColorGridNavigationMode.PreviousRow)
+        {
           index = this.GetNavigationDestination(-_actualColumns, true);
-          break;
-
-        case ColorGridNavigationMode.NextRow:
+        }
+        else if (mode == ColorGridNavigationMode.NextRow)
+        {
           index = this.GetNavigationDestination(_actualColumns, true);
-          break;
-
-        case ColorGridNavigationMode.PreviousPage:
+        }
+        else if (mode == ColorGridNavigationMode.PreviousPage)
+        {
           index = this.GetNavigationDestination(-(_fullyVisibleRows * _actualColumns), false);
-          break;
-
-        case ColorGridNavigationMode.NextPage:
+        }
+        else if (mode == ColorGridNavigationMode.NextPage)
+        {
           index = this.GetNavigationDestination(_fullyVisibleRows * _actualColumns, false);
-          break;
-
-        case ColorGridNavigationMode.Start:
+        }
+        else if (mode == ColorGridNavigationMode.Start)
+        {
           index = this.GetNavigationDestination(-this.ItemCount, false);
-          break;
-
-        case ColorGridNavigationMode.End:
+        }
+        else /*if (mode == ColorGridNavigationMode.End)*/
+        {
           index = this.GetNavigationDestination(this.ItemCount, false);
-          break;
-
-        default:
-          index = ColorGrid.InvalidIndex;
-          break;
+        }
+      }
+      else
+      {
+        index = ColorGrid.InvalidIndex;
       }
 
       return index;
@@ -227,6 +277,7 @@ namespace Cyotek.Windows.Forms
     {
       int newIndex;
 
+      increment = this.AdjustNavigationIncrement(increment);
       newIndex = _colorIndex + increment;
 
       if (!keepToGrid)

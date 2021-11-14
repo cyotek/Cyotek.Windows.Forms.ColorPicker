@@ -65,15 +65,16 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
         yield return new TestCaseData(0, ColorGridNavigationMode.NextRow, 10).SetName("{m}DownStart");
         yield return new TestCaseData(97, ColorGridNavigationMode.Previous, 96).SetName("{m}LeftEnd");
         yield return new TestCaseData(97, ColorGridNavigationMode.NextRow, 97).SetName("{m}RightEnd");
-        yield return new TestCaseData(97, ColorGridNavigationMode.PreviousRow, 88).SetName("{m}UpEnd");
+        yield return new TestCaseData(97, ColorGridNavigationMode.PreviousRow, 87).SetName("{m}UpEnd");
         yield return new TestCaseData(97, ColorGridNavigationMode.NextRow, 97).SetName("{m}DownEnd");
-        yield return new TestCaseData(69, ColorGridNavigationMode.NextRow, 78).SetName("{m}DownToStaggeredPrimary");
-        yield return new TestCaseData(70, ColorGridNavigationMode.NextRow, 79).SetName("{m}DownStartStaggeredPrimary");
-        yield return new TestCaseData(78, ColorGridNavigationMode.NextRow, 87).SetName("{m}DownEndStaggeredPrimary");
-        yield return new TestCaseData(78, ColorGridNavigationMode.PreviousRow, 68).SetName("{m}UpEndStaggeredPrimary");
-        yield return new TestCaseData(88, ColorGridNavigationMode.NextRow, 97).SetName("{m}DownToStaggeredSecondary");
-        yield return new TestCaseData(88, ColorGridNavigationMode.PreviousRow, 78).SetName("{m}UpToStaggeredPrimary");
-        yield return new TestCaseData(97, ColorGridNavigationMode.PreviousRow, 87).SetName("{m}UpEndStaggeredPrimary");
+        yield return new TestCaseData(69, ColorGridNavigationMode.NextRow, 78).SetName("{m}DownToPartialPrimary");
+        yield return new TestCaseData(70, ColorGridNavigationMode.NextRow, 79).SetName("{m}DownStartPartialPrimary");
+        yield return new TestCaseData(78, ColorGridNavigationMode.NextRow, 87).SetName("{m}DownEndPartialPrimary");
+        yield return new TestCaseData(78, ColorGridNavigationMode.PreviousRow, 68).SetName("{m}UpEndPartialPrimary");
+        yield return new TestCaseData(88, ColorGridNavigationMode.NextRow, 97).SetName("{m}DownToPartialCustom");
+        yield return new TestCaseData(87, ColorGridNavigationMode.PreviousRow, 78).SetName("{m}UpToPartialPrimary");
+        yield return new TestCaseData(88, ColorGridNavigationMode.PreviousRow, 78).SetName("{m}UpToPartialPrimaryFromEnd");
+        yield return new TestCaseData(97, ColorGridNavigationMode.PreviousRow, 87).SetName("{m}UpEndPartialCustom");
       }
     }
 
