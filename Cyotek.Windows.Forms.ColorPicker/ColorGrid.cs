@@ -225,6 +225,7 @@ namespace Cyotek.Windows.Forms
 
       this.CalculateActualCellSize();
       this.RefreshColors();
+      this.AdjustLayout();
     }
 
     #endregion Public Constructors
@@ -599,9 +600,6 @@ namespace Cyotek.Windows.Forms
         if (_columns != value)
         {
           _columns = value;
-          this.CalculateGridSize();
-          this.DefineRows();
-          this.Invalidate();
 
           this.OnColumnsChanged(EventArgs.Empty);
         }
@@ -1014,7 +1012,8 @@ namespace Cyotek.Windows.Forms
 
       if (this.IsOutOfBounds(r, c, x, y))
       {
-        r = ColorGrid.InvalidIndex; c = ColorGrid.InvalidIndex;
+        r = ColorGrid.InvalidIndex;
+        c = ColorGrid.InvalidIndex;
       }
 
       return c != ColorGrid.InvalidIndex && r != ColorGrid.InvalidIndex;
@@ -1179,6 +1178,8 @@ namespace Cyotek.Windows.Forms
       Padding padding;
       int primaryRows;
       int customRows;
+
+      this.CalculateActualCellSize();
 
       size = this.ClientSize;
       padding = this.Padding;
@@ -1526,6 +1527,11 @@ namespace Cyotek.Windows.Forms
       {
         this.Invalidate(_previousColorIndex);
         this.Invalidate(_colorIndex);
+
+        if (this.IsValidIndex(_colorIndex))
+        {
+          this.EnsureVisible(_colorIndex);
+        }
       }
 
       handler = (EventHandler)this.Events[_eventColorIndexChanged];
@@ -2060,7 +2066,7 @@ namespace Cyotek.Windows.Forms
       {
         this.CalculateActualCellSize();
 
-        this.CalculateGridSize();
+        this.DefineRows();
 
         if (base.AutoSize)
         {
@@ -2208,14 +2214,12 @@ namespace Cyotek.Windows.Forms
     {
       if (this.ItemCount > 0)
       {
-        //this.DefineColumns();
-        //this.DefineRowCount();
+        this.CalculateGridSize();
 
         if (_rows > _fullyVisibleRows)
         {
           // HACK: Awful, required to resize cells after showing a scrollbar
-          //this.DefineColumns();
-          //this.DefineRowCount();
+        this.CalculateGridSize();
         }
 
         if (_scrollBar != null)
