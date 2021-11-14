@@ -40,9 +40,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
         yield return new TestCaseData(15, 0, -1, NavigationOrigin.Begin, 0).SetName("{m}UpStart");
         yield return new TestCaseData(15, 0, 1, NavigationOrigin.Begin, 10).SetName("{m}DownStart");
         yield return new TestCaseData(15, -1, 0, NavigationOrigin.End, 97).SetName("{m}LeftEnd");
-        yield return new TestCaseData(15, 1, 0, NavigationOrigin.End, 98).SetName("{m}RightEnd");
+        yield return new TestCaseData(15, 1, 0, NavigationOrigin.End, 97).SetName("{m}RightEnd");
         yield return new TestCaseData(15, 0, -1, NavigationOrigin.End, 88).SetName("{m}UpEnd");
-        yield return new TestCaseData(15, 0, 1, NavigationOrigin.End, 98).SetName("{m}DownEnd");
+        yield return new TestCaseData(15, 0, 1, NavigationOrigin.End, 97).SetName("{m}DownEnd");
       }
     }
 
@@ -75,12 +75,14 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
     private ColorGrid CreateGrid() => new ColorGrid
     {
+      AutoAddColors = false,
       Size = new Size(100, 100),
       Padding = Padding.Empty,
       Spacing = Size.Empty,
       Columns = 10,
       Colors = new ColorCollection(Enumerable.Repeat(Color.White, 79)),
-      CustomColors = new ColorCollection(Enumerable.Repeat(Color.White, 19))
+      CustomColors = new ColorCollection(Enumerable.Repeat(Color.White, 19)),
+      Color = Color.White
     };
 
     #endregion Private Methods
