@@ -12,142 +12,79 @@
 using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
   internal partial class ColorGridDemoForm : BaseForm
   {
-    #region Constructors
+    #region Private Fields
+
+    private readonly Random _random;
+
+    #endregion Private Fields
+
+    #region Public Constructors
 
     public ColorGridDemoForm()
     {
       this.InitializeComponent();
+
+      _random = new Random(20211114);
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Properties
+    #region Private Methods
 
-    private string PalettePath
-    {
-      get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "palettes"); }
-    }
-
-    #endregion
-
-    #region Methods
-
-    protected override void OnLoad(EventArgs e)
-    {
-      base.OnLoad(e);
-
-      colorGrid.Color = Color.LightSkyBlue;
-
-      palettesListBox.BeginUpdate();
-
-      foreach (string fileName in Directory.GetFiles(this.PalettePath))
-      {
-        // ReSharper disable once AssignNullToNotNullAttribute
-        palettesListBox.Items.Add(Path.GetFileName(fileName));
-      }
-
-      palettesListBox.EndUpdate();
-    }
-
-    private void addCustomColorsButton_Click(object sender, EventArgs e)
+    private void AddCustomColorsButton_Click(object sender, EventArgs e)
     {
       colorGrid.CustomColors = ColorPalettes.QbColors;
     }
 
-    private void addNewColorButton_Click(object sender, EventArgs e)
+    private void AddNewColorButton_Click(object sender, EventArgs e)
     {
       int r;
       int g;
       int b;
       int a;
-      Random random;
 
-      random = new Random();
-      r = random.Next(0, 256);
-      g = random.Next(0, 256);
-      b = random.Next(0, 256);
-      a = random.Next(0, 256);
+      r = _random.Next(0, 256);
+      g = _random.Next(0, 256);
+      b = _random.Next(0, 256);
+      a = _random.Next(0, 256);
 
       colorGrid.Color = Color.FromArgb(a, r, g, b);
     }
 
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
     }
 
-    private void colorGrid_ColorChanged(object sender, EventArgs e)
+    private void ColorGrid_ColorChanged(object sender, EventArgs e)
     {
       optionsSplitContainer.Panel2.BackColor = colorGrid.Color;
 
       colorToolStripStatusLabel.Text = string.Format("{0}, {1}, {2}", colorGrid.Color.R, colorGrid.Color.G, colorGrid.Color.B);
+
+      propertyGrid.Refresh();
     }
 
-    private void grayScaleButton_Click(object sender, EventArgs e)
+    private void ColorGrid_ColorIndexChanged(object sender, EventArgs e)
+    {
+      colorIndexToolStripStatusLabel.Text = colorGrid.ColorIndex.ToString();
+    }
+
+    private void GrayScaleButton_Click(object sender, EventArgs e)
     {
       colorGrid.Colors = this.MakeShades(i => Color.FromArgb(i, i, i));
     }
 
-    private void hexagonPaletteButton_Click(object sender, EventArgs e)
+    private void HexagonPaletteButton_Click(object sender, EventArgs e)
     {
       // NOTE: Predefined palettes can now be set via the Palette property
       colorGrid.Colors = ColorPalettes.HexagonPalette;
-    }
-
-    private void office2010Button_Click(object sender, EventArgs e)
-    {
-      // NOTE: Predefined palettes can now be set via the Palette property (this does not affect other properties such as Columns below though!)
-      colorGrid.Colors = ColorPalettes.Office2010Standard;
-      colorGrid.Columns = 10;
-    }
-
-    private void paintNetPaletteButton_Click(object sender, EventArgs e)
-    {
-      // NOTE: Predefined palettes can now be set via the Palette property
-      colorGrid.Colors = ColorPalettes.PaintPalette;
-    }
-
-    private void palettesListBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (palettesListBox.SelectedIndex != -1)
-      {
-        colorGrid.Colors = ColorCollection.LoadPalette(Path.Combine(this.PalettePath, palettesListBox.SelectedItem.ToString()));
-      }
-    }
-
-    private void resetCustomColorsButton_Click(object sender, EventArgs e)
-    {
-      colorGrid.CustomColors = new ColorCollection(Enumerable.Repeat(Color.White, 32));
-    }
-
-    private void savePaletteButton_Click(object sender, EventArgs e)
-    {
-      using (FileDialog dialog = new SaveFileDialog
-      {
-        Filter = PaletteSerializer.DefaultSaveFilter,
-        Title = "Save Palette As"
-      })
-      {
-        if (dialog.ShowDialog(this) == DialogResult.OK)
-        {
-          IPaletteSerializer serializer;
-
-          serializer = PaletteSerializer.AllSerializers.Where(s => s.CanWrite).ElementAt(dialog.FilterIndex - 1);
-
-          using (Stream stream = File.Create(dialog.FileName))
-          {
-            serializer.Serialize(stream, colorGrid.Colors);
-          }
-        }
-      }
     }
 
     private ColorCollection MakeShades(Func<int, Color> createColor)
@@ -164,27 +101,60 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       return colors;
     }
 
-    private void shadesOfBlueButton_Click(object sender, EventArgs e)
+    private void Office2010Button_Click(object sender, EventArgs e)
+    {
+      // NOTE: Predefined palettes can now be set via the Palette property (this does not affect other properties such as Columns below though!)
+      colorGrid.Colors = ColorPalettes.Office2010Standard;
+      colorGrid.Columns = 10;
+    }
+
+    private void PaintNetPaletteButton_Click(object sender, EventArgs e)
+    {
+      // NOTE: Predefined palettes can now be set via the Palette property
+      colorGrid.Colors = ColorPalettes.PaintPalette;
+      colorGrid.Columns = 16;
+    }
+
+    private void ResetCustomColorsButton_Click(object sender, EventArgs e)
+    {
+      colorGrid.CustomColors.Clear();
+    }
+
+    private void ShadesOfBlueButton_Click(object sender, EventArgs e)
     {
       colorGrid.Colors = this.MakeShades(i => Color.FromArgb(0, 0, i));
     }
 
-    private void shadesOfGreenButton_Click(object sender, EventArgs e)
+    private void ShadesOfGreenButton_Click(object sender, EventArgs e)
     {
       colorGrid.Colors = this.MakeShades(i => Color.FromArgb(0, i, 0));
     }
 
-    private void shadesOfRedButton_Click(object sender, EventArgs e)
+    private void ShadesOfRedButton_Click(object sender, EventArgs e)
     {
       colorGrid.Colors = this.MakeShades(i => Color.FromArgb(i, 0, 0));
     }
 
-    private void standardColorsButton_Click(object sender, EventArgs e)
+    private void StandardColorsButton_Click(object sender, EventArgs e)
     {
-      // NOTE: Predefined palettes can now be set via the Palette property
       colorGrid.Colors = ColorPalettes.NamedColors;
     }
 
-    #endregion
+    private void Vga256ColorsButton_Click(object sender, EventArgs e)
+    {
+      colorGrid.Colors = ColorPalettes.StandardPalette;
+    }
+
+    private void WebSafeColorsButton_Click(object sender, EventArgs e)
+    {
+      colorGrid.Colors = ColorPalettes.WebSafe;
+    }
+
+    #endregion Private Methods
+
+    private void AlphaRangeButton_Click(object sender, EventArgs e)
+    {
+      colorGrid.Colors = this.MakeShades(i => Color.FromArgb(i, Color.Goldenrod));
+    }
   }
 }

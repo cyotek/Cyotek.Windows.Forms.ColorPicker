@@ -117,6 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="demoLabel.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="demoLabel.Text" xml:space="preserve">
+    <value>Using the PaletteSerializer class, ColorCollection instances can be populated from external palette files.
+
+Supported formats are 8bit VGA (pal), Adobe Color Table (act), Adobe PhotoShop (versions 1 and 2) (aco), Gimp (gpl), Interleaved Bitmap (read-only) (lbm), PaintShop Pro (pal, psppalette) and Paint .NET (txt).
+
+Important: This functionality is currently under review. Some formats will be removed and the feature may be restricted to internal operation. If you use this functionality, consider dropping support@cyotek.com a line detailing how you use the feature.</value>
+  </data>
   <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>

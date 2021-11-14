@@ -1,28 +1,31 @@
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright (c) 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
 using System;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
   internal partial class MainForm : AboutDialog
   {
-    #region Constructors
+    #region Public Constructors
 
     public MainForm()
     {
       this.InitializeComponent();
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Methods
+    #region Protected Methods
 
     protected override void OnLoad(EventArgs e)
     {
@@ -31,11 +34,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       base.OnLoad(e);
 
       demoPage = new TabPage
-                 {
-                   UseVisualStyleBackColor = true,
-                   Padding = new Padding(9),
-                   Text = "Demonstrations"
-                 };
+      {
+        UseVisualStyleBackColor = true,
+        Padding = new Padding(9),
+        Text = "Demonstrations"
+      };
 
       groupBox1.Dock = DockStyle.Fill;
       demoPage.Controls.Add(groupBox1);
@@ -43,40 +46,49 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.TabControl.TabPages.Insert(0, demoPage);
       this.TabControl.SelectedTab = demoPage;
 
-      this.Text = "Cyotek ColorPicker Controls for Windows Forms";
+      this.Text = Application.ProductName;
     }
 
-    private void colorEditorDemoButton_Click(object sender, EventArgs e)
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private void ColorEditorDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorEditorDemoForm>();
     }
 
-    private void colorEditorManagerDemoButton_Click(object sender, EventArgs e)
+    private void ColorEditorManagerDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorEditorManagerDemoForm>();
     }
 
-    private void colorGridDemoButton_Click(object sender, EventArgs e)
+    private void ColorGridDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorGridDemoForm>();
     }
 
-    private void colorPickerFormDemoButton_Click(object sender, EventArgs e)
+    private void ColorPickerFormDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorPickerDialogDemoForm>();
     }
 
-    private void colorSliderDemoButton_Click(object sender, EventArgs e)
+    private void ColorSliderDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorSliderDemonstrationForm>();
     }
 
-    private void colorWheelDemoButton_Click(object sender, EventArgs e)
+    private void ColorWheelDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorWheelDemoForm>();
     }
 
-    private void screenColorPickerDemoButton_Click(object sender, EventArgs e)
+    private void ExternalPaletteFilesDemoButton_Click(object sender, EventArgs e)
+    {
+      this.ShowDemo<ExternalPalettesDemoForm>();
+    }
+
+    private void ScreenColorPickerDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ScreenColorPickerDemoForm>();
     }
@@ -91,11 +103,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       }
     }
 
-    private void toolstripDemoButton_Click(object sender, EventArgs e)
+    private void ToolstripDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ToolStripHostDemoForm>();
     }
 
-    #endregion
+    #endregion Private Methods
   }
 }
