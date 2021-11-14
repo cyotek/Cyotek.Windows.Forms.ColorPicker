@@ -230,44 +230,43 @@ namespace Cyotek.Windows.Forms
     {
       int index;
 
-      if (mode > ColorGridNavigationMode.None && mode <= ColorGridNavigationMode.NextPage)
+      switch (mode)
       {
-        if (mode == ColorGridNavigationMode.Previous)
-        {
+        case ColorGridNavigationMode.Previous:
           index = this.GetNavigationDestination(-1, true);
-        }
-        else if (mode == ColorGridNavigationMode.Next)
-        {
+          break;
+
+        case ColorGridNavigationMode.Next:
           index = this.GetNavigationDestination(1, true);
-        }
-        else if (mode == ColorGridNavigationMode.PreviousRow)
-        {
+          break;
+
+        case ColorGridNavigationMode.PreviousRow:
           index = this.GetNavigationDestination(-_actualColumns, true);
-        }
-        else if (mode == ColorGridNavigationMode.NextRow)
-        {
+          break;
+
+        case ColorGridNavigationMode.NextRow:
           index = this.GetNavigationDestination(_actualColumns, true);
-        }
-        else if (mode == ColorGridNavigationMode.PreviousPage)
-        {
+          break;
+
+        case ColorGridNavigationMode.PreviousPage:
           index = this.GetNavigationDestination(-(_fullyVisibleRows * _actualColumns), false);
-        }
-        else if (mode == ColorGridNavigationMode.NextPage)
-        {
+          break;
+
+        case ColorGridNavigationMode.NextPage:
           index = this.GetNavigationDestination(_fullyVisibleRows * _actualColumns, false);
-        }
-        else if (mode == ColorGridNavigationMode.Start)
-        {
+          break;
+
+        case ColorGridNavigationMode.Start:
           index = this.GetNavigationDestination(-this.ItemCount, false);
-        }
-        else /*if (mode == ColorGridNavigationMode.End)*/
-        {
+          break;
+
+        case ColorGridNavigationMode.End:
           index = this.GetNavigationDestination(this.ItemCount, false);
-        }
-      }
-      else
-      {
-        index = ColorGrid.InvalidIndex;
+          break;
+
+        default:
+          index = ColorGrid.InvalidIndex;
+          break;
       }
 
       return index;
@@ -336,6 +335,7 @@ namespace Cyotek.Windows.Forms
       this.SetScrollValue(value);
     }
 
+    /// <summary> Sets the scrollbar value. </summary>
     /// <param name="value">  The value to apply. </param>
     private void SetScrollValue(int value)
     {
@@ -402,7 +402,5 @@ namespace Cyotek.Windows.Forms
     }
 
     #endregion Private Methods
-
-    /// <summary> Sets the scrollbar value. </summary>
   }
 }
