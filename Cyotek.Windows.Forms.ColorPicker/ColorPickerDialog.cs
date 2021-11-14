@@ -12,7 +12,6 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -23,6 +22,8 @@ namespace Cyotek.Windows.Forms
   [DefaultProperty("Color")]
   public partial class ColorPickerDialog : Form
   {
+    #region Private Fields
+
     private static readonly object _eventCustomColorsLoading = new object();
 
     private static readonly object _eventCustomColorsSaving = new object();
@@ -43,6 +44,10 @@ namespace Cyotek.Windows.Forms
 
     private Brush _textureBrush;
 
+    #endregion Private Fields
+
+    #region Public Constructors
+
     public ColorPickerDialog()
     {
       this.InitializeComponent();
@@ -54,6 +59,10 @@ namespace Cyotek.Windows.Forms
 
       base.Font = SystemFonts.DialogFont;
     }
+
+    #endregion Public Constructors
+
+    #region Public Events
 
     [Category("Action")]
     public event CancelEventHandler CustomColorsLoading
@@ -75,6 +84,10 @@ namespace Cyotek.Windows.Forms
       add => this.Events.AddHandler(_eventPreviewColorChanged, value);
       remove => this.Events.RemoveHandler(_eventPreviewColorChanged, value);
     }
+
+    #endregion Public Events
+
+    #region Public Properties
 
     public Color Color
     {
@@ -127,6 +140,10 @@ namespace Cyotek.Windows.Forms
       get => _showSave;
       set => _showSave = value;
     }
+
+    #endregion Public Properties
+
+    #region Protected Methods
 
     /// <summary>
     /// Clean up any resources being used.
@@ -223,6 +240,10 @@ namespace Cyotek.Windows.Forms
       handler?.Invoke(this, e);
     }
 
+    #endregion Protected Methods
+
+    #region Private Methods
+
     private void CancelButton_Click(object sender, EventArgs e)
     {
       this.DialogResult = DialogResult.Cancel;
@@ -233,7 +254,7 @@ namespace Cyotek.Windows.Forms
     {
       _color = colorEditorManager.Color;
 
-      previewPanel.Invalidate();
+      previewPanel.Color = _color;
 
       this.OnPreviewColorChanged(e);
     }
@@ -366,30 +387,6 @@ namespace Cyotek.Windows.Forms
       this.Close();
     }
 
-    private void PreviewPanel_Paint(object sender, PaintEventArgs e)
-    {
-      Rectangle region;
-
-      region = previewPanel.ClientRectangle;
-
-      if (this.Color.A != 255)
-      {
-        if (_textureBrush == null)
-        {
-          _textureBrush = new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
-        }
-
-        e.Graphics.FillRectangle(_textureBrush, region);
-      }
-
-      using (Brush brush = new SolidBrush(this.Color))
-      {
-        e.Graphics.FillRectangle(brush, region);
-      }
-
-      e.Graphics.DrawRectangle(SystemPens.ControlText, region.Left, region.Top, region.Width - 1, region.Height - 1);
-    }
-
     private void SaveCustomColors()
     {
       using (FileDialog dialog = new SaveFileDialog
@@ -464,5 +461,7 @@ namespace Cyotek.Windows.Forms
         savePaletteButton.Visible = false;
       }
     }
+
+    #endregion Private Methods
   }
 }

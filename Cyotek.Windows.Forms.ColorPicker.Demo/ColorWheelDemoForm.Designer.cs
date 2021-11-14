@@ -41,7 +41,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.propertyGrid = new System.Windows.Forms.PropertyGrid();
       this.colorWheel = new Cyotek.Windows.Forms.ColorWheel();
       this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
-      this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
+      this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPreviewBox();
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();

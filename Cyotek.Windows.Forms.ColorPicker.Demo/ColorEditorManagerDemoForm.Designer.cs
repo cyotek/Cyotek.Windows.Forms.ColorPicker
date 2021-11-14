@@ -32,7 +32,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.previewPanel = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
+      this.previewPanel = new Cyotek.Windows.Forms.ColorPreviewBox();
       this.lightnessColorSlider = new Cyotek.Windows.Forms.LightnessColorSlider();
       this.screenColorPicker = new Cyotek.Windows.Forms.ScreenColorPicker();
       this.colorWheel = new Cyotek.Windows.Forms.ColorWheel();
@@ -231,7 +231,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private ColorEditor colorEditor;
     private ColorGrid colorGrid;
     private ColorEditorManager colorEditorManager;
-    private Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox previewPanel;
+    private Cyotek.Windows.Forms.ColorPreviewBox previewPanel;
     private LightnessColorSlider lightnessColorSlider;
     private System.Windows.Forms.Label demoLabel;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

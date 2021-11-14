@@ -64,7 +64,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void ColorGrid_ColorChanged(object sender, EventArgs e)
     {
-      optionsSplitContainer.Panel2.BackColor = colorGrid.Color;
+      colorPreviewBox.Color = colorGrid.Color;
 
       colorToolStripStatusLabel.Text = string.Format("{0}, {1}, {2}", colorGrid.Color.R, colorGrid.Color.G, colorGrid.Color.B);
 

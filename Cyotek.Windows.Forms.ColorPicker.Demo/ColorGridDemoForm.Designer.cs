@@ -50,10 +50,13 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.office2010Button = new System.Windows.Forms.Button();
             this.addNewColorButton = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.statusToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.colorToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.colorIndexToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPreviewBox();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesSplitContainer)).BeginInit();
             this.propertiesSplitContainer.Panel1.SuspendLayout();
             this.propertiesSplitContainer.Panel2.SuspendLayout();
@@ -102,7 +105,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.colorGrid.Location = new System.Drawing.Point(0, 0);
             this.colorGrid.Name = "colorGrid";
             this.colorGrid.Padding = new System.Windows.Forms.Padding(6);
-            this.colorGrid.Size = new System.Drawing.Size(275, 428);
+            this.colorGrid.Size = new System.Drawing.Size(273, 428);
             this.colorGrid.TabIndex = 0;
             this.colorGrid.ColorChanged += new System.EventHandler(this.ColorGrid_ColorChanged);
             this.colorGrid.ColorIndexChanged += new System.EventHandler(this.ColorGrid_ColorIndexChanged);
@@ -120,12 +123,13 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             // 
             // optionsSplitContainer.Panel2
             // 
+            this.optionsSplitContainer.Panel2.Controls.Add(this.colorPreviewBox);
             this.optionsSplitContainer.Panel2.Controls.Add(this.groupBox3);
             this.optionsSplitContainer.Panel2.Controls.Add(this.groupBox2);
             this.optionsSplitContainer.Panel2.Controls.Add(this.groupBox1);
             this.optionsSplitContainer.Panel2.Controls.Add(this.addNewColorButton);
             this.optionsSplitContainer.Size = new System.Drawing.Size(667, 428);
-            this.optionsSplitContainer.SplitterDistance = 275;
+            this.optionsSplitContainer.SplitterDistance = 273;
             this.optionsSplitContainer.SplitterWidth = 5;
             this.optionsSplitContainer.TabIndex = 0;
             // 
@@ -318,17 +322,31 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.colorToolStripStatusLabel});
+            this.statusToolStripStatusLabel,
+            this.colorToolStripStatusLabel,
+            this.colorIndexToolStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 452);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
             this.statusStrip.Size = new System.Drawing.Size(1006, 22);
             this.statusStrip.TabIndex = 2;
             // 
+            // statusToolStripStatusLabel
+            // 
+            this.statusToolStripStatusLabel.Name = "statusToolStripStatusLabel";
+            this.statusToolStripStatusLabel.Size = new System.Drawing.Size(989, 17);
+            this.statusToolStripStatusLabel.Spring = true;
+            this.statusToolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // colorToolStripStatusLabel
             // 
             this.colorToolStripStatusLabel.Name = "colorToolStripStatusLabel";
             this.colorToolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // colorIndexToolStripStatusLabel
+            // 
+            this.colorIndexToolStripStatusLabel.Name = "colorIndexToolStripStatusLabel";
+            this.colorIndexToolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // menuStrip
             // 
@@ -354,6 +372,17 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.closeToolStripMenuItem.Text = "&Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
+            // 
+            // colorPreviewBox
+            // 
+            this.colorPreviewBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.colorPreviewBox.Color = System.Drawing.Color.Empty;
+            this.colorPreviewBox.Location = new System.Drawing.Point(31, 383);
+            this.colorPreviewBox.Name = "colorPreviewBox";
+            this.colorPreviewBox.Size = new System.Drawing.Size(321, 41);
+            this.colorPreviewBox.TabIndex = 4;
+            this.colorPreviewBox.Text = "colorPreviewBox";
             // 
             // ColorGridDemoForm
             // 
@@ -413,5 +442,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private System.Windows.Forms.Button vga256ColorsButton;
     private System.Windows.Forms.Button webSafeColorsButton;
     private System.Windows.Forms.Button alphaRangeButton;
+    private System.Windows.Forms.ToolStripStatusLabel statusToolStripStatusLabel;
+    private System.Windows.Forms.ToolStripStatusLabel colorIndexToolStripStatusLabel;
+    private ColorPreviewBox colorPreviewBox;
   }
 }

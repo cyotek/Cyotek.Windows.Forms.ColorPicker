@@ -101,6 +101,9 @@
   <ItemGroup>
     <None Remove="*.ncrunchproject" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Cyotek.Windows.Forms.ColorPicker\ColorPreviewBox.cs" Link="ColorPreviewBox.cs" />
+  </ItemGroup>
 
   <!-- Workarounds for .NET 3.5 compilation via dotnet -->
   <PropertyGroup>

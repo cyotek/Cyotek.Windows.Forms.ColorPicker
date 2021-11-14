@@ -31,12 +31,12 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       System.Windows.Forms.Label demoLabel;
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ColorPickerDialogDemoForm));
       Cyotek.Windows.Forms.GroupBox previewGroupBox;
-      this.dialogColorPreviewPanel = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
+      this.dialogColorPreviewPanel = new Cyotek.Windows.Forms.ColorPreviewBox();
       this.menuStrip = new System.Windows.Forms.MenuStrip();
       this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.browseColorButton = new System.Windows.Forms.Button();
-      this.colorPreviewPanel = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
+      this.colorPreviewPanel = new Cyotek.Windows.Forms.ColorPreviewBox();
       this.showAlphaChannelCheckBox = new System.Windows.Forms.CheckBox();
       this.preserveAlphaChannelCheckBox = new System.Windows.Forms.CheckBox();
       this.showLoadCheckBox = new System.Windows.Forms.CheckBox();

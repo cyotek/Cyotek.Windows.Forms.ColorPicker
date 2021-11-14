@@ -34,7 +34,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.screenColorPicker = new Cyotek.Windows.Forms.ScreenColorPicker();
       this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
       this.eventsSplitContainer = new System.Windows.Forms.SplitContainer();
-      this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPicker.Demo.ColorPreviewBox();
+      this.colorPreviewBox = new Cyotek.Windows.Forms.ColorPreviewBox();
       this.demoLabel = new System.Windows.Forms.Label();
       this.captureButton = new System.Windows.Forms.Button();
       this.releaseButton = new System.Windows.Forms.Button();
