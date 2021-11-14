@@ -13,6 +13,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Tests
@@ -21,6 +22,24 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
   public class ColorGridTests
   {
     #region Public Properties
+
+    public static IEnumerable<TestCaseData> GetCellIndexTestCaseSource
+    {
+      get
+      {
+        yield return new TestCaseData(0, 0, 0).SetName("{m}");
+        yield return new TestCaseData(1, 0, 1).SetName("{m}Column");
+        yield return new TestCaseData(0, 1, 10).SetName("{m}Row");
+        yield return new TestCaseData(-1, 0, -1).SetName("{m}LowerBoundsColumn");
+        yield return new TestCaseData(10, 0, -1).SetName("{m}UpperBoundsColumn");
+        yield return new TestCaseData(0, -1, -1).SetName("{m}LowerBoundsRow");
+        yield return new TestCaseData(0, 10, -1).SetName("{m}UpperBoundsRow");
+        yield return new TestCaseData(9, 7, -1).SetName("{m}PrimaryPartialRowBounds");
+        yield return new TestCaseData(9, 9, -1).SetName("{m}CustomPartialRowBounds");
+        yield return new TestCaseData(8, 7, 78).SetName("{m}EndPrimaryPartialRow");
+        yield return new TestCaseData(8, 9, 97).SetName("{m}EndCustomPartialRow");
+      }
+    }
 
     public static IEnumerable<TestCaseData> NavigateOriginTestCaseSource
     {
@@ -81,6 +100,28 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
     #endregion Public Properties
 
     #region Public Methods
+
+    [Test]
+    [TestCaseSource(nameof(GetCellIndexTestCaseSource))]
+    public void GetCellIndexTestCases(int c, int r, int expected)
+    {
+      // arrange
+      ColorGrid target;
+      int actual;
+      MethodInfo method;
+
+      // HACK: GetCellIndex isn't exposed and I'm trying to limit
+      // as much as possible breaking changes without prior notice
+      method = typeof(ColorGrid).GetMethod("GetCellIndex", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(int), typeof(int) }, null);
+
+      target = this.CreateGrid();
+
+      // act
+      actual = (int)method.Invoke(target, new object[] { c, r });
+
+      // assert
+      Assert.AreEqual(expected, actual);
+    }
 
     [Test]
     [TestCaseSource(nameof(NavigateOriginTestCaseSource))]

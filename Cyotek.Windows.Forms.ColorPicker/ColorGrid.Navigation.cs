@@ -141,7 +141,7 @@ namespace Cyotek.Windows.Forms
       row = cell.Y + rowOffset;
 
       // if the row is the last row, but there aren't enough columns to fill the row - nudge it to the last available
-      if (row == _primaryRows - 1 && column >= lastStandardRowLastColumn)
+      if (this.IsPrimaryLastRow(row) && column >= lastStandardRowLastColumn)
       {
         column = lastStandardRowLastColumn - 1;
       }
@@ -151,14 +151,14 @@ namespace Cyotek.Windows.Forms
       {
         column = _actualColumns - 1;
         row--;
-        if (row == _primaryRows - 1)
+        if (this.IsCustomLastRow(row))
         {
           column = _actualColumns - (lastStandardRowOffset + 1);
         }
       }
 
       // wrap to column to the start of the next row
-      if (row == _primaryRows - 1 && column >= _actualColumns - lastStandardRowOffset || column >= _actualColumns)
+      if (this.IsCustomLastRow(row) && column >= _actualColumns - lastStandardRowOffset || column >= _actualColumns)
       {
         column = 0;
         row++;
@@ -191,32 +191,32 @@ namespace Cyotek.Windows.Forms
 
       if (increment == _actualColumns)
       {
-        if (r == _primaryRows - 1)
+        if (this.IsPrimaryLastRow(r))
         {
           // the current row is the end of the
           // primary colours and may be partial
           increment -= this.PrimaryRowOffset;
         }
-        else if (r + 1 == _primaryRows - 1 && c >= _actualColumns - this.PrimaryRowOffset)
+        else if (this.IsPrimaryLastRow(r + 1) && c >= _actualColumns - this.PrimaryRowOffset)
         {
           // the next row is partial AND the current
           // column is beyond the length of the new row
           increment -= this.PrimaryRowOffset;
         }
-        else if (r == _primaryRows + _customRows - 1)
+        else if (this.IsCustomLastRow(r))
         {
           // the current row is the end of the
           // custom colours and may be partial
           increment -= this.CustomRowOffset;
         }
-        else if (r + 1 == _primaryRows + _customRows - 1 && c >= _actualColumns - this.CustomRowOffset)
+        else if (this.IsCustomLastRow(r + 1) && c >= _actualColumns - this.CustomRowOffset)
         {
           // the next row is partial AND the current
           // column is beyond the length of the new row
           increment -= this.CustomRowOffset;
         }
       }
-      else if (increment == -_actualColumns && r - 1 == _primaryRows - 1 && c < _actualColumns - this.PrimaryRowOffset)
+      else if (increment == -_actualColumns && this.IsPrimaryLastRow(r - 1) && c < _actualColumns - this.PrimaryRowOffset)
       {
         // the previous row is partial AND the current
         // column is within the length of the new row

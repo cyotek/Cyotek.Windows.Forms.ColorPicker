@@ -1293,27 +1293,27 @@ namespace Cyotek.Windows.Forms
 
       if (column >= 0 && column < _actualColumns && row >= 0 && row < _rows)
       {
-        int lastStandardRowOffset;
-
-        lastStandardRowOffset = _primaryRows * _actualColumns - _colors.Count;
-        result = row * _actualColumns + column;
-        if (row == _primaryRows - 1 && column >= _actualColumns - lastStandardRowOffset)
+        if (this.IsPrimaryLastRow(row) && column >= _actualColumns - this.PrimaryRowOffset)
         {
-          result -= lastStandardRowOffset;
+          result = ColorGrid.InvalidIndex;
         }
-        if (row >= _primaryRows)
+        else if (this.IsCustomLastRow(row) && column >= _actualColumns - this.CustomRowOffset)
         {
-          result -= lastStandardRowOffset;
+          result = ColorGrid.InvalidIndex;
         }
-
-        if (result > this.ItemCount - 1)
+        else
         {
-          result = InvalidIndex;
+          result = row * _actualColumns + column;
+
+          if (row >= _primaryRows)
+          {
+            result -= this.PrimaryRowOffset;
+          }
         }
       }
       else
       {
-        result = InvalidIndex;
+        result = ColorGrid.InvalidIndex;
       }
 
       return result;
@@ -2274,6 +2274,8 @@ namespace Cyotek.Windows.Forms
 
     private bool IsCustomColor(int index) => index >= _colors.Count;
 
+    private bool IsCustomLastRow(int r) => r == _primaryRows + _customRows - 1;
+
     private bool IsOutOfBounds(int r, int c, int x, int y)
     {
       return c < 0
@@ -2281,6 +2283,8 @@ namespace Cyotek.Windows.Forms
           || x > c * (_actualCellSize.Width + _spacing.Width) + _actualCellSize.Width
           || y > r * (_actualCellSize.Height + _spacing.Height) + _actualCellSize.Height;
     }
+
+    private bool IsPrimaryLastRow(int r) => r == _primaryRows - 1;
 
     private bool IsValidIndex(int index) => index >= 0 && index < this.ItemCount;
 
@@ -2317,7 +2321,7 @@ namespace Cyotek.Windows.Forms
 
               y += _actualCellSize.Height + _spacing.Height;
 
-              if (r == _primaryRows - 1)
+              if (this.IsPrimaryLastRow(r))
               {
                 y += _separatorHeight;
               }
