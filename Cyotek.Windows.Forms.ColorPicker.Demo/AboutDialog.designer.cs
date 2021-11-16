@@ -32,7 +32,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.closeButton.TabIndex = 1;
       this.closeButton.Text = "Close";
       this.closeButton.UseVisualStyleBackColor = true;
-      this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
+      this.closeButton.Click += new System.EventHandler(this.CloseButton_Click);
       // 
       // nameLabel
       // 
@@ -85,7 +85,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.footerGroupBox.Name = "footerGroupBox";
       this.footerGroupBox.Size = new System.Drawing.Size(615, 47);
       this.footerGroupBox.TabIndex = 4;
-      this.footerGroupBox.Paint += new System.Windows.Forms.PaintEventHandler(this.footerGroupBox_Paint);
+      this.footerGroupBox.Paint += new System.Windows.Forms.PaintEventHandler(this.FooterGroupBox_Paint);
       // 
       // webLinkLabel
       // 
@@ -99,7 +99,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.webLinkLabel.TabStop = true;
       this.webLinkLabel.Tag = "www.cyotek.com";
       this.webLinkLabel.Text = "www.cyotek.com";
-      this.webLinkLabel.Click += new System.EventHandler(this.webLinkLabel_Click);
+      this.webLinkLabel.Click += new System.EventHandler(this.WebLinkLabel_Click);
       // 
       // docsTabControl
       // 
@@ -111,7 +111,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.docsTabControl.SelectedIndex = 0;
       this.docsTabControl.Size = new System.Drawing.Size(591, 360);
       this.docsTabControl.TabIndex = 3;
-      this.docsTabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.docsTabControl_Selecting);
+      this.docsTabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.DocsTabControl_Selecting);
       // 
       // AboutDialog
       // 

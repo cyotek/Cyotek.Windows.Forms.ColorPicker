@@ -44,6 +44,8 @@
   navigation the existing method
 * Added `ColorGrid.EnsureVisible`
 * Added `ColorGrid.TopItem`
+* The `ColorGrid` will now automatically display a scrollbar if
+  the control is too small to fix its contents
 
 #### Changed
 

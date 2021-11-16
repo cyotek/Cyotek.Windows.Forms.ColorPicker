@@ -12,6 +12,7 @@
 using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
 {
@@ -19,7 +20,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
   {
     #region Private Fields
 
-    private Random _random;
+    private readonly Random _random;
+
+    private Button _lastButton;
 
     #endregion Private Fields
 
@@ -28,6 +31,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     public ColorWheelDemoForm()
     {
       this.InitializeComponent();
+
+      _random = new Random(20211116);
     }
 
     #endregion Public Constructors
@@ -71,6 +76,17 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #region Private Methods
 
+    private void AnalogousButton_Click(object sender, EventArgs e)
+    {
+      _lastButton = (Button)sender;
+
+      colorWheel.SecondaryColors = new[]
+      {
+        ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, -30),
+        ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, 30)
+      };
+    }
+
     private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
@@ -81,20 +97,17 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       colorPreviewBox.Color = colorWheel.Color;
 
       propertyGrid.Refresh();
-    }
 
-    private void AnalogousButton_Click(object sender, EventArgs e)
-    {
-      colorWheel.SecondaryColors = new[]
+      if (automaticSecondaryCheckBox.Checked && _lastButton != null)
       {
-        ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, -30),
-        ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, 30)
-      };
+        _lastButton.PerformClick();
+      }
     }
 
     private void NoneButton_Click(object sender, EventArgs e)
     {
       colorWheel.SecondaryColors = null;
+      _lastButton = null;
     }
 
     private void RandomButton_Click(object sender, EventArgs e)
@@ -102,10 +115,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       HslColor[] colors;
       int count;
 
-      if (_random == null)
-      {
-        _random = new Random();
-      }
+      _lastButton = null;
 
       count = 5;
       colors = new HslColor[count];
@@ -124,10 +134,10 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       colorWheel.SecondaryColors = colors;
     }
 
-    #endregion Private Methods
-
     private void TetradicButton_Click(object sender, EventArgs e)
     {
+      _lastButton = (Button)sender;
+
       colorWheel.SecondaryColors = new[]
       {
         ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, -60),
@@ -135,5 +145,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, -240)
       };
     }
+
+    #endregion Private Methods
   }
 }

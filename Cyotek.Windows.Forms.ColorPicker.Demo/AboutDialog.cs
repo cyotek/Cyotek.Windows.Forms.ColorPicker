@@ -9,15 +9,16 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Windows.Forms;
 using CommonMark;
 using Cyotek.Demo.Windows.Forms;
 using Cyotek.Windows.Forms.ColorPicker.Demo.Properties;
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
 using TheArtOfDev.HtmlRenderer.WinForms;
 
 namespace Cyotek.Windows.Forms.ColorPicker.Demo
@@ -35,10 +36,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #region Protected Properties
 
-    protected TabControl TabControl
-    {
-      get { return docsTabControl; }
-    }
+    protected TabControl TabControl => docsTabControl;
 
     #endregion Protected Properties
 
@@ -103,31 +101,30 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         UseVisualStyleBackColor = true,
         Padding = new Padding(9),
         ToolTipText = this.GetFullReadmePath(fileName),
-        Text = fileName,
+        Text = this.GetFileLabel(fileName),
         Tag = fileName
       });
     }
 
-    private void closeButton_Click(object sender, EventArgs e)
+    private void CloseButton_Click(object sender, EventArgs e)
     {
       this.Close();
     }
 
-    private void docsTabControl_Selecting(object sender, TabControlCancelEventArgs e)
+    private void DocsTabControl_Selecting(object sender, TabControlCancelEventArgs e)
     {
       this.LoadDocumentForTab(e.TabPage);
     }
 
-    private void footerGroupBox_Paint(object sender, PaintEventArgs e)
+    private void FooterGroupBox_Paint(object sender, PaintEventArgs e)
     {
       e.Graphics.DrawLine(SystemPens.ControlDark, 0, 0, footerGroupBox.Width, 0);
       e.Graphics.DrawLine(SystemPens.ControlLightLight, 0, 1, footerGroupBox.Width, 1);
     }
 
-    private string GetFullReadmePath(string fileName)
-    {
-      return Path.GetFullPath(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\"), fileName));
-    }
+    private string GetFileLabel(string fileName) => CultureInfo.CurrentUICulture.TextInfo.ToTitleCase(Path.GetFileNameWithoutExtension(fileName).ToLower());
+
+    private string GetFullReadmePath(string fileName) => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "docs", fileName);
 
     private void HtmlPanelImageLoadHandler(object sender, TheArtOfDev.HtmlRenderer.Core.Entities.HtmlImageLoadEventArgs e)
     {
@@ -137,7 +134,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       }
       else if (e.Src.StartsWith("res/", StringComparison.OrdinalIgnoreCase))
       {
-        e.Callback(this.GetFullReadmePath(e.Src));
+        e.Callback(this.GetFullReadmePath(e.Src.Substring(4)));
       }
     }
 
@@ -145,48 +142,24 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     {
       if (page != null && page.Controls.Count == 0 && page.Tag != null)
       {
-        Control documentView;
+        HtmlPanel documentView;
         string fullPath;
         string text;
 
         Cursor.Current = Cursors.WaitCursor;
-
-        Debug.Print("Loading readme: {0}", page.Tag);
 
         fullPath = this.GetFullReadmePath(page.Tag.ToString());
         text = File.Exists(fullPath)
           ? File.ReadAllText(fullPath)
           : string.Format("Cannot find file '{0}'", fullPath);
 
-        if (text.IndexOf('\n') != -1 && text.IndexOf('\r') == -1)
+        documentView = new HtmlPanel
         {
-          text = text.Replace("\n", "\r\n");
-        }
-
-        switch (Path.GetExtension(fullPath))
-        {
-          case ".md":
-            documentView = new HtmlPanel
-            {
-              Dock = DockStyle.Fill,
-              BaseStylesheet = Resources.CSS,
-              Text = string.Concat("<html><body>", CommonMarkConverter.Convert(text), "</body></html>") // HACK: HTML panel screws up rendering if a <body> tag isn't present
-            };
-            ((HtmlPanel)documentView).ImageLoad += this.HtmlPanelImageLoadHandler;
-            break;
-
-          default:
-            documentView = new TextBox
-            {
-              ReadOnly = true,
-              Multiline = true,
-              WordWrap = true,
-              ScrollBars = ScrollBars.Vertical,
-              Dock = DockStyle.Fill,
-              Text = text
-            };
-            break;
-        }
+          Dock = DockStyle.Fill,
+          BaseStylesheet = Resources.CSS,
+          Text = "<html><body>" + CommonMarkConverter.Convert(text) + "</body></html>" // HACK: HTML panel screws up rendering if a <body> tag isn't present
+        };
+        documentView.ImageLoad += this.HtmlPanelImageLoadHandler;
 
         page.Controls.Add(documentView);
 
@@ -203,7 +176,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       versionLabel.Font = boldFont;
     }
 
-    private void webLinkLabel_Click(object sender, EventArgs e)
+    private void WebLinkLabel_Click(object sender, EventArgs e)
     {
       try
       {

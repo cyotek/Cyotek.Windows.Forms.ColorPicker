@@ -6,6 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>Cyotek.Windows.Forms.ColorPicker.Demo</RootNamespace>
     <OutputType>WinExe</OutputType>
+    <AssemblyName>demo</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -38,9 +39,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Cyotek.Windows.Forms.ColorPicker\ColorPreviewBox.cs" Link="ColorPreviewBox.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="ExternalPalettesDemoForm.cs">
       <SubType>Form</SubType>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <Generator></Generator>
       <DesignTime>True</DesignTime>
@@ -62,37 +70,43 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="palettes\16pal_v20.act">
+    <None Include="..\CHANGELOG.md" Link="docs\CHANGELOG.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\arne-v20-16.aco">
+    <None Include="..\README.md" Link="docs\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\arnev-20-16.pal">
+    <None Include="..\LICENSE.txt" Link="docs\LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\atari-800xl-palette.pal">
+    <None Include="..\res\cp-coloreditorcontrol.png" Link="docs\cp-coloreditorcontrol.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\background.lbm">
+    <None Include="..\res\cp-coloreditormanager.gif" Link="docs\cp-coloreditormanager.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\background.pal">
+    <None Include="..\res\cp-colorgridcontrol.png" Link="docs\cp-colorgridcontrol.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\db16.gpl">
+    <None Include="..\res\cp-colorpickerdialog.png" Link="docs\cp-colorpickerdialog.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\db32.gpl">
+    <None Include="..\res\cp-colorslidercontrols.png" Link="docs\cp-colorslidercontrols.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\grayscale.pal">
+    <None Include="..\res\cp-colorwheelcontrol.png" Link="docs\cp-colorwheelcontrol.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\Hex256.pal">
+    <None Include="..\res\cp-screencolorpickercontrol.png" Link="docs\cp-screencolorpickercontrol.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="palettes\PaintNet.txt">
+    <None Include="..\res\icon-32.png" Link="docs\icon-32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="palettes\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -100,9 +114,6 @@
   <!-- Don't clutter the Solution Explorer with NCrunch setting files -->
   <ItemGroup>
     <None Remove="*.ncrunchproject" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\Cyotek.Windows.Forms.ColorPicker\ColorPreviewBox.cs" Link="ColorPreviewBox.cs" />
   </ItemGroup>
 
   <!-- Workarounds for .NET 3.5 compilation via dotnet -->
