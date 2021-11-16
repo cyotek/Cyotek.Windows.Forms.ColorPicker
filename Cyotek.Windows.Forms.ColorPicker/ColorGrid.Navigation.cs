@@ -105,18 +105,14 @@ namespace Cyotek.Windows.Forms
 
     public void Navigate(ColorGridNavigationMode mode)
     {
-      //NavigationOption option;
       int index;
 
-      //option = this.GetNavigationOption(false);
       index = this.GetNavigationDestination(mode);
 
       if (this.IsValidIndex(index))
       {
         this.ColorIndex = index;
       }
-      //this.SetFocused(index);
-      //this.UpdateSelection(index, option);
     }
 
     #endregion Public Methods
@@ -213,7 +209,7 @@ namespace Cyotek.Windows.Forms
         {
           // the next row is partial AND the current
           // column is beyond the length of the new row
-          increment -= this.CustomRowOffset;
+          increment = this.ItemCount - _colorIndex - 1;
         }
       }
       else if (increment == -_actualColumns && this.IsPrimaryLastRow(r - 1) && c < _actualColumns - this.PrimaryRowOffset)
