@@ -5,7 +5,6 @@ bin/
 obj/
 _NCrunch_Cyotek.Windows.Forms.ColorPicker/
 testresults/
-demo/
 dist/
 
 *.ncrunchsolution

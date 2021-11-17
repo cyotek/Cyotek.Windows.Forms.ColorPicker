@@ -9,11 +9,11 @@ SET RELDIR=%BASENAME%\bin\Release\
 SET PRJFILE=%BASENAME%\%BASENAME%.csproj
 SET DLLNAME=%BASENAME%.dll
 
+SET DISTDIR=dist\
+
 SET DEMOPRJFILE=%BASENAME%.Demo\%BASENAME%.Demo.csproj
 SET DEMORELDIR=%BASENAME%.Demo\bin\Release\net48\
-SET DEPDIR=demo\
-
-SET DISTDIR=dist\
+SET DEPDIR=%DISTDIR%demo\
 
 IF EXIST %RELDIR%*.nupkg  DEL /F %RELDIR%*.nupkg
 IF EXIST %RELDIR%*.snupkg DEL /F %RELDIR%*.snupkg
@@ -67,7 +67,7 @@ CALL signcmd bin\Cyotek.Windows.Forms.ColorPicker.dll
 
 POPD
 
-COPY %DEPDIR%*.zip %DISTDIR%
+MOVE %DEPDIR%*.zip %DISTDIR%
 
 exit /b %ERRORLEVEL%
 
@@ -90,7 +90,7 @@ CALL signcmd net5.0-windows\%DLLNAME%
 
 POPD
 
-COPY %RELDIR%*.zip %DISTDIR%
+MOVE %RELDIR%*.zip %DISTDIR%
 
 dotnet pack %PRJFILE% --configuration Release --no-build
 IF %ERRORLEVEL% NEQ 0 GOTO :failed
