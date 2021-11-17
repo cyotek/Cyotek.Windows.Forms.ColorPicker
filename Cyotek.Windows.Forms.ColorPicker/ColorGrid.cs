@@ -1671,7 +1671,7 @@ namespace Cyotek.Windows.Forms
             {
               e.Handled = true;
 
-              this.StartColorEdit(_colorIndex);
+              this.BeginEdit(_colorIndex);
             }
             break;
 
@@ -1715,7 +1715,7 @@ namespace Cyotek.Windows.Forms
 
       if (e.Button == MouseButtons.Left && (hitTest.Source == ColorSource.Custom && _editMode != ColorEditingMode.None || hitTest.Source == ColorSource.Standard && _editMode == ColorEditingMode.Both))
       {
-        this.StartColorEdit(hitTest.Index);
+        this.BeginEdit(hitTest.Index);
       }
     }
 
@@ -2428,10 +2428,12 @@ namespace Cyotek.Windows.Forms
       this.Size = this.GetAutoSize();
     }
 
-    private void StartColorEdit(int index)
+    public void BeginEdit(int index)
     {
       EditColorCancelEventArgs e;
 
+      this.ValidateIndex(index, false);
+      
       e = new EditColorCancelEventArgs(this.GetColor(index), index);
       this.OnEditingColor(e);
 
