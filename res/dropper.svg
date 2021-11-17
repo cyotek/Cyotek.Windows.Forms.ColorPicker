@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   inkscape:export-ydpi="96"
+   inkscape:export-xdpi="96"
+   inkscape:export-filename="D:\Checkout\trunk\cyotek\source\Libraries\Cyotek.Windows.Forms.ColorPicker\res\dropper.png"
+   sodipodi:docname="ColorPicker_16x.svg"
+   id="svg7"
+   version="1.1"
+   height="256"
+   width="256">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs11" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg7"
+     inkscape:window-maximized="1"
+     inkscape:window-y="352"
+     inkscape:window-x="892"
+     inkscape:cy="-163.62902"
+     inkscape:cx="-299.20257"
+     inkscape:zoom="0.83007813"
+     scale-x="1"
+     showgrid="false"
+     id="namedview9"
+     inkscape:window-height="1017"
+     inkscape:window-width="2560"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <style
+     id="style2"
+     type="text/css">.icon-canvas-transparent{opacity:0;fill:#F6F6F6;} .icon-vs-out{fill:#F6F6F6;} .icon-vs-bg{fill:#424242;}</style>
+  <path
+     style="stroke-width:15.9999"
+     id="canvas"
+     d="M 255.99606,255.97799 H 0 V -0.022 h 255.99606 z"
+     class="icon-canvas-transparent" />
+  <path
+     style="stroke-width:15.9999"
+     id="outline"
+     d="m 243.85225,74.762 -23.69564,23.696 13.35979,13.36 -49.35924,49.36 L 171.96535,148.986 89.278625,231.70601 31.743511,256.33 0.39999384,224.986 21.983662,165.11399 105.02238,82.058 94.702542,71.722 144.06178,22.362001 157.42158,35.722 181.11721,12.026 c 6.8959,-6.8960001 15.99975,-10.8480001 25.8556,-11.696 h 7.37589 c 10.57584,0.864 20.76768,5.296 28.31956,12.832 17.31174,17.344 17.82373,44.96 1.18399,61.6 z"
+     class="icon-vs-out" />
+  <path
+     style="stroke-width:15.9999"
+     id="iconBg"
+     d="m 151.46967,127.242 9.79185,9.808 -81.134754,81.152 -44.719311,19.168 -16.511746,-16.512 16.91174,-46.976 81.150751,-81.152 9.35985,9.36 v 0.048 l -69.694922,69.696 25.103614,25.104 69.678928,-69.696 z M 231.38844,24.489999 C 220.7166,13.866 202.95687,12.826 192.42904,23.338 l -35.00746,35.024001 -13.3758,-13.360002 -2.78396,2.784 -23.95163,23.952 66.83097,66.832001 26.73559,-26.736 -13.35979,-13.36 35.02346,-35.024 c 10.52784,-10.528001 9.47185,-28.288 -1.15198,-38.960001 z"
+     class="icon-vs-bg" />
+</svg>
