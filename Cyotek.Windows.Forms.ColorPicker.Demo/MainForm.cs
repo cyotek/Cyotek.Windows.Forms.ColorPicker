@@ -40,8 +40,8 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         Text = "Demonstrations"
       };
 
-      groupBox1.Dock = DockStyle.Fill;
-      demoPage.Controls.Add(groupBox1);
+      demoGroupBox.Dock = DockStyle.Fill;
+      demoPage.Controls.Add(demoGroupBox);
 
       this.TabControl.TabPages.Insert(0, demoPage);
       this.TabControl.SelectedTab = demoPage;
@@ -66,6 +66,11 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void ColorGridDemoButton_Click(object sender, EventArgs e)
     {
       this.ShowDemo<ColorGridDemoForm>();
+    }
+
+    private void colorGridEditingDemoButton_Click(object sender, EventArgs e)
+    {
+      this.ShowDemo<ColorGridEditingDemoForm>();
     }
 
     private void ColorPickerFormDemoButton_Click(object sender, EventArgs e)

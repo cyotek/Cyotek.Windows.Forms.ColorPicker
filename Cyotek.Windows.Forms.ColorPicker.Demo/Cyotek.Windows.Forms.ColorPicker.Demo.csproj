@@ -43,6 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="ColorGridEditingDemoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="ExternalPalettesDemoForm.cs">
       <SubType>Form</SubType>
     </Compile>

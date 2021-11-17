@@ -59,6 +59,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       base.OnFontChanged(e);
 
       this.SetBoldFonts();
+      this.UpdateLayout();
     }
 
     protected override void OnLoad(EventArgs e)
@@ -88,6 +89,13 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
         this.SetBoldFonts();
       }
+    }
+
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+
+      this.UpdateLayout();
     }
 
     #endregion Protected Methods
@@ -174,6 +182,15 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       boldFont = new Font(this.Font, FontStyle.Bold);
       nameLabel.Font = boldFont;
       versionLabel.Font = boldFont;
+    }
+
+    private void UpdateLayout()
+    {
+      if (docsTabControl != null)
+      {
+        docsTabControl.Width = this.ClientSize.Width - (docsTabControl.Left * 2);
+        docsTabControl.Height = footerGroupBox.Top - (docsTabControl.Top + docsTabControl.Left);
+      }
     }
 
     private void WebLinkLabel_Click(object sender, EventArgs e)
