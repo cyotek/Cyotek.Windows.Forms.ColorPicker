@@ -498,37 +498,40 @@ namespace Cyotek.Windows.Forms
       get => _color;
       set
       {
-        int newIndex;
-
-        _color = value;
-
-        if (!value.IsEmpty)
+        if (_color != value)
         {
-          // if the new color matches the color at the current index, don't change the index -
-          // this stops the selection hopping about if you have duplicate colors in a palette.
-          // otherwise, if the colors don't match, then find the index that does
-          newIndex = this.GetColor(_colorIndex) == value
-            ? _colorIndex
-            : this.GetColorIndex(value);
+          int newIndex;
 
-          if (newIndex == ColorGrid.InvalidIndex)
+          _color = value;
+
+          if (!value.IsEmpty)
           {
-            newIndex = this.AddCustomColor(value);
+            // if the new color matches the color at the current index, don't change the index -
+            // this stops the selection hopping about if you have duplicate colors in a palette.
+            // otherwise, if the colors don't match, then find the index that does
+            newIndex = this.GetColor(_colorIndex) == value
+              ? _colorIndex
+              : this.GetColorIndex(value);
+
+            if (newIndex == ColorGrid.InvalidIndex)
+            {
+              newIndex = this.AddCustomColor(value);
+            }
           }
-        }
-        else
-        {
-          newIndex = ColorGrid.InvalidIndex;
-        }
+          else
+          {
+            newIndex = ColorGrid.InvalidIndex;
+          }
 
-        if (newIndex != _colorIndex)
-        {
-          _previousColorIndex = _colorIndex;
-          _colorIndex = newIndex;
-          this.OnColorIndexChanged(EventArgs.Empty);
-        }
+          if (newIndex != _colorIndex)
+          {
+            _previousColorIndex = _colorIndex;
+            _colorIndex = newIndex;
+            this.OnColorIndexChanged(EventArgs.Empty);
+          }
 
-        this.OnColorChanged(EventArgs.Empty);
+          this.OnColorChanged(EventArgs.Empty);
+        }
       }
     }
 
