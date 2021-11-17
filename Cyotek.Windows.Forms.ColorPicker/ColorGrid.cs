@@ -1227,7 +1227,7 @@ namespace Cyotek.Windows.Forms
 
     protected virtual Brush CreateTransparencyBrush()
     {
-      return new TextureBrush(ResourceManager.CellBackground, WrapMode.Tile);
+      return new TextureBrush(ResourceManager.CreateCheckerBoxTile(), WrapMode.Tile);
     }
 
     [Obsolete("This method is no longer used.", true)]

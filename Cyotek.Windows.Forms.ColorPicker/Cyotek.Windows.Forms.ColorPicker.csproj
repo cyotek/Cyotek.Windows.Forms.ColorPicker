@@ -21,7 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\cellbackground.png" />
     <None Remove="Resources\eyedropper.cur" />
     <None Remove="Resources\eyedropper.png" />
     <None Remove="Resources\palette-load.png" />
@@ -34,7 +33,6 @@
     <EmbeddedResource Include="..\res\ColorGridToolboxBitmap.bmp" Link="ColorGridToolboxBitmap.bmp" />
     <EmbeddedResource Include="..\res\ColorWheelToolboxBitmap.bmp" Link="ColorWheelToolboxBitmap.bmp" />
     <EmbeddedResource Include="..\res\ScreenColorPickerToolboxBitmap.bmp" Link="ScreenColorPickerToolboxBitmap.bmp" />
-    <EmbeddedResource Include="Resources\cellbackground.png" />
     <EmbeddedResource Include="Resources\eyedropper.cur" />
     <EmbeddedResource Include="Resources\eyedropper.png" />
     <EmbeddedResource Include="Resources\palette-load.png" />
