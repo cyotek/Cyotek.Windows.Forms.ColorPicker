@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
   // Cyotek Color Picker controls library
   // Copyright © 2013-2017 Cyotek Ltd.

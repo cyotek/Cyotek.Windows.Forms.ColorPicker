@@ -9,14 +9,13 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ColorWheelDemoForm : BaseForm
+  internal partial class ColorWheelDemoForm : DemonstrationBaseForm
   {
     #region Private Fields
 
@@ -85,11 +84,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
         ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, -30),
         ColorWheelDemoForm.ChangeHue(colorWheel.HslColor, 30)
       };
-    }
-
-    private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      this.Close();
     }
 
     private void ColorWheel_ColorChanged(object sender, EventArgs e)

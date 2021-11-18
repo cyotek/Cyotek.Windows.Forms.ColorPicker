@@ -12,12 +12,13 @@
 // Found this example useful?
 // https://www.cyotek.com/contribute
 
+using Cyotek.Windows.Forms.Demo.Properties;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Cyotek.Demo.Windows.Forms
+namespace Cyotek.Windows.Forms.Demo
 {
   internal class BaseForm : System.Windows.Forms.Form
   {
@@ -32,6 +33,7 @@ namespace Cyotek.Demo.Windows.Forms
       base.StartPosition = FormStartPosition.CenterParent;
       this.AutoScaleDimensions = new SizeF(6F, 13F);
       this.AutoScaleMode = AutoScaleMode.Font;
+      base.Icon = Resources.ApplicationIcon;
     }
 
     #endregion Protected Constructors

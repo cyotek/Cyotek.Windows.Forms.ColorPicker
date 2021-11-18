@@ -1,4 +1,4 @@
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
   partial class MainForm
   {

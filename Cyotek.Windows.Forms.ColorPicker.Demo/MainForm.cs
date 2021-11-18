@@ -12,7 +12,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
   internal partial class MainForm : AboutDialog
   {

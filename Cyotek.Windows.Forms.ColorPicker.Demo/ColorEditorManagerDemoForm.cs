@@ -9,13 +9,12 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Drawing;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ColorEditorManagerDemoForm : BaseForm
+  internal partial class ColorEditorManagerDemoForm : DemonstrationBaseForm
   {
     #region Public Constructors
 

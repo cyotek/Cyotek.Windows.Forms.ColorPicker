@@ -1,4 +1,4 @@
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
   partial class AboutDialog
   {
@@ -59,7 +59,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             // copyrightLabel
             // 
             this.copyrightLabel.AutoSize = true;
-            this.copyrightLabel.Location = new System.Drawing.Point(85, 47);
+            this.copyrightLabel.Location = new System.Drawing.Point(82, 47);
             this.copyrightLabel.Name = "copyrightLabel";
             this.copyrightLabel.Size = new System.Drawing.Size(50, 13);
             this.copyrightLabel.TabIndex = 2;
@@ -67,7 +67,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             // 
             // iconPictureBox
             // 
-            this.iconPictureBox.Image = global::Cyotek.Windows.Forms.ColorPicker.Demo.Properties.Resources.Icon;
+            this.iconPictureBox.Image = global::Cyotek.Windows.Forms.Demo.Properties.Resources.IconLarge;
             this.iconPictureBox.Location = new System.Drawing.Point(12, 12);
             this.iconPictureBox.Name = "iconPictureBox";
             this.iconPictureBox.Size = new System.Drawing.Size(64, 64);

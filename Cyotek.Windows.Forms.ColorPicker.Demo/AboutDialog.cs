@@ -10,8 +10,7 @@
 // https://www.cyotek.com/contribute
 
 using CommonMark;
-using Cyotek.Demo.Windows.Forms;
-using Cyotek.Windows.Forms.ColorPicker.Demo.Properties;
+using Cyotek.Windows.Forms.Demo.Properties;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -21,7 +20,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using TheArtOfDev.HtmlRenderer.WinForms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
   internal partial class AboutDialog : BaseForm
   {
@@ -40,7 +39,28 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion Protected Properties
 
+    #region Public Methods
+
+    public static void OpenUrl(string url)
+    {
+      try
+      {
+        Process.Start(url);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(string.Format("Unable to open URL '{1}'.\n\n{0}", ex.Message, url), Application.ProductVersion, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+      }
+    }
+
+    #endregion Public Methods
+
     #region Internal Methods
+
+    internal static void OpenCyotekHomePage()
+    {
+      AboutDialog.OpenUrl("https://www.cyotek.com/");
+    }
 
     internal static void ShowAboutDialog()
     {
@@ -195,14 +215,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     private void WebLinkLabel_Click(object sender, EventArgs e)
     {
-      try
-      {
-        Process.Start(((Control)sender).Text);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(string.Format("Unable to start the specified URI.\n\n{0}", ex.Message), this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-      }
+      AboutDialog.OpenUrl(((Control)sender).Text);
     }
 
     #endregion Private Methods

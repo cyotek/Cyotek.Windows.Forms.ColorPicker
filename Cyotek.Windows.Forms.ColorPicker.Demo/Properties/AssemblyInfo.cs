@@ -17,7 +17,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Cyotek Ltd")]
-[assembly: AssemblyProduct("Cyotek ColorPicker Controls for Windows Forms")]
+[assembly: AssemblyProduct("Cyotek Color Picker Controls for Windows Forms")]
 [assembly: AssemblyCopyright("Copyright © 2013-2021 Cyotek Ltd.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

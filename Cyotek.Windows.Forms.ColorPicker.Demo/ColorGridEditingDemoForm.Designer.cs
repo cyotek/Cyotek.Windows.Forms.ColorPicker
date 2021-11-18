@@ -1,4 +1,4 @@
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
   internal partial class ColorGridEditingDemoForm
   {
@@ -32,131 +32,142 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ColorGridEditingDemoForm));
             System.Windows.Forms.Label editModeLabel;
             this.colorGrid = new Cyotek.Windows.Forms.ColorGrid();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editModeComboBox = new System.Windows.Forms.ComboBox();
-            this.eventsListBox = new Cyotek.Windows.Forms.ColorPicker.Demo.EventsListBox();
+            this.eventsListBox = new Cyotek.Windows.Forms.Demo.EventsListBox();
+            this.eventsSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
             demoLabel = new System.Windows.Forms.Label();
             editModeLabel = new System.Windows.Forms.Label();
-            this.menuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.eventsSplitContainer)).BeginInit();
+            this.eventsSplitContainer.Panel1.SuspendLayout();
+            this.eventsSplitContainer.Panel2.SuspendLayout();
+            this.eventsSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).BeginInit();
+            this.optionsSplitContainer.Panel1.SuspendLayout();
+            this.optionsSplitContainer.Panel2.SuspendLayout();
+            this.optionsSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // demoLabel
             // 
-            demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            demoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             demoLabel.AutoEllipsis = true;
             demoLabel.BackColor = System.Drawing.SystemColors.Info;
             demoLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             demoLabel.ForeColor = System.Drawing.SystemColors.InfoText;
-            demoLabel.Location = new System.Drawing.Point(444, 27);
+            demoLabel.Location = new System.Drawing.Point(2, 0);
             demoLabel.Name = "demoLabel";
             demoLabel.Padding = new System.Windows.Forms.Padding(9);
-            demoLabel.Size = new System.Drawing.Size(408, 151);
-            demoLabel.TabIndex = 2;
+            demoLabel.Size = new System.Drawing.Size(391, 168);
+            demoLabel.TabIndex = 0;
             demoLabel.Text = resources.GetString("demoLabel.Text");
             // 
             // editModeLabel
             // 
-            editModeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            editModeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             editModeLabel.AutoSize = true;
-            editModeLabel.Location = new System.Drawing.Point(441, 190);
+            editModeLabel.Location = new System.Drawing.Point(0, 178);
             editModeLabel.Name = "editModeLabel";
             editModeLabel.Size = new System.Drawing.Size(58, 13);
-            editModeLabel.TabIndex = 3;
+            editModeLabel.TabIndex = 1;
             editModeLabel.Text = "&Edit Mode:";
             // 
             // colorGrid
             // 
-            this.colorGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.colorGrid.AutoAddColors = false;
-            this.colorGrid.Location = new System.Drawing.Point(12, 27);
+            this.colorGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.colorGrid.Location = new System.Drawing.Point(0, 0);
             this.colorGrid.Name = "colorGrid";
             this.colorGrid.Padding = new System.Windows.Forms.Padding(6);
             this.colorGrid.Palette = Cyotek.Windows.Forms.ColorPalette.Paint;
-            this.colorGrid.Size = new System.Drawing.Size(426, 199);
-            this.colorGrid.TabIndex = 1;
+            this.colorGrid.Size = new System.Drawing.Size(361, 218);
+            this.colorGrid.TabIndex = 0;
             this.colorGrid.ColorChanged += new System.EventHandler(this.ColorGrid_ColorChanged);
             this.colorGrid.ColorIndexChanged += new System.EventHandler(this.ColorGrid_ColorIndexChanged);
             this.colorGrid.EditingColor += new System.EventHandler<Cyotek.Windows.Forms.EditColorCancelEventArgs>(this.ColorGrid_EditingColor);
             // 
-            // statusStrip
-            // 
-            this.statusStrip.Location = new System.Drawing.Point(0, 337);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip.Size = new System.Drawing.Size(864, 22);
-            this.statusStrip.TabIndex = 6;
-            // 
-            // menuStrip
-            // 
-            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(864, 24);
-            this.menuStrip.TabIndex = 0;
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.closeToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.closeToolStripMenuItem.Text = "&Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.CloseToolStripMenuItem_Click);
-            // 
             // editModeComboBox
             // 
-            this.editModeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.editModeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.editModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.editModeComboBox.Items.AddRange(new object[] {
             "None",
             "Custom",
             "Both"});
-            this.editModeComboBox.Location = new System.Drawing.Point(444, 206);
+            this.editModeComboBox.Location = new System.Drawing.Point(3, 194);
             this.editModeComboBox.Name = "editModeComboBox";
             this.editModeComboBox.Size = new System.Drawing.Size(121, 21);
-            this.editModeComboBox.TabIndex = 4;
+            this.editModeComboBox.TabIndex = 2;
             this.editModeComboBox.SelectedIndexChanged += new System.EventHandler(this.EditModeComboBox_SelectedIndexChanged);
             // 
             // eventsListBox
             // 
-            this.eventsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.eventsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.eventsListBox.FormattingEnabled = true;
-            this.eventsListBox.Location = new System.Drawing.Point(12, 239);
+            this.eventsListBox.Location = new System.Drawing.Point(0, 0);
             this.eventsListBox.Name = "eventsListBox";
-            this.eventsListBox.Size = new System.Drawing.Size(840, 95);
-            this.eventsListBox.TabIndex = 5;
+            this.eventsListBox.Size = new System.Drawing.Size(761, 96);
+            this.eventsListBox.TabIndex = 0;
+            // 
+            // eventsSplitContainer
+            // 
+            this.eventsSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.eventsSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.eventsSplitContainer.Location = new System.Drawing.Point(12, 12);
+            this.eventsSplitContainer.Name = "eventsSplitContainer";
+            this.eventsSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // eventsSplitContainer.Panel1
+            // 
+            this.eventsSplitContainer.Panel1.Controls.Add(this.optionsSplitContainer);
+            // 
+            // eventsSplitContainer.Panel2
+            // 
+            this.eventsSplitContainer.Panel2.Controls.Add(this.eventsListBox);
+            this.eventsSplitContainer.Size = new System.Drawing.Size(761, 318);
+            this.eventsSplitContainer.SplitterDistance = 218;
+            this.eventsSplitContainer.TabIndex = 0;
+            // 
+            // optionsSplitContainer
+            // 
+            this.optionsSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.optionsSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.optionsSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.optionsSplitContainer.Name = "optionsSplitContainer";
+            // 
+            // optionsSplitContainer.Panel1
+            // 
+            this.optionsSplitContainer.Panel1.Controls.Add(this.colorGrid);
+            // 
+            // optionsSplitContainer.Panel2
+            // 
+            this.optionsSplitContainer.Panel2.Controls.Add(demoLabel);
+            this.optionsSplitContainer.Panel2.Controls.Add(this.editModeComboBox);
+            this.optionsSplitContainer.Panel2.Controls.Add(editModeLabel);
+            this.optionsSplitContainer.Size = new System.Drawing.Size(761, 218);
+            this.optionsSplitContainer.SplitterDistance = 361;
+            this.optionsSplitContainer.TabIndex = 0;
             // 
             // ColorGridEditingDemoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(864, 359);
-            this.Controls.Add(this.eventsListBox);
-            this.Controls.Add(this.editModeComboBox);
-            this.Controls.Add(this.colorGrid);
-            this.Controls.Add(editModeLabel);
-            this.Controls.Add(this.menuStrip);
-            this.Controls.Add(demoLabel);
-            this.Controls.Add(this.statusStrip);
+            this.ClientSize = new System.Drawing.Size(785, 380);
+            this.Controls.Add(this.eventsSplitContainer);
             this.Name = "ColorGridEditingDemoForm";
             this.Text = "External Palette Files Demonstration";
-            this.menuStrip.ResumeLayout(false);
-            this.menuStrip.PerformLayout();
+            this.Controls.SetChildIndex(this.eventsSplitContainer, 0);
+            this.eventsSplitContainer.Panel1.ResumeLayout(false);
+            this.eventsSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.eventsSplitContainer)).EndInit();
+            this.eventsSplitContainer.ResumeLayout(false);
+            this.optionsSplitContainer.Panel1.ResumeLayout(false);
+            this.optionsSplitContainer.Panel2.ResumeLayout(false);
+            this.optionsSplitContainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).EndInit();
+            this.optionsSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,11 +175,9 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
     #endregion
     private ColorGrid colorGrid;
-    private System.Windows.Forms.StatusStrip statusStrip;
-    private System.Windows.Forms.MenuStrip menuStrip;
-    private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     private EventsListBox eventsListBox;
     private System.Windows.Forms.ComboBox editModeComboBox;
+    private System.Windows.Forms.SplitContainer eventsSplitContainer;
+    private System.Windows.Forms.SplitContainer optionsSplitContainer;
   }
 }

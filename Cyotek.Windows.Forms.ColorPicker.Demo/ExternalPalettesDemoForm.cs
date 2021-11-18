@@ -9,15 +9,14 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ExternalPalettesDemoForm : BaseForm
+  internal partial class ExternalPalettesDemoForm : DemonstrationBaseForm
   {
     #region Public Constructors
 
@@ -53,11 +52,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     #endregion Protected Methods
 
     #region Private Methods
-
-    private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      this.Close();
-    }
 
     private void LoadPaletteFileNames()
     {

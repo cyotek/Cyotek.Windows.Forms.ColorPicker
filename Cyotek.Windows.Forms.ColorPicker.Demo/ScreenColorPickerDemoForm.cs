@@ -9,15 +9,14 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ScreenColorPickerDemoForm : BaseForm
+  internal partial class ScreenColorPickerDemoForm : DemonstrationBaseForm
   {
     #region Public Constructors
 
@@ -33,11 +32,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
     private void CaptureButton_Click(object sender, EventArgs e)
     {
       screenColorPicker.CaptureMouse();
-    }
-
-    private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      this.Close();
     }
 
     private void ReleaseButton_Click(object sender, EventArgs e)

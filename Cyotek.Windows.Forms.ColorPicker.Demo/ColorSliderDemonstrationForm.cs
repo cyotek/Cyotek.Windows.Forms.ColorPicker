@@ -9,15 +9,14 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ColorSliderDemonstrationForm : BaseForm
+  internal partial class ColorSliderDemonstrationForm : DemonstrationBaseForm
   {
     #region Private Fields
 
@@ -87,11 +86,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       horizontalBottomColorSlider.Color = color;
 
       propertyGrid.Refresh();
-    }
-
-    private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      this.Close();
     }
 
     private void GotFocusHandler(object sender, EventArgs e)

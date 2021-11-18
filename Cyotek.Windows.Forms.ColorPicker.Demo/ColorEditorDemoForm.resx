@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <data name="demoLabel.Text" xml:space="preserve">
     <value>The ColorEditor control allows a color be defined using either direct RGB values, HSL, and hexadecimal notation. In addition, you can selected from named web or system colors. The different sliders all update color ranges according to the current color.
 
@@ -129,7 +126,4 @@ The ShowHex, ShowHsl and ShowRgb properties can be used to show or hide specific
 
 This control can also be bound to a ColorEditorManager component, allowing several color editing components to notify each other of color changes for creating composite color editors.</value>
   </data>
-  <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>293, 17</value>
-  </metadata>
 </root>

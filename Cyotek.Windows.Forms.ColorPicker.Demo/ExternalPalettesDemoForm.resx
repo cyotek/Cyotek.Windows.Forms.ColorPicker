@@ -127,10 +127,4 @@ Supported formats are 8bit VGA (pal), Adobe Color Table (act), Adobe PhotoShop (
 
 Important: This functionality is currently under review. Some formats will be removed and the feature may be restricted to internal operation. If you use this functionality, consider dropping support@cyotek.com a line detailing how you use the feature.</value>
   </data>
-  <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>293, 17</value>
-  </metadata>
 </root>

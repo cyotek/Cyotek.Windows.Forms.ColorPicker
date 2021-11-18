@@ -1,22 +1,47 @@
-﻿using System;
+// Cyotek Color Picker Controls Library
+// http://cyotek.com/blog/tag/colorpicker
+
+// Copyright (c) 2013-2021 Cyotek Ltd.
+
+// This work is licensed under the MIT License.
+// See LICENSE.TXT for the full text
+
+// Found this code useful?
+// https://www.cyotek.com/contribute
+
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  // Cyotek Color Picker controls library
-  // Copyright © 2013-2017 Cyotek Ltd.
-  // http://cyotek.com/blog/tag/colorpicker
-
-  // Licensed under the MIT License. See license.txt for the full text.
-
-  // If you use this code in your applications, donations or attribution are welcome
-
-  internal class EventsListBox : ListBox
+  internal sealed class EventsListBox : ListBox
   {
-    #region Methods
+    #region Public Constructors
+
+    public EventsListBox()
+    {
+      base.IntegralHeight = false;
+    }
+
+    #endregion Public Constructors
+
+    #region Public Properties
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public new bool IntegralHeight
+    {
+      get => base.IntegralHeight;
+      set => base.IntegralHeight = value;
+    }
+
+    #endregion Public Properties
+
+    #region Public Methods
 
     public void AddEvent(Control sender, string eventName)
     {
@@ -53,6 +78,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       this.TopIndex = this.Items.Count - this.ClientSize.Height / this.ItemHeight;
     }
 
-    #endregion
+    #endregion Public Methods
   }
 }

@@ -6,24 +6,23 @@
 
 // If you use this code in your applications, donations or attribution are welcome
 
-using Cyotek.Demo.Windows.Forms;
-using System;
 using Cyotek.Windows.Forms.ToolStripControllerHosts;
+using System;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ToolStripHostDemoForm : BaseForm
+  internal partial class ToolStripHostDemoForm : DemonstrationBaseForm
   {
-    #region Constructors
+    #region Public Constructors
 
     public ToolStripHostDemoForm()
     {
       this.InitializeComponent();
     }
 
-    #endregion
+    #endregion Public Constructors
 
-    #region Methods
+    #region Protected Methods
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
@@ -39,22 +38,25 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       propertyGrid.SelectedObject = textToolStripColorPickerButton.Host;
     }
 
-    private void backgroundToolStripColorPickerSplitButton_ColorChanged(object sender, EventArgs e)
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private void BackgroundToolStripColorPickerSplitButton_ColorChanged(object sender, EventArgs e)
     {
       previewLabel.BackColor = ((ToolStripColorPickerSplitButton)sender).Color;
     }
 
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    private void BlogLinkLabel_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
     {
-      this.Close();
+      AboutDialog.OpenUrl("https://www.cyotek.com/blog/hosting-a-colorgrid-control-in-a-toolstrip");
     }
 
-    private void textToolStripColorPickerButton_ColorChanged(object sender, EventArgs e)
+    private void TextToolStripColorPickerButton_ColorChanged(object sender, EventArgs e)
     {
       previewLabel.ForeColor = ((ToolStripColorPickerSplitButton)sender).Color;
     }
 
-    #endregion
-
+    #endregion Private Methods
   }
 }

@@ -122,10 +122,4 @@
 
 Alternatively, you can trigger the picker by calling the CaptureMouse method (for example, via a hotkey). This will cause the selection mode to enter without having to click and drag. Move your mouse to update the snapshot and click the left mouse button to both select the colour and end the capture.</value>
   </data>
-  <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>125, 17</value>
-  </metadata>
 </root>

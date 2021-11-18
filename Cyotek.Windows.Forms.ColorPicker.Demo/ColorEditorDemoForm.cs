@@ -1,8 +1,7 @@
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Drawing;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
   // Cyotek Color Picker controls library
   // Copyright © 2013-2017 Cyotek Ltd.
@@ -12,7 +11,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
   // If you use this code in your applications, donations or attribution are welcome
 
-  internal partial class ColorEditorDemoForm : BaseForm
+  internal partial class ColorEditorDemoForm : DemonstrationBaseForm
   {
     #region Constructors
 
@@ -32,12 +31,7 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
       colorEditor.Color = Color.SeaGreen;
     }
 
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      this.Close();
-    }
-
-    private void colorEditor_ColorChanged(object sender, EventArgs e)
+    private void ColorEditor_ColorChanged(object sender, EventArgs e)
     {
       colorPreviewBox.Color = colorEditor.Color;
 

@@ -9,15 +9,14 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ColorPickerDialogDemoForm : BaseForm
+  internal partial class ColorPickerDialogDemoForm : DemonstrationBaseForm
   {
     #region Public Constructors
 
@@ -62,11 +61,6 @@ namespace Cyotek.Windows.Forms.ColorPicker.Demo
 
         dialog.PreviewColorChanged -= this.DialogColorChangedHandler;
       }
-    }
-
-    private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      this.Close();
     }
 
     private void DialogColorChangedHandler(object sender, EventArgs e)

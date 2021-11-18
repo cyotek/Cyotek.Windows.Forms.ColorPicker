@@ -9,14 +9,13 @@
 // Found this code useful?
 // https://www.cyotek.com/contribute
 
-using Cyotek.Demo.Windows.Forms;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Cyotek.Windows.Forms.ColorPicker.Demo
+namespace Cyotek.Windows.Forms.Demo
 {
-  internal partial class ColorGridEditingDemoForm : BaseForm
+  internal partial class ColorGridEditingDemoForm : DemonstrationBaseForm
   {
     #region Public Constructors
 
