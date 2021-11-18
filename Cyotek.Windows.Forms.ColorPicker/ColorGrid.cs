@@ -913,6 +913,21 @@ namespace Cyotek.Windows.Forms
       return newIndex;
     }
 
+    public void BeginEdit(int index)
+    {
+      EditColorCancelEventArgs e;
+
+      this.ValidateIndex(index, false);
+
+      e = new EditColorCancelEventArgs(this.GetColor(index), index);
+      this.OnEditingColor(e);
+
+      if (!e.Cancel)
+      {
+        this.EditColor(index);
+      }
+    }
+
     /// <summary>
     ///   Disables any redrawing of the image box
     /// </summary>
@@ -1325,14 +1340,17 @@ namespace Cyotek.Windows.Forms
 
     protected virtual int GetColorIndex(Color value)
     {
+      int rgb;
       int index;
 
-      index = _colors.IndexOf(value);
+      rgb = value.ToArgb();
+      index = this.GetColorIndexImpl(_colors, rgb);
 
-      if (index == InvalidIndex && _showCustomColors)
+      if (index == ColorGrid.InvalidIndex && _showCustomColors)
       {
-        index = _customColors.IndexOf(value);
-        if (index != InvalidIndex)
+        index = this.GetColorIndexImpl(_customColors, rgb);
+
+        if (index != ColorGrid.InvalidIndex)
         {
           index += _colors.Count;
         }
@@ -2222,7 +2240,7 @@ namespace Cyotek.Windows.Forms
         if (_rows > _fullyVisibleRows)
         {
           // HACK: Awful, required to resize cells after showing a scrollbar
-        this.CalculateGridSize();
+          this.CalculateGridSize();
         }
 
         if (_scrollBar != null)
@@ -2277,6 +2295,30 @@ namespace Cyotek.Windows.Forms
       }
 
       return new Point(column, row);
+    }
+
+    private int GetColorIndexImpl(ColorCollection values, int value)
+    {
+      int index;
+
+      // TODO: This doesn't feel particular effeciant
+      // even though the original IndexOf was O(n) as
+      // well, however ColorCollection doesn't support
+      // custom comparers and I don't want to maintain
+      // a separate dictionary yet
+
+      index = ColorGrid.InvalidIndex;
+
+      for (int i = 0; i < values.Count; i++)
+      {
+        if (values[i].ToArgb() == value)
+        {
+          index = i;
+          break;
+        }
+      }
+
+      return index;
     }
 
     private bool IsCustomColor(int index) => index >= _colors.Count;
@@ -2426,21 +2468,6 @@ namespace Cyotek.Windows.Forms
     private void SizeToFit()
     {
       this.Size = this.GetAutoSize();
-    }
-
-    public void BeginEdit(int index)
-    {
-      EditColorCancelEventArgs e;
-
-      this.ValidateIndex(index, false);
-      
-      e = new EditColorCancelEventArgs(this.GetColor(index), index);
-      this.OnEditingColor(e);
-
-      if (!e.Cancel)
-      {
-        this.EditColor(index);
-      }
     }
 
     private void ValidateIndex(int index, bool allowInvalid)

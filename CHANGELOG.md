@@ -49,6 +49,8 @@
 
 #### Changed
 
+* [BREAKING] The `ColorGrid` control now tries to treat named
+  and non-named colours the same if they have the same RGB value
 * [BREAKING] The `ColorGrid.AutoSize` property now defaults to
   `false`
 * [BREAKING] If the `AutoSize` and `AutoFit` properties of a
@@ -113,6 +115,8 @@
   disabled
 * Pressing `Home` or `End` in a `ColorGrid` would sometimes take
   no action
+* The `ColorGrid` control treated named and non-named colours as
+  different, even if the RGB value was the same (#4)
 
 ### 1.8.0
 

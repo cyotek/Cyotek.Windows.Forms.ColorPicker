@@ -41,6 +41,19 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
       }
     }
 
+    public static IEnumerable<TestCaseData> GetColorIndexTestCaseSource
+    {
+      get
+      {
+        yield return new TestCaseData(Color.Transparent, -1).SetName("{m}Missing");
+        yield return new TestCaseData(Color.FromArgb(0, 0, 0), 0).SetName("{m}Match");
+        yield return new TestCaseData(Color.Black, 0).SetName("{m}ValueMatch");
+        yield return new TestCaseData(Color.FromArgb(102, 51, 143), 32).SetName("{m}Custom");
+        yield return new TestCaseData(Color.CornflowerBlue, 33).SetName("{m}CustomNamed");
+        yield return new TestCaseData(Color.FromArgb(100, 149, 237), 33).SetName("{m}CustomValueMatch");
+      }
+    }
+
     public static IEnumerable<TestCaseData> NavigateOriginTestCaseSource
     {
       get
@@ -118,6 +131,37 @@ namespace Cyotek.Windows.Forms.ColorPicker.Tests
 
       // act
       actual = (int)method.Invoke(target, new object[] { c, r });
+
+      // assert
+      Assert.AreEqual(expected, actual);
+    }
+
+    [Test]
+    [TestCaseSource(nameof(GetColorIndexTestCaseSource))]
+    public void GetColorIndexTestCases(Color value, int expected)
+    {
+      // arrange
+      ColorGrid target;
+      int actual;
+      MethodInfo method;
+
+      // HACK: GetColorIndex isn't exposed and I'm trying to limit
+      // as much as possible breaking changes without prior notice
+      method = typeof(ColorGrid).GetMethod("GetColorIndex", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(Color) }, null);
+
+      target = new ColorGrid
+      {
+        AutoAddColors = false,
+        Palette = ColorPalette.Standard,
+        CustomColors =
+        {
+          Color.FromArgb(102, 51, 143),
+          Color.CornflowerBlue
+        }
+      };
+
+      // act
+      actual = (int)method.Invoke(target, new object[] { value });
 
       // assert
       Assert.AreEqual(expected, actual);
