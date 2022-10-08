@@ -254,7 +254,7 @@ namespace Cyotek.Windows.Forms
         v = 255;
       }
 
-      return (byte)v;
+      return (byte)Math.Round(v);
     }
 
     private static double HueToRgb(double v1, double v2, double vH)
